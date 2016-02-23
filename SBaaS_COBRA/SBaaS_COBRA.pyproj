@@ -24,6 +24,30 @@
   <ItemGroup>
     <Compile Include="main.py" />
     <Compile Include="sampling.py" />
+    <Compile Include="stage02_physiology_analysis_execute.py" />
+    <Compile Include="stage02_physiology_analysis_io.py" />
+    <Compile Include="stage02_physiology_analysis_postgresql_models.py" />
+    <Compile Include="stage02_physiology_analysis_query.py" />
+    <Compile Include="stage02_physiology_measuredData_execute.py" />
+    <Compile Include="stage02_physiology_measuredData_io.py" />
+    <Compile Include="stage02_physiology_measuredData_postgresql_models.py" />
+    <Compile Include="stage02_physiology_measuredData_query.py" />
+    <Compile Include="stage02_physiology_pairWiseTest_execute.py" />
+    <Compile Include="stage02_physiology_pairWiseTest_io.py" />
+    <Compile Include="stage02_physiology_pairWiseTest_postgresql_models.py" />
+    <Compile Include="stage02_physiology_pairWiseTest_query.py" />
+    <Compile Include="stage02_physiology_sampledData_execute.py" />
+    <Compile Include="stage02_physiology_sampledData_io.py" />
+    <Compile Include="stage02_physiology_sampledData_postgresql_models.py" />
+    <Compile Include="stage02_physiology_sampledData_query.py" />
+    <Compile Include="stage02_physiology_simulatedData_execute.py" />
+    <Compile Include="stage02_physiology_simulatedData_io.py" />
+    <Compile Include="stage02_physiology_simulatedData_postgresql_models.py" />
+    <Compile Include="stage02_physiology_simulatedData_query.py" />
+    <Compile Include="stage02_physiology_simulation_execute.py" />
+    <Compile Include="stage02_physiology_simulation_io.py" />
+    <Compile Include="stage02_physiology_simulation_postgresql_models.py" />
+    <Compile Include="stage02_physiology_simulation_query.py" />
     <Compile Include="__init__.py">
       <SubType>Code</SubType>
     </Compile>
