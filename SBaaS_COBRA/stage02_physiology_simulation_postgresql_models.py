@@ -12,21 +12,22 @@ class data_stage02_physiology_simulation(Base):
     comment_ = Column(Text);
 
     __table_args__ = (
-            UniqueConstraint('experiment_id','model_id','sample_name_abbreviation','simulation_type'),
+            UniqueConstraint('experiment_id','model_id','sample_name_abbreviation','simulation_type','simulation_id'),
             #UniqueConstraint('experiment_id','model_id','sample_name_abbreviation','time_point','simulation_type'),
-            UniqueConstraint('simulation_id'),
+            #UniqueConstraint('experiment_id','model_id','sample_name_abbreviation','simulation_type'),
+            #UniqueConstraint('simulation_id'),
             )
 
     def __init__(self, 
                 row_dict_I,
                 ):
-        self.used_=data_dict_I['used_'];
-        self.simulation_id=data_dict_I['simulation_id'];
-        self.experiment_id=data_dict_I['experiment_id'];
-        self.model_id=data_dict_I['model_id'];
-        self.sample_name_abbreviation=data_dict_I['sample_name_abbreviation'];
-        self.simulation_type=data_dict_I['simulation_type'];
-        self.comment_=data_dict_I['comment_'];
+        self.used_=row_dict_I['used_'];
+        self.simulation_id=row_dict_I['simulation_id'];
+        self.experiment_id=row_dict_I['experiment_id'];
+        self.model_id=row_dict_I['model_id'];
+        self.sample_name_abbreviation=row_dict_I['sample_name_abbreviation'];
+        self.simulation_type=row_dict_I['simulation_type'];
+        self.comment_=row_dict_I['comment_'];
 
     def __set__row__(self,simulation_id_I,
                  experiment_id_I,
@@ -81,15 +82,15 @@ class data_stage02_physiology_simulationParameters(Base):
     def __init__(self, 
                 row_dict_I,
                 ):
-        self.n_points=data_dict_I['n_points'];
-        self.solver_id=data_dict_I['solver_id'];
-        self.simulation_id=data_dict_I['simulation_id'];
-        self.comment_=data_dict_I['comment_'];
-        self.used_=data_dict_I['used_'];
-        self.sampler_id=data_dict_I['sampler_id'];
-        self.id=data_dict_I['id'];
-        self.max_time=data_dict_I['max_time'];
-        self.n_steps=data_dict_I['n_steps'];
+        self.n_points=row_dict_I['n_points'];
+        self.solver_id=row_dict_I['solver_id'];
+        self.simulation_id=row_dict_I['simulation_id'];
+        self.comment_=row_dict_I['comment_'];
+        self.used_=row_dict_I['used_'];
+        self.sampler_id=row_dict_I['sampler_id'];
+        self.id=row_dict_I['id'];
+        self.max_time=row_dict_I['max_time'];
+        self.n_steps=row_dict_I['n_steps'];
 
     def __set__row__(self,
                  simulation_id_I,

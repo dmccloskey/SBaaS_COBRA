@@ -30,22 +30,22 @@ class data_stage02_physiology_pairWiseTest(Base):
     def __init__(self, 
                 row_dict_I,
                 ):
-        self.pvalue_corrected=data_dict_I['pvalue_corrected'];
-        self.comment_=data_dict_I['comment_'];
-        self.used_=data_dict_I['used_'];
-        self.fold_change=data_dict_I['fold_change'];
-        self.ci_level=data_dict_I['ci_level'];
-        self.ci_ub=data_dict_I['ci_ub'];
-        self.ci_lb=data_dict_I['ci_lb'];
-        self.mean=data_dict_I['mean'];
-        self.pvalue_corrected_description=data_dict_I['pvalue_corrected_description'];
-        self.pvalue=data_dict_I['pvalue'];
-        self.test_description=data_dict_I['test_description'];
-        self.test_stat=data_dict_I['test_stat'];
-        self.flux_units=data_dict_I['flux_units'];
-        self.rxn_id=data_dict_I['rxn_id'];
-        self.simulation_id_2=data_dict_I['simulation_id_2'];
-        self.simulation_id_1=data_dict_I['simulation_id_1'];
+        self.pvalue_corrected=row_dict_I['pvalue_corrected'];
+        self.comment_=row_dict_I['comment_'];
+        self.used_=row_dict_I['used_'];
+        self.fold_change=row_dict_I['fold_change'];
+        self.ci_level=row_dict_I['ci_level'];
+        self.ci_ub=row_dict_I['ci_ub'];
+        self.ci_lb=row_dict_I['ci_lb'];
+        self.mean=row_dict_I['mean'];
+        self.pvalue_corrected_description=row_dict_I['pvalue_corrected_description'];
+        self.pvalue=row_dict_I['pvalue'];
+        self.test_description=row_dict_I['test_description'];
+        self.test_stat=row_dict_I['test_stat'];
+        self.flux_units=row_dict_I['flux_units'];
+        self.rxn_id=row_dict_I['rxn_id'];
+        self.simulation_id_2=row_dict_I['simulation_id_2'];
+        self.simulation_id_1=row_dict_I['simulation_id_1'];
 
     def __set__row__(self,simulation_id_1_I,simulation_id_2_I,
         #simulation_dateAndTime_I,
@@ -131,22 +131,22 @@ class data_stage02_physiology_pairWiseTestMetabolites(Base):
     def __init__(self, 
                 row_dict_I,
                 ):
-        self.pvalue_corrected_description=data_dict_I['pvalue_corrected_description'];
-        self.used_=data_dict_I['used_'];
-        self.comment_=data_dict_I['comment_'];
-        self.test_description=data_dict_I['test_description'];
-        self.test_stat=data_dict_I['test_stat'];
-        self.flux_units=data_dict_I['flux_units'];
-        self.met_id=data_dict_I['met_id'];
-        self.simulation_id_2=data_dict_I['simulation_id_2'];
-        self.simulation_id_1=data_dict_I['simulation_id_1'];
-        self.pvalue=data_dict_I['pvalue'];
-        self.pvalue_corrected=data_dict_I['pvalue_corrected'];
-        self.fold_change=data_dict_I['fold_change'];
-        self.ci_level=data_dict_I['ci_level'];
-        self.ci_ub=data_dict_I['ci_ub'];
-        self.ci_lb=data_dict_I['ci_lb'];
-        self.mean=data_dict_I['mean'];
+        self.pvalue_corrected_description=row_dict_I['pvalue_corrected_description'];
+        self.used_=row_dict_I['used_'];
+        self.comment_=row_dict_I['comment_'];
+        self.test_description=row_dict_I['test_description'];
+        self.test_stat=row_dict_I['test_stat'];
+        self.flux_units=row_dict_I['flux_units'];
+        self.met_id=row_dict_I['met_id'];
+        self.simulation_id_2=row_dict_I['simulation_id_2'];
+        self.simulation_id_1=row_dict_I['simulation_id_1'];
+        self.pvalue=row_dict_I['pvalue'];
+        self.pvalue_corrected=row_dict_I['pvalue_corrected'];
+        self.fold_change=row_dict_I['fold_change'];
+        self.ci_level=row_dict_I['ci_level'];
+        self.ci_ub=row_dict_I['ci_ub'];
+        self.ci_lb=row_dict_I['ci_lb'];
+        self.mean=row_dict_I['mean'];
 
     def __set__row__(self,simulation_id_1_I,simulation_id_2_I,
         #simulation_dateAndTime_I,
@@ -232,22 +232,22 @@ class data_stage02_physiology_pairWiseTestSubsystems(Base):
     def __init__(self, 
                 row_dict_I,
                 ):
-        self.mean=data_dict_I['mean'];
-        self.simulation_id_1=data_dict_I['simulation_id_1'];
-        self.simulation_id_2=data_dict_I['simulation_id_2'];
-        self.subsystem_id=data_dict_I['subsystem_id'];
-        self.flux_units=data_dict_I['flux_units'];
-        self.test_stat=data_dict_I['test_stat'];
-        self.test_description=data_dict_I['test_description'];
-        self.pvalue=data_dict_I['pvalue'];
-        self.pvalue_corrected=data_dict_I['pvalue_corrected'];
-        self.pvalue_corrected_description=data_dict_I['pvalue_corrected_description'];
-        self.ci_lb=data_dict_I['ci_lb'];
-        self.ci_ub=data_dict_I['ci_ub'];
-        self.ci_level=data_dict_I['ci_level'];
-        self.fold_change=data_dict_I['fold_change'];
-        self.used_=data_dict_I['used_'];
-        self.comment_=data_dict_I['comment_'];
+        self.mean=row_dict_I['mean'];
+        self.simulation_id_1=row_dict_I['simulation_id_1'];
+        self.simulation_id_2=row_dict_I['simulation_id_2'];
+        self.subsystem_id=row_dict_I['subsystem_id'];
+        self.flux_units=row_dict_I['flux_units'];
+        self.test_stat=row_dict_I['test_stat'];
+        self.test_description=row_dict_I['test_description'];
+        self.pvalue=row_dict_I['pvalue'];
+        self.pvalue_corrected=row_dict_I['pvalue_corrected'];
+        self.pvalue_corrected_description=row_dict_I['pvalue_corrected_description'];
+        self.ci_lb=row_dict_I['ci_lb'];
+        self.ci_ub=row_dict_I['ci_ub'];
+        self.ci_level=row_dict_I['ci_level'];
+        self.fold_change=row_dict_I['fold_change'];
+        self.used_=row_dict_I['used_'];
+        self.comment_=row_dict_I['comment_'];
 
     def __set__row__(self,simulation_id_1_I,simulation_id_2_I,
         #simulation_dateAndTime_I,

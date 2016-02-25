@@ -66,7 +66,7 @@ class stage02_physiology_analysis_query(sbaas_template_query):
                 except SQLAlchemyError as e:
                     print(e);
             self.session.commit();
-    def initialize_dataStage03_quantification_analysis(self):
+    def initialize_dataStage02_physiology_analysis(self):
         try:
             data_stage02_physiology_analysis.__table__.create(self.engine,True);
         except SQLAlchemyError as e:

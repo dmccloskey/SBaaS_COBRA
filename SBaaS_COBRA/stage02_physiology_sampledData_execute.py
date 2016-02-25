@@ -24,7 +24,7 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io):
                 
         # get simulation information
         simulation_info_all = [];
-        simulation_info_all = self.stage02_physiology_query.get_rows_simulationID_dataStage02PhysiologySimulation(simulation_id_I);
+        simulation_info_all = self.stage02_physiology_query.get_rows_simulationIDAndSimulationType_dataStage02PhysiologySimulation(simulation_id_I,'sampling');
         if not simulation_info_all:
             print('simulation not found!')
             return;
@@ -68,36 +68,66 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io):
             else:
                 print('sampler_id not recognized');
             # add data to the database
-            row = None;
-            row = data_stage02_physiology_sampledPoints(
-                simulation_id_I,
-                sampling.simulation_dateAndTime,
-                sampling.mixed_fraction,
-                sampling.matlab_path+'/'+filename_points,
-                sampling.loops,
-                True,
-                None);
-            self.session.add(row);
+            row = {'simulation_id':simulation_id_I,
+                'simulation_dateAndTime':sampling.simulation_dateAndTime,
+                'mixed_fraction':sampling.mixed_fraction,
+                'data_dir':data_dir_I+'/'+filename_points,
+                'infeasible_loops':sampling.loops,
+                'used_':True,
+                'comment_':None
+                };
+            self.add_dataStage02PhysiologySampledPoints([row])
+            #row = None;
+            #row = data_stage02_physiology_sampledPoints(
+            #    simulation_id_I,
+            #    sampling.simulation_dateAndTime,
+            #    sampling.mixed_fraction,
+            #    sampling.matlab_path+'/'+filename_points,
+            #    sampling.loops,
+            #    True,
+            #    None);
+            #self.session.add(row);
+            # add data to the database
+            sampledData_O = [];
             for k,v in self.sampling.points_statistics.items():
-                row = None;
-                row = data_stage02_physiology_sampledData(
-                    simulation_id_I,
-                    sampling.simulation_dateAndTime,
-                    k,
-                    'mmol*gDW-1*hr-1',
-                    None, #v['points'],
-                    v['ave'],
-                    v['var'],
-                    v['lb'],
-                    v['ub'],
-                    v['min'],
-                    v['max'],
-                    v['median'],
-                    v['iq_1'],
-                    v['iq_3'],
-                    True,
-                    None);
-                self.session.add(row);
+                row = {'simulation_id':simulation_id_I,
+                    'simulation_dateAndTime':sampling.simulation_dateAndTime,
+                    'rxn_id':k,
+                    'flux_units':'mmol*gDW-1*hr-1',
+                    'sampling_points':None, #v['points'],
+                    'sampling_ave':v['ave'],
+                    'sampling_var':v['var'],
+                    'sampling_lb':v['lb'],
+                    'sampling_ub':v['ub'],
+                    'sampling_ci':0.95,
+                    'sampling_min':v['min'],
+                    'sampling_max':v['max'],
+                    'sampling_median':v['median'],
+                    'sampling_iq_1':v['iq_1'],
+                    'sampling_iq_3':v['iq_3'],
+                    'used_':True,
+                    'comment_':None};
+                sampledData_O.append(row);
+                #row = None;
+                #row = data_stage02_physiology_sampledData(
+                #    simulation_id_I,
+                #    sampling.simulation_dateAndTime,
+                #    k,
+                #    'mmol*gDW-1*hr-1',
+                #    None, #v['points'],
+                #    v['ave'],
+                #    v['var'],
+                #    v['lb'],
+                #    v['ub'],
+                #    v['min'],
+                #    v['max'],
+                #    v['median'],
+                #    v['iq_1'],
+                #    v['iq_3'],
+                #    True,
+                #    None);
+                #self.session.add(row);
+            self.add_dataStage02PhysiologySampledData(sampledData_O);
         else:
             print('no solution found!');
         self.session.commit()

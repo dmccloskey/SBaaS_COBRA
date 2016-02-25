@@ -11,7 +11,7 @@ from numpy import histogram, mean, std, loadtxt, savetxt
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 # Resources
-from calculate_utilities.base_calculate import base_calculate
+from python_statistics.calculate_interface import calculate_interface
 from molmass.molmass import Formula
 # Dependencies from cobra
 from cobra.io.mat import load_matlab_model,save_matlab_model
@@ -21,7 +21,7 @@ from cobra.flux_analysis import flux_variability_analysis, single_deletion
 from cobra.flux_analysis.parsimonious import optimize_minimal_flux
 from cobra.flux_analysis.objective import update_objective
 
-class cobra_sampling(base_calculate):
+class cobra_sampling(calculate_interface):
 
     def __init__(self,data_dir_I=None,model_I=None,loops_I=[]):#,sampler_I=None):
         if data_dir_I:self.data_dir =  data_dir_I;
@@ -37,7 +37,7 @@ class cobra_sampling(base_calculate):
         self.points_metabolite = {};
         self.points_subsystem = {};
         self.mixed_fraction = None;
-        self.calculate = base_calculate();
+        self.calculate = calculate_interface();
     # import functions
     def get_points_numpy(self,numpy_data,model_sbml=None):
         '''load sampling points from numpy file'''
@@ -514,7 +514,7 @@ class cobra_sampling(base_calculate):
         self.points = {};
         self.mixed_fraction = None;
         self.loops = {};
-        self.calculate = base_calculate();
+        self.calculate = calculate_interface();
 
 class matlab_sampling(cobra_sampling):
 
@@ -526,7 +526,7 @@ class matlab_sampling(cobra_sampling):
         self.model = None;
         self.simulation_dateAndTime = None;
         self.loops = {};
-        self.calculate = base_calculate();
+        self.calculate = calculate_interface();
 
     def get_points_matlab(self,matlab_data,sampler_model_name):
         '''load sampling points from MATLAB'''
@@ -613,7 +613,7 @@ class matlab_sampling(cobra_sampling):
         with open(self.matlab_path + '/' + filename_script,'w') as f:
             f.write(mat_script);
 
-class cobra_sampling_n(base_calculate):
+class cobra_sampling_n(calculate_interface):
 
     def __init__(self,data_dir_I=None,model_I=None,loops_I=[],sample_ids_I=[],samplers_I=None,control_I=False):
         #   control_I = True: sample_ids_I[0]=control,sample_ids_I[1:]=perturbation
@@ -634,7 +634,7 @@ class cobra_sampling_n(base_calculate):
         self.points = [];
         self.points_metabolites = [];
         self.points_subsystems = [];
-        self.calculate = base_calculate();
+        self.calculate = calculate_interface();
         self.data = [];
 
     def calculate_pairWiseTest(self):

@@ -235,6 +235,28 @@ class stage02_physiology_simulation_query(sbaas_template_query):
             return rows_O;
         except SQLAlchemyError as e:
             print(e);
+    def get_rows_simulationIDAndSimulationType_dataStage02PhysiologySimulation(self,simulation_id_I,simulation_type_I):
+        '''Querry rows that are used from the simulation'''
+        try:
+            data = self.session.query(data_stage02_physiology_simulation).filter(
+                    data_stage02_physiology_simulation.simulation_id.like(simulation_id_I),
+                    data_stage02_physiology_simulation.simulation_type.like(simulation_type_I),
+                    data_stage02_physiology_simulation.used_.is_(True)).all();
+            rows_O = [];
+            if data: 
+                for d in data:
+                    rows_O.append({
+                            'simulation_id':d.simulation_id,
+                            'experiment_id':d.experiment_id,
+                            'model_id':d.model_id,
+                            'sample_name_abbreviation':d.sample_name_abbreviation,
+                            #'time_point':d.time_point,
+                            'simulation_type':d.simulation_type,
+                            'used_':d.used_,
+                            'comment_':d.comment_});
+            return rows_O;
+        except SQLAlchemyError as e:
+            print(e);
     ##  Query from data_stage02_physiology_simulationParameters
     # query rows from data_stage02_physiology_simulation
     def get_rows_simulationID_dataStage02PhysiologySimulationParameters(self,simulation_id_I):

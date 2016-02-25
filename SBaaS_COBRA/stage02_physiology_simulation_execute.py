@@ -3,6 +3,9 @@ from .stage02_physiology_simulation_io import stage02_physiology_simulation_io
 # resources
 from python_statistics.calculate_interface import calculate_interface
 from .sampling import cobra_sampling,cobra_sampling_n
+from .cobra_simulatedData import cobra_simulatedData
+import datetime
+
 # Dependencies from cobra
 from cobra.io.sbml import create_cobra_model_from_sbml_file, write_cobra_model_to_sbml_file
 from cobra.flux_analysis.variability import flux_variability_analysis
@@ -11,12 +14,70 @@ from cobra.flux_analysis import flux_variability_analysis
 from cobra.manipulation.modify import convert_to_irreversible
 
 class stage02_physiology_simulation_execute(stage02_physiology_simulation_io,):
-    def execute_fva(self,):
+    def execute_fva(self,simulation_id_I,
+                        rxn_ids_I=[],
+                        models_I = {},
+                        ):
         '''
+        Run FVA on the simulation
         INPUT:
+        simulation_id = string
+        rxn_ids_I = [{}], specifying specifc rxn ub and lb
+                    e.g., [{'rxn_id':string, 'rxn_lb':float, 'rxn_ub':float},...]
+        models_I = {} of model_id:cobra_model
         OUTPUT:
         '''
-        pass;
+        print('executing fva...');
+        # input:
+        models = models_I;
+        # get simulation information
+        simulation_info_all = [];
+        simulation_info_all = self.stage02_physiology_query.get_rows_simulationIDAndSimulationType_dataStage02PhysiologySimulation(simulation_id_I,'fva');
+        if not simulation_info_all:
+            print('simulation not found!')
+            return;
+        simulation_info = simulation_info_all[0]; # unique constraint guarantees only 1 row will be returned
+        # get simulation parameters
+        simulation_parameters_all = [];
+        simulation_parameters_all = self.stage02_physiology_query.get_rows_simulationID_dataStage02PhysiologySimulationParameters(simulation_id_I);
+        if not simulation_parameters_all:
+            print('simulation not found!')
+            return;
+        simulation_parameters = simulation_parameters_all[0]; # unique constraint guarantees only 1 row will be returned
+        # get the cobra model
+        cobra_model = models[simulation_info['model_id']];
+        # copy the model
+        cobra_model_copy = cobra_model.copy();
+        # get rxn_ids
+        if rxn_ids_I:
+            rxn_ids = rxn_ids_I;
+        else:
+            rxn_ids = [];
+            rxn_ids = self.stage02_physiology_query.get_rows_experimentIDAndModelIDAndSampleNameAbbreviation_dataStage02PhysiologyMeasuredFluxes(simulation_info['experiment_id'],simulation_info['model_id'],simulation_info['sample_name_abbreviation']);
+        for rxn in rxn_ids:
+            # constrain the model
+            cobra_model_copy.reactions.get_by_id(rxn['rxn_id']).lower_bound = rxn['flux_lb'];
+            cobra_model_copy.reactions.get_by_id(rxn['rxn_id']).upper_bound = rxn['flux_ub'];
+        # Test model
+        if self.test_model(cobra_model_I=cobra_model_copy):
+            simulated_data = cobra_simulatedData();
+            simulated_data.generate_fva_data(cobra_model,solver=simulation_info['solver_id']); # perform flux variability analysis
+            #add data to the DB
+            data_O = [];
+            for k,v in simulated_data.fva_data.items():
+                data_tmp = {
+                'simulation_id':simulation_id_I,
+                'simulation_dateAndTime':datetime.datetime.now(),
+                'rxn_id':k,
+                'fva_minimum':simulated_data.fva_data[k]['minimum'],
+                'fva_maximum':simulated_data.fva_data[k]['maximum'],
+                'flux_units':'mmol*gDCW-1*hr-1',
+                'used_':True,
+                'comment_':None};
+                data_O.append(data_tmp);
+            self.add_dataStage02PhysiologySimulatedData('data_stage02_physiology_simulatedData_fva',data_O);
+        else:
+            print('no solution found!');  
     def execute_fba(self,):
         '''
         INPUT:
@@ -50,7 +111,7 @@ class stage02_physiology_simulation_execute(stage02_physiology_simulation_io,):
         models = models_I;
         # get simulation information
         simulation_info_all = [];
-        simulation_info_all = self.stage02_physiology_query.get_rows_simulationID_dataStage02PhysiologySimulation(simulation_id_I);
+        simulation_info_all = self.stage02_physiology_query.get_rows_simulationIDAndSimulationType_dataStage02PhysiologySimulation(simulation_id_I,'sampling');
         if not simulation_info_all:
             print('simulation not found!')
             return;

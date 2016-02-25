@@ -103,6 +103,17 @@ class stage02_physiology_sampledData_query(sbaas_template_query):
             return rows_O;
         except SQLAlchemyError as e:
             print(e);
+    def add_dataStage02PhysiologySampledData(self, data_I):
+        '''add rows of data_stage02_physiology_sampledData'''
+        if data_I:
+            for d in data_I:
+                try:
+                    data_add = data_stage02_physiology_sampledData(d
+                        );
+                    self.session.add(data_add);
+                except SQLAlchemyError as e:
+                    print(e);
+            self.session.commit();
 
     ##  Query from data_stage02_physiology_sampledPoints
     # query rows from data_stage02_physiology_sampledPoints
@@ -126,6 +137,17 @@ class stage02_physiology_sampledData_query(sbaas_template_query):
             return rows_O;
         except SQLAlchemyError as e:
             print(e);
+    def add_dataStage02PhysiologySampledPoints(self, data_I):
+        '''add rows of data_stage02_physiology_sampledPoints'''
+        if data_I:
+            for d in data_I:
+                try:
+                    data_add = data_stage02_physiology_sampledPoints(d
+                        );
+                    self.session.add(data_add);
+                except SQLAlchemyError as e:
+                    print(e);
+            self.session.commit();
     
     def drop_dataStage02_physiology_sampledData(self):
         try:

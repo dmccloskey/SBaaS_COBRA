@@ -14,10 +14,10 @@ class data_stage02_physiology_analysis(Base):
     def __init__(self, 
                 row_dict_I,
                 ):
-        self.used_=data_dict_I['used_'];
-        self.comment_=data_dict_I['comment_'];
-        self.analysis_id=data_dict_I['analysis_id'];
-        self.simulation_id=data_dict_I['simulation_id'];
+        self.used_=row_dict_I['used_'];
+        self.comment_=row_dict_I['comment_'];
+        self.analysis_id=row_dict_I['analysis_id'];
+        self.simulation_id=row_dict_I['simulation_id'];
 
     def __set__row__(self,
             analysis_id_I,

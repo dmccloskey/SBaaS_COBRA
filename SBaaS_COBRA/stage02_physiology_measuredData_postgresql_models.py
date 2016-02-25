@@ -22,18 +22,18 @@ class data_stage02_physiology_metabolomicsData(Base):
     def __init__(self, 
                 row_dict_I,
                 ):
-        self.used_=data_dict_I['used_'];
-        self.experiment_id=data_dict_I['experiment_id'];
-        self.sample_name_abbreviation=data_dict_I['sample_name_abbreviation'];
-        self.time_point=data_dict_I['time_point'];
-        self.met_id=data_dict_I['met_id'];
-        self.concentration=data_dict_I['concentration'];
-        self.concentration_var=data_dict_I['concentration_var'];
-        self.concentration_units=data_dict_I['concentration_units'];
-        self.concentration_lb=data_dict_I['concentration_lb'];
-        self.concentration_ub=data_dict_I['concentration_ub'];
-        self.measured=data_dict_I['measured'];
-        self.comment_=data_dict_I['comment_'];
+        self.used_=row_dict_I['used_'];
+        self.experiment_id=row_dict_I['experiment_id'];
+        self.sample_name_abbreviation=row_dict_I['sample_name_abbreviation'];
+        self.time_point=row_dict_I['time_point'];
+        self.met_id=row_dict_I['met_id'];
+        self.concentration=row_dict_I['concentration'];
+        self.concentration_var=row_dict_I['concentration_var'];
+        self.concentration_units=row_dict_I['concentration_units'];
+        self.concentration_lb=row_dict_I['concentration_lb'];
+        self.concentration_ub=row_dict_I['concentration_ub'];
+        self.measured=row_dict_I['measured'];
+        self.comment_=row_dict_I['comment_'];
 
     def __set__row__(self, experiment_id_I, sample_name_abbreviation_I,
                  time_point_I, met_id_I,
@@ -95,17 +95,17 @@ class data_stage02_physiology_measuredFluxes(Base):
     def __init__(self, 
                 row_dict_I,
                 ):
-        self.flux_units=data_dict_I['flux_units'];
-        self.model_id=data_dict_I['model_id'];
-        self.sample_name_abbreviation=data_dict_I['sample_name_abbreviation'];
-        self.rxn_id=data_dict_I['rxn_id'];
-        self.flux_ub=data_dict_I['flux_ub'];
-        self.flux_lb=data_dict_I['flux_lb'];
-        self.flux_stdev=data_dict_I['flux_stdev'];
-        self.flux_average=data_dict_I['flux_average'];
-        self.comment_=data_dict_I['comment_'];
-        self.used_=data_dict_I['used_'];
-        self.experiment_id=data_dict_I['experiment_id'];
+        self.flux_units=row_dict_I['flux_units'];
+        self.model_id=row_dict_I['model_id'];
+        self.sample_name_abbreviation=row_dict_I['sample_name_abbreviation'];
+        self.rxn_id=row_dict_I['rxn_id'];
+        self.flux_ub=row_dict_I['flux_ub'];
+        self.flux_lb=row_dict_I['flux_lb'];
+        self.flux_stdev=row_dict_I['flux_stdev'];
+        self.flux_average=row_dict_I['flux_average'];
+        self.comment_=row_dict_I['comment_'];
+        self.used_=row_dict_I['used_'];
+        self.experiment_id=row_dict_I['experiment_id'];
 
     def __set__row__(self,experiment_id_I,
             model_id_I,
