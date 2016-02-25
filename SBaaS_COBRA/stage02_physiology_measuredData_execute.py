@@ -5,10 +5,9 @@ from SBaaS_quantification.stage01_quantification_averages_query import stage01_q
 from SBaaS_physiology.stage01_physiology_rates_query import stage01_physiology_rates_query
 from SBaaS_MFA.stage02_isotopomer_fittedNetFluxes_query import stage02_isotopomer_fittedNetFluxes_query
 from SBaaS_models.models_COBRA_dependencies import models_COBRA_dependencies
-# Resources (delete if not needed)
-from io_utilities.base_importData import base_importData
-from io_utilities.base_exportData import base_exportData
+# Resources
 import copy
+from math import sqrt
 
 class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io,
                                                   stage02_physiology_simulation_query,
@@ -115,21 +114,21 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
             model_ids = model_ids_I;
         else:
             model_ids = [];
-            model_ids = self.get_modelID_experimentID_dataStage03QuantificationSimulation(experiment_id_I);
+            model_ids = self.get_modelID_experimentID_dataStage02PhysiologySimulation(experiment_id_I);
         for model_id in model_ids:
             # get sample names and sample name abbreviations
             if sample_name_abbreviations_I:
                 sample_name_abbreviations = sample_name_abbreviations_I;
             else:
                 sample_name_abbreviations = [];
-                sample_name_abbreviations = self.get_sampleNameAbbreviations_experimentIDAndModelID_dataStage03QuantificationSimulation(experiment_id_I,model_id);
+                sample_name_abbreviations = self.get_sampleNameAbbreviations_experimentIDAndModelID_dataStage02PhysiologySimulation(experiment_id_I,model_id);
             for sna_cnt,sna in enumerate(sample_name_abbreviations):
                 print('Adding experimental fluxes for sample name abbreviation ' + sna);
                 if time_points_I:
                     time_points = time_points_I;
                 else:
                     time_points = [];
-                    time_points = self.get_timePoints_experimentIDAndModelIDAndSampleNameAbbreviation_dataStage03QuantificationSimulation(experiment_id_I,model_id,sna)
+                    time_points = self.get_timePoints_experimentIDAndModelIDAndSampleNameAbbreviation_dataStage02PhysiologySimulation(experiment_id_I,model_id,sna)
                 for tp in time_points:
                     if flux_dict:
                         for k,v in flux_dict[model_id][sna][tp].items():
@@ -198,14 +197,17 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
         #add data to the database:
         self.add_dataStage02PhysiologyMeasuredFluxes(data_O);
         #self.session.commit();
-    def execute_makeMeasuredFluxes(self,experiment_id_I, metID2RxnID_I = {}, sample_name_abbreviations_I = [], met_ids_I = []):
-        '''Collect and flux data from data_stage01_physiology_ratesAverages for physiological simulation'''
-        #Input:
-        #   metID2RxnID_I = e.g. {'glc-D':{'model_id':'140407_iDM2014','rxn_id':'EX_glc_LPAREN_e_RPAREN_'},
-        #                        {'ac':{'model_id':'140407_iDM2014','rxn_id':'EX_ac_LPAREN_e_RPAREN_'},
-        #                        {'succ':{'model_id':'140407_iDM2014','rxn_id':'EX_succ_LPAREN_e_RPAREN_'},
-        #                        {'lac-L':{'model_id':'140407_iDM2014','rxn_id':'EX_lac_DASH_L_LPAREN_e_RPAREN_'},
-        #                        {'biomass':{'model_id':'140407_iDM2014','rxn_id':'Ec_biomass_iJO1366_WT_53p95M'}};
+    def execute_makeMeasuredFluxes(self,experiment_id_I, metID2RxnID_I = {}, sample_name_abbreviations_I = [], met_ids_I = [],
+                                   correct_EX_glc_LPAREN_e_RPAREN_I = True):
+        '''Collect and flux data from data_stage01_physiology_ratesAverages for physiological simulation
+        INPUT:
+        metID2RxnID_I = e.g. {'glc-D':{'model_id':'140407_iDM2014','rxn_id':'EX_glc_LPAREN_e_RPAREN_'},
+                                {'ac':{'model_id':'140407_iDM2014','rxn_id':'EX_ac_LPAREN_e_RPAREN_'},
+                                {'succ':{'model_id':'140407_iDM2014','rxn_id':'EX_succ_LPAREN_e_RPAREN_'},
+                                {'lac-L':{'model_id':'140407_iDM2014','rxn_id':'EX_lac_DASH_L_LPAREN_e_RPAREN_'},
+                                {'biomass':{'model_id':'140407_iDM2014','rxn_id':'Ec_biomass_iJO1366_WT_53p95M'}};
+        correct_EX_glc_LPAREN_e_RPAREN_I = boolean, if True, the direction of glucose input will be reversed
+                                '''
 
         data_O = [];
         # get sample names and sample name abbreviations
@@ -213,7 +215,7 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
             sample_name_abbreviations = sample_name_abbreviations_I;
         else:
             sample_name_abbreviations = [];
-            sample_name_abbreviations = self.get_sampleNameAbbreviations_experimentID_dataStage03QuantificationSimulation(experiment_id_I);
+            sample_name_abbreviations = self.get_sampleNameAbbreviations_experimentID_dataStage02PhysiologySimulation(experiment_id_I);
         for sna in sample_name_abbreviations:
             print('Collecting experimental fluxes for sample name abbreviation ' + sna);
             # get met_ids
@@ -229,8 +231,18 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
                 slope_average, intercept_average, rate_average, rate_lb, rate_ub, rate_units, rate_var = None,None,None,None,None,None,None;
                 slope_average, intercept_average, rate_average, rate_lb, rate_ub, rate_units, rate_var = self.get_rateData_experimentIDAndSampleNameAbbreviationAndMetID_dataStage01PhysiologyRatesAverages(experiment_id_I,sna,met);
                 rate_stdev = sqrt(rate_var);
+                # check that the metID2RxnID_I mapping is provided
+                if not met in metID2RxnID_I.keys():
+                    print('no metID2RxnID mapping provided for metabolite ' + met);
+                    continue;
                 model_id = metID2RxnID_I[met]['model_id'];
                 rxn_id = metID2RxnID_I[met]['rxn_id'];
+                # correct for glucose uptake
+                if rxn_id == 'EX_glc_LPAREN_e_RPAREN_' and correct_EX_glc_LPAREN_e_RPAREN_I:
+                    rate_lb_tmp,rate_ub_tmp = rate_lb,rate_ub;
+                    rate_lb = min([abs(x) for x in [rate_lb_tmp,rate_ub_tmp]]);
+                    rate_ub = max([abs(x) for x in [rate_lb_tmp,rate_ub_tmp]]);
+                    rate_average = abs(rate_average);
                 # record the data
                 data_tmp = {'experiment_id':experiment_id_I,
                         'model_id':model_id,
@@ -276,7 +288,7 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
             model_ids = model_ids_I;
         else:
             model_ids = [];
-            model_ids = self.get_modelID_experimentID_dataStage03QuantificationSimulation(experiment_id_I);
+            model_ids = self.get_modelID_experimentID_dataStage02PhysiologySimulation(experiment_id_I);
         for model_id in model_ids:
             diagnose_variables_O[model_id] = {};
             cobra_model_base = models_I[model_id];
@@ -286,7 +298,7 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
                 sample_name_abbreviations = sample_name_abbreviations_I;
             else:
                 sample_name_abbreviations = [];
-                sample_name_abbreviations = self.get_sampleNameAbbreviations_experimentIDAndModelID_dataStage03QuantificationSimulation(experiment_id_I,model_id);
+                sample_name_abbreviations = self.get_sampleNameAbbreviations_experimentIDAndModelID_dataStage02PhysiologySimulation(experiment_id_I,model_id);
             for sna_cnt,sna in enumerate(sample_name_abbreviations):
                 diagnose_variables_O[model_id][sna] = {};
                 print('testing sample_name_abbreviation ' + sna);
@@ -295,7 +307,7 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
                     time_points = time_points_I;
                 else:
                     time_points = [];
-                    time_points = self.get_timePoints_experimentIDAndModelIDAndSampleNameAbbreviation_dataStage03QuantificationSimulation(experiment_id_I,model_id,sna)
+                    time_points = self.get_timePoints_experimentIDAndModelIDAndSampleNameAbbreviation_dataStage02PhysiologySimulation(experiment_id_I,model_id,sna)
                 for tp in time_points:
                     diagnose_variables_O[model_id][sna][tp] = {'bad_lbub_1':None,'bad_lbub_2':None};
                     print('testing time_point ' + tp);

@@ -32,11 +32,11 @@ class stage02_physiology_pairWiseTest_io(stage02_physiology_pairWiseTest_query,
     #        simulation_ids = simulation_ids_I;
     #    else:
     #        simulation_ids = [];
-    #        simulation_ids = self.stage02_physiology_query.get_simulationID_experimentID_dataStage02PhysiologySimulation(experiment_id_I);
+    #        simulation_ids = self.get_simulationID_experimentID_dataStage02PhysiologySimulation(experiment_id_I);
     #    for simulation_id_1 in simulation_ids:
     #        # get simulation information
     #        simulation_1_info = [];
-    #        simulation_1_info = self.stage02_physiology_query.get_rows_simulationID_dataStage02PhysiologySimulation(simulation_id_1);
+    #        simulation_1_info = self.get_rows_simulationID_dataStage02PhysiologySimulation(simulation_id_1);
     #        sna_1 = simulation_1_info[0]['sample_name_abbreviation']
     #        model_id = simulation_1_info[0]['model_id']
     #        # get the cobra model
@@ -44,7 +44,7 @@ class stage02_physiology_pairWiseTest_io(stage02_physiology_pairWiseTest_query,
     #            cobra_model = model_ids_dict_I[model_id];
     #        else:
     #            cobra_model_sbml = None;
-    #            cobra_model_sbml = self.stage02_physiology_query.get_row_modelID_datastage02PhysiologyModels(model_id);
+    #            cobra_model_sbml = self.get_row_modelID_datastage02PhysiologyModels(model_id);
     #            # write the model to a temporary file
     #            with open('data/cobra_model_tmp.xml','wb') as file:
     #                file.write(cobra_model_sbml['model_file']);
@@ -55,13 +55,13 @@ class stage02_physiology_pairWiseTest_io(stage02_physiology_pairWiseTest_query,
     #        objectives = [x.id for x in cobra_model.reactions if x.objective_coefficient == 1];
     #        for simulation_id_2 in simulation_ids:
     #            simulation_2_info = [];
-    #            simulation_2_info = self.stage02_physiology_query.get_rows_simulationID_dataStage02PhysiologySimulation(simulation_id_2);
+    #            simulation_2_info = self.get_rows_simulationID_dataStage02PhysiologySimulation(simulation_id_2);
     #            sna_2 = simulation_2_info[0]['sample_name_abbreviation']
     #            # get simulation information
     #            if sna_1 != sna_2:
     #                # get data:
     #                data_1 = [];
-    #                data_1 = self.stage02_physiology_query.get_RDataList_simulationIDs_dataStage02PhysiologyPairWiseTest(simulation_id_1,simulation_id_2);
+    #                data_1 = self.get_RDataList_simulationIDs_dataStage02PhysiologyPairWiseTest(simulation_id_1,simulation_id_2);
     #                if data_1:
     #                    filter_sna_str = 'sample/'+sna_1 + '_' + sna_2;
     #                    filter_O['sample'].append(filter_sna_str);

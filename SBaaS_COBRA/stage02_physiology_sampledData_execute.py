@@ -1,8 +1,77 @@
 #SBaaS
 from .stage02_physiology_sampledData_io import stage02_physiology_sampledData_io
+from .stage02_physiology_simulation_query import stage02_physiology_simulation_query
+from .stage02_physiology_measuredData_query import stage02_physiology_measuredData_query
 from .sampling import cobra_sampling,cobra_sampling_n
+from SBaaS_models.models_COBRA_dependencies import models_COBRA_dependencies
+# resources
+from python_statistics.calculate_interface import calculate_interface
+from .sampling import cobra_sampling,cobra_sampling_n
+import datetime
 
-class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io): 
+class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
+                                            stage02_physiology_simulation_query,
+                                            stage02_physiology_measuredData_query): 
+    def execute_sampling(self,simulation_id_I,
+                               rxn_ids_I=[],
+                               data_dir_I='C:/Users/dmccloskey-sbrg/Documents/MATLAB/sampling_physiology',
+                               models_I = {},
+                               ):
+        '''Sample a specified model that is constrained to measured physiological data
+        INPUT:
+        OUTPUT:
+        '''
+        print('executing sampling...');
+        # input
+        modelsCOBRA = models_COBRA_dependencies();
+        data_dir = data_dir_I;
+        models = models_I;
+        # get simulation information
+        simulation_info_all = [];
+        simulation_info_all = self.get_rows_simulationIDAndSimulationType_dataStage02PhysiologySimulation(simulation_id_I,'sampling');
+        if not simulation_info_all:
+            print('simulation not found!')
+            return;
+        simulation_info = simulation_info_all[0]; # unique constraint guarantees only 1 row will be returned
+        # get simulation parameters
+        simulation_parameters_all = [];
+        simulation_parameters_all = self.get_rows_simulationID_dataStage02PhysiologySimulationParameters(simulation_id_I);
+        if not simulation_parameters_all:
+            print('simulation not found!')
+            return;
+        simulation_parameters = simulation_parameters_all[0]; # unique constraint guarantees only 1 row will be returned
+        # get the cobra model
+        cobra_model = models[simulation_info['model_id']];
+        # copy the model
+        cobra_model_copy = cobra_model.copy();
+        # get rxn_ids
+        if rxn_ids_I:
+            rxn_ids = rxn_ids_I;
+        else:
+            rxn_ids = [];
+            rxn_ids = self.get_rows_experimentIDAndModelIDAndSampleNameAbbreviation_dataStage02PhysiologyMeasuredFluxes(simulation_info['experiment_id'],simulation_info['model_id'],simulation_info['sample_name_abbreviation']);
+        for rxn in rxn_ids:
+            # constrain the model
+            cobra_model_copy.reactions.get_by_id(rxn['rxn_id']).lower_bound = rxn['flux_lb'];
+            cobra_model_copy.reactions.get_by_id(rxn['rxn_id']).upper_bound = rxn['flux_ub'];
+        # Test model
+        if modelsCOBRA.test_model(cobra_model_I=cobra_model_copy):
+            sampling = cobra_sampling(data_dir_I = data_dir);
+            if simulation_parameters['sampler_id']=='gpSampler':
+                filename_model = simulation_id_I + '.mat';
+                filename_script = simulation_id_I + '.m';
+                filename_points = simulation_id_I + '_points' + '.mat';
+                sampling.export_sampling_matlab(cobra_model=cobra_model_copy,filename_model=filename_model,filename_script=filename_script,filename_points=filename_points,\
+                    solver_id_I = simulation_parameters['solver_id'],\
+                    n_points_I = simulation_parameters['n_points'],\
+                    n_steps_I = simulation_parameters['n_steps'],\
+                    max_time_I = simulation_parameters['max_time']);
+            elif simulation_parameters['sampler_id']=='optGpSampler':
+                return;
+            else:
+                print('sampler_id not recognized');
+        else:
+            print('no solution found!'); 
     def execute_analyzeSamplingPoints(self,simulation_id_I,
                                rxn_ids_I=[],
                                data_dir_I='C:/Users/dmccloskey-sbrg/Documents/MATLAB/sampling_physiology',
@@ -18,20 +87,21 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io):
         '''
 
         print('analyzing sampling points');
-
+        
+        modelsCOBRA = models_COBRA_dependencies();
         data_dir = data_dir_I;
         models = models_I;
                 
         # get simulation information
         simulation_info_all = [];
-        simulation_info_all = self.stage02_physiology_query.get_rows_simulationIDAndSimulationType_dataStage02PhysiologySimulation(simulation_id_I,'sampling');
+        simulation_info_all = self.get_rows_simulationIDAndSimulationType_dataStage02PhysiologySimulation(simulation_id_I,'sampling');
         if not simulation_info_all:
             print('simulation not found!')
             return;
         simulation_info = simulation_info_all[0]; # unique constraint guarantees only 1 row will be returned
         # get simulation parameters
         simulation_parameters_all = [];
-        simulation_parameters_all = self.stage02_physiology_query.get_rows_simulationID_dataStage02PhysiologySimulationParameters(simulation_id_I);
+        simulation_parameters_all = self.get_rows_simulationID_dataStage02PhysiologySimulationParameters(simulation_id_I);
         if not simulation_parameters_all:
             print('simulation not found!')
             return;
@@ -45,13 +115,13 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io):
             rxn_ids = rxn_ids_I;
         else:
             rxn_ids = [];
-            rxn_ids = self.stage02_physiology_query.get_rows_experimentIDAndModelIDAndSampleNameAbbreviation_dataStage02PhysiologyMeasuredFluxes(simulation_info['experiment_id'],simulation_info['model_id'],simulation_info['sample_name_abbreviation']);
+            rxn_ids = self.get_rows_experimentIDAndModelIDAndSampleNameAbbreviation_dataStage02PhysiologyMeasuredFluxes(simulation_info['experiment_id'],simulation_info['model_id'],simulation_info['sample_name_abbreviation']);
         for rxn in rxn_ids:
             # constrain the model
             cobra_model_copy.reactions.get_by_id(rxn['rxn_id']).lower_bound = rxn['flux_lb'];
             cobra_model_copy.reactions.get_by_id(rxn['rxn_id']).upper_bound = rxn['flux_ub'];
         # Test each model
-        if self.test_model(cobra_model_I=cobra_model_copy):
+        if modelsCOBRA.test_model(cobra_model_I=cobra_model_copy):
             sampling = cobra_sampling(data_dir_I = data_dir);
             if simulation_parameters['sampler_id']=='gpSampler':
                 # load the results of sampling

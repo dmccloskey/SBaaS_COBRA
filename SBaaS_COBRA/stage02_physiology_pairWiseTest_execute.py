@@ -35,7 +35,7 @@ class stage02_physiology_pairWiseTest_execute(stage02_physiology_pairWiseTest_io
         simulation_info_all = [];
         for simulation_id in simulation_ids_I:
             simulation_info_1_all = [];
-            simulation_info_1_all = self.stage02_physiology_query.get_rows_simulationID_dataStage02PhysiologySimulation(simulation_id);
+            simulation_info_1_all = self.get_rows_simulationID_dataStage02PhysiologySimulation(simulation_id);
             if not simulation_info_1_all:
                 print('simulation not found!')
                 return;
@@ -45,7 +45,7 @@ class stage02_physiology_pairWiseTest_execute(stage02_physiology_pairWiseTest_io
         sampledPoints_all = [];
         for simulation_id in simulation_ids_I:
             sampledPoints_1_all = [];
-            sampledPoints_1_all = self.stage02_physiology_query.get_rows_simulationID_dataStage02PhysiologySampledPoints(simulation_id);
+            sampledPoints_1_all = self.get_rows_simulationID_dataStage02PhysiologySampledPoints(simulation_id);
             if not sampledPoints_1_all:
                 print('simulation not found!')
                 return;
@@ -55,7 +55,7 @@ class stage02_physiology_pairWiseTest_execute(stage02_physiology_pairWiseTest_io
         simulation_parameters_all = [];
         for simulation_id in simulation_ids_I:
             simulation_parameters_1_all = [];
-            simulation_parameters_1_all = self.stage02_physiology_query.get_rows_simulationID_dataStage02PhysiologySimulationParameters(simulation_id);
+            simulation_parameters_1_all = self.get_rows_simulationID_dataStage02PhysiologySimulationParameters(simulation_id);
             if not simulation_parameters_1_all:
                 print('simulation not found!')
                 return;

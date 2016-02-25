@@ -20,50 +20,50 @@ class stage02_physiology_measuredData_query(sbaas_template_query):
                         };
         self.set_supportedTables(tables_supported);     
     ## Query from data_stage01_physiology_ratesAverages:
-    # query met_ids from data_stage01_physiology_ratesAverages
-    def get_metID_experimentIDAndSampleNameAbbreviation_dataStage01PhysiologyRatesAverages(self,experiment_id_I,sample_name_abbreviation_I):
-        '''Querry rate data by sample id and met id that are used from
-        the experiment'''
-        try:
-            data = self.session.query(data_stage01_physiology_ratesAverages.sample_name_abbreviation,
-                    data_stage01_physiology_ratesAverages.met_id).filter(
-                    data_stage01_physiology_ratesAverages.experiment_id.like(experiment_id_I),
-                    data_stage01_physiology_ratesAverages.used_.is_(True),
-                    data_stage01_physiology_ratesAverages.sample_name_abbreviation.like(sample_name_abbreviation_I)).group_by(
-                    data_stage01_physiology_ratesAverages.sample_name_abbreviation,
-                    data_stage01_physiology_ratesAverages.met_id).order_by(
-                    data_stage01_physiology_ratesAverages.met_id.asc()).all();
-            met_id_O = [];
-            if data: 
-                for d in data:
-                    met_id_O.append(d.met_id);
-            return met_id_O;
-        except SQLAlchemyError as e:
-            print(e);
-    # query rate from data_stage01_physiology_ratesAverages
-    def get_rateData_experimentIDAndSampleNameAbbreviationAndMetID_dataStage01PhysiologyRatesAverages(self,experiment_id_I,sample_name_abbreviation_I,met_id_I):
-        '''Querry rate data by sample id and met id that are used from
-        the experiment'''
-        try:
-            data = self.session.query(data_stage01_physiology_ratesAverages.slope_average,
-                    data_stage01_physiology_ratesAverages.intercept_average,
-                    data_stage01_physiology_ratesAverages.rate_average,
-                    data_stage01_physiology_ratesAverages.rate_lb,
-                    data_stage01_physiology_ratesAverages.rate_ub,
-                    data_stage01_physiology_ratesAverages.rate_units,
-                    data_stage01_physiology_ratesAverages.rate_var).filter(
-                    data_stage01_physiology_ratesAverages.met_id.like(met_id_I),
-                    data_stage01_physiology_ratesAverages.experiment_id.like(experiment_id_I),
-                    data_stage01_physiology_ratesAverages.used_.is_(True),
-                    data_stage01_physiology_ratesAverages.sample_name_abbreviation.like(sample_name_abbreviation_I)).first();
-            slope_average, intercept_average, rate_average, rate_lb, rate_ub, rate_units, rate_var = None,None,None,None,None,None,None;
-            if data: 
-                slope_average, intercept_average,\
-                    rate_average, rate_lb, rate_ub, rate_units, rate_var = data.slope_average, data.intercept_average,\
-                    data.rate_average, data.rate_lb, data.rate_ub, data.rate_units, data.rate_var;
-            return slope_average, intercept_average, rate_average, rate_lb, rate_ub, rate_units, rate_var;
-        except SQLAlchemyError as e:
-            print(e);
+    ## query met_ids from data_stage01_physiology_ratesAverages
+    #def get_metID_experimentIDAndSampleNameAbbreviation_dataStage01PhysiologyRatesAverages(self,experiment_id_I,sample_name_abbreviation_I):
+    #    '''Querry rate data by sample id and met id that are used from
+    #    the experiment'''
+    #    try:
+    #        data = self.session.query(data_stage01_physiology_ratesAverages.sample_name_abbreviation,
+    #                data_stage01_physiology_ratesAverages.met_id).filter(
+    #                data_stage01_physiology_ratesAverages.experiment_id.like(experiment_id_I),
+    #                data_stage01_physiology_ratesAverages.used_.is_(True),
+    #                data_stage01_physiology_ratesAverages.sample_name_abbreviation.like(sample_name_abbreviation_I)).group_by(
+    #                data_stage01_physiology_ratesAverages.sample_name_abbreviation,
+    #                data_stage01_physiology_ratesAverages.met_id).order_by(
+    #                data_stage01_physiology_ratesAverages.met_id.asc()).all();
+    #        met_id_O = [];
+    #        if data: 
+    #            for d in data:
+    #                met_id_O.append(d.met_id);
+    #        return met_id_O;
+    #    except SQLAlchemyError as e:
+    #        print(e);
+    ## query rate from data_stage01_physiology_ratesAverages
+    #def get_rateData_experimentIDAndSampleNameAbbreviationAndMetID_dataStage01PhysiologyRatesAverages(self,experiment_id_I,sample_name_abbreviation_I,met_id_I):
+    #    '''Querry rate data by sample id and met id that are used from
+    #    the experiment'''
+    #    try:
+    #        data = self.session.query(data_stage01_physiology_ratesAverages.slope_average,
+    #                data_stage01_physiology_ratesAverages.intercept_average,
+    #                data_stage01_physiology_ratesAverages.rate_average,
+    #                data_stage01_physiology_ratesAverages.rate_lb,
+    #                data_stage01_physiology_ratesAverages.rate_ub,
+    #                data_stage01_physiology_ratesAverages.rate_units,
+    #                data_stage01_physiology_ratesAverages.rate_var).filter(
+    #                data_stage01_physiology_ratesAverages.met_id.like(met_id_I),
+    #                data_stage01_physiology_ratesAverages.experiment_id.like(experiment_id_I),
+    #                data_stage01_physiology_ratesAverages.used_.is_(True),
+    #                data_stage01_physiology_ratesAverages.sample_name_abbreviation.like(sample_name_abbreviation_I)).first();
+    #        slope_average, intercept_average, rate_average, rate_lb, rate_ub, rate_units, rate_var = None,None,None,None,None,None,None;
+    #        if data: 
+    #            slope_average, intercept_average,\
+    #                rate_average, rate_lb, rate_ub, rate_units, rate_var = data.slope_average, data.intercept_average,\
+    #                data.rate_average, data.rate_lb, data.rate_ub, data.rate_units, data.rate_var;
+    #        return slope_average, intercept_average, rate_average, rate_lb, rate_ub, rate_units, rate_var;
+    #    except SQLAlchemyError as e:
+    #        print(e);
 
     ##TODO: convert?
     ## Query from data_stage02_physiology_metabolomicsData
@@ -159,18 +159,20 @@ class stage02_physiology_measuredData_query(sbaas_template_query):
         if data_I:
             for d in data_I:
                 try:
-                    data_add = data_stage02_physiology_metabolomicsData(d['experiment_id'],
-                            d['sample_name_abbreviation'],
-                            d['time_point'],
-                            d['met_id'],
-                            d['concentration'],
-                            d['concentration_var'],
-                            d['concentration_units'],
-                            d['concentration_lb'],
-                            d['concentration_ub'],
-                            d['measured'],
-                            d['used_'],
-                            d['comment_']);
+                    data_add = data_stage02_physiology_metabolomicsData(d
+                        #d['experiment_id'],
+                        #d['sample_name_abbreviation'],
+                        #d['time_point'],
+                        #d['met_id'],
+                        #d['concentration'],
+                        #d['concentration_var'],
+                        #d['concentration_units'],
+                        #d['concentration_lb'],
+                        #d['concentration_ub'],
+                        #d['measured'],
+                        #d['used_'],
+                        #d['comment_']
+                        );
                     self.session.add(data_add);
                 except SQLAlchemyError as e:
                     print(e);
@@ -289,18 +291,20 @@ class stage02_physiology_measuredData_query(sbaas_template_query):
         if data_I:
             for d in data_I:
                 try:
-                    data_add = data_stage02_physiology_measuredFluxes(d['experiment_id'],
-                            d['model_id'],
-                            d['sample_name_abbreviation'],
-                            #d['time_point'],
-                            d['rxn_id'],
-                            d['flux_average'],
-                            d['flux_stdev'],
-                            d['flux_lb'],
-                            d['flux_ub'],
-                            d['flux_units'],
-                            d['used_'],
-                            d['comment_']);
+                    data_add = data_stage02_physiology_measuredFluxes(d
+                        #d['experiment_id'],
+                        #d['model_id'],
+                        #d['sample_name_abbreviation'],
+                        ##d['time_point'],
+                        #d['rxn_id'],
+                        #d['flux_average'],
+                        #d['flux_stdev'],
+                        #d['flux_lb'],
+                        #d['flux_ub'],
+                        #d['flux_units'],
+                        #d['used_'],
+                        #d['comment_']
+                        );
                     self.session.add(data_add);
                 except SQLAlchemyError as e:
                     print(e);

@@ -11,7 +11,7 @@ from numpy import average, var, log
 
 from io_utilities.base_exportData import base_exportData
 
-class cobra_simulatedData(thermodynamics_io):
+class cobra_simulatedData():
     """Class to generate and handle COBRA simulated data"""
 
     def __init__(self,fva_data_I={},sra_data_I={},fba_data_I={},pfba_data_I={}):
@@ -37,7 +37,7 @@ class cobra_simulatedData(thermodynamics_io):
         return
 
     def generate_sra_data(self, cobra_model, element_list=None,
-                            method='fba', element_type='reaction', solver='gurobi'):
+                            method='fba', element_type='reaction', solver='glpk'):
 
         print('Single Reaction Deletion...')
 
@@ -60,7 +60,7 @@ class cobra_simulatedData(thermodynamics_io):
 
     def generate_fva_data(self, cobra_model, fraction_of_optimum=0.9,
                                       objective_sense='maximize', the_reactions=None,
-                                      allow_loops=True, solver='gurobi',
+                                      allow_loops=True, solver='glpk',
                                       the_problem='return', tolerance_optimality=1e-6,
                                       tolerance_feasibility=1e-6, tolerance_barrier=1e-8,
                                       lp_method=1, lp_parallel=0, new_objective=None,
@@ -115,14 +115,14 @@ class cobra_simulatedData(thermodynamics_io):
 
         return flux_bounds_O
 
-    def generate_fba_data(self,cobra_model,allow_loops=True, solver='gurobi'):
+    def generate_fba_data(self,cobra_model,allow_loops=True, solver='glpk'):
         '''
         perform FBA simulation on the model
         INPUT:
         OUTPUT:
         '''
         pass;
-    def generate_pfba_data(self,cobra_model, solver='gurobi'):
+    def generate_pfba_data(self,cobra_model, solver='glpk'):
         '''
         perform FBA simulation on the model
         INPUT:

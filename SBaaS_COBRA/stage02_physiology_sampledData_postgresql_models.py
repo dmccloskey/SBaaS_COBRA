@@ -165,6 +165,7 @@ class data_stage02_physiology_sampledData(Base):
     rxn_id = Column(String(100)) #TODO: change name to variable_id and add column for variable_type (e.g. met,rxn)
     flux_units = Column(String(50), default = 'mmol*gDW-1*hr-1'); #TODO: change to variable_units
     sampling_points = Column(postgresql.ARRAY(Float)); #
+    sampling_n = Column(Integer);
     sampling_ave = Column(Float);
     sampling_var = Column(Float);
     sampling_lb = Column(Float);
@@ -188,6 +189,7 @@ class data_stage02_physiology_sampledData(Base):
                 ):
         self.comment_=row_dict_I['comment_'];
         self.used_=row_dict_I['used_'];
+        self.sampling_n=row_dict_I['sampling_n'];
         self.sampling_iq_3=row_dict_I['sampling_iq_3'];
         self.sampling_iq_1=row_dict_I['sampling_iq_1'];
         self.sampling_median=row_dict_I['sampling_median'];
@@ -195,6 +197,7 @@ class data_stage02_physiology_sampledData(Base):
         self.sampling_min=row_dict_I['sampling_min'];
         self.sampling_ub=row_dict_I['sampling_ub'];
         self.sampling_lb=row_dict_I['sampling_lb'];
+        self.sampling_ci=row_dict_I['sampling_ci'];
         self.sampling_var=row_dict_I['sampling_var'];
         self.sampling_ave=row_dict_I['sampling_ave'];
         self.sampling_points=row_dict_I['sampling_points'];
@@ -207,7 +210,7 @@ class data_stage02_physiology_sampledData(Base):
         simulation_dateAndTime_I,
         #experiment_id_I,model_id_I,
         #    sample_name_abbreviation_I,
-            rxn_id_I,flux_units_I,sampling_points_I,
+            rxn_id_I,flux_units_I,sampling_points_I,sampling_n_I,
                  sampling_ave_I,sampling_var_I,sampling_lb_I,sampling_ub_I,
                  sampling_ci_I,
                  sampling_min_I,sampling_max_I,sampling_median_I,
@@ -221,6 +224,7 @@ class data_stage02_physiology_sampledData(Base):
         self.rxn_id=rxn_id_I
         self.flux_units=flux_units_I
         self.sampling_points=sampling_points_I
+        self.sampling_n=sampling_n_I
         self.sampling_ave=sampling_ave_I
         self.sampling_var=sampling_var_I
         self.sampling_lb=sampling_lb_I
@@ -244,11 +248,12 @@ class data_stage02_physiology_sampledData(Base):
                 'rxn_id':self.rxn_id,
                 'flux_units':self.flux_units,
                 'sampling_points':self.sampling_points,
+                'sampling_n':self.sampling_n,
                 'sampling_ave':self.sampling_ave,
                 'sampling_var':self.sampling_var,
                 'sampling_lb':self.sampling_lb,
                 'sampling_ub':self.sampling_ub,
-                #'sampling_ci':self.sampling_ci,
+                'sampling_ci':self.sampling_ci,
                 'sampling_max':self.sampling_max,
                 'sampling_min':self.sampling_min,
                 'sampling_median':self.sampling_median,
