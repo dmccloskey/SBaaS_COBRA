@@ -27,17 +27,4 @@ class stage02_physiology_simulation_io(stage02_physiology_simulation_query,
         data.format_data();
         self.update_dataStage02PhysiologySimulation(data.data);
         data.clear_data();
-    def import_dataStage02PhysiologySimulationParameters_add(self, filename):
-        '''table adds'''
-        data = base_importData();
-        data.read_csv(filename);
-        data.format_data();
-        self.add_dataStage02PhysiologySimulationParameters(data.data);
-        data.clear_data();
-    def import_dataStage02PhysiologySimulationParameters_update(self, filename):
-        '''table adds'''
-        data = base_importData();
-        data.read_csv(filename);
-        data.format_data();
-        self.update_dataStage02PhysiologySimulationParameters(data.data);
         data.clear_data();

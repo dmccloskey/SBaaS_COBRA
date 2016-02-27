@@ -19,50 +19,11 @@ class stage02_physiology_simulatedData_query(sbaas_template_query):
         tables_supported = {
             'data_stage02_physiology_simulatedData_fva':data_stage02_physiology_simulatedData_fva,
             'data_stage02_physiology_simulatedData_sra':data_stage02_physiology_simulatedData_sra,
-            'data_stage02_physiology_simulatedData_pfba':data_stage02_physiology_simulatedData_pfba,
-            'data_stage02_physiology_simulatedData_fba':data_stage02_physiology_simulatedData_fba,
+            'data_stage02_physiology_simulatedData_fbaPrimal':data_stage02_physiology_simulatedData_fbaPrimal,
+            'data_stage02_physiology_simulatedData_fbaDual':data_stage02_physiology_simulatedData_fbaDual,
                         };
         self.set_supportedTables(tables_supported);
     ## Query from data_stage02_physiology_simulatedData
-    # query rows from data_stage02_physiology_simulatedData    
-    def get_rows_simulationIDAndSimulationDateAndTime_dataStage02PhysiologySimulatedData(self,simulation_id_I,simulation_dateAndTime_I):
-        '''Query rows by simulation_id and simulation_dateAndTime from data_stage02_physiology_simulatedData'''
-        try:
-            data = self.session.query(data_stage02_physiology_simulatedData).filter(
-                    data_stage02_physiology_simulatedData.simulation_dateAndTime.like(simulation_dateAndTime_I),
-                    data_stage02_physiology_simulatedData.simulation_id.like(simulation_id_I),
-                    data_stage02_physiology_simulatedData.used_.is_(True)).all();
-            rows_O = [];
-            if data: 
-                for d in data:
-                    data_tmp = d.__repr__dict__();
-                    rows_O.append(data_tmp);
-            return rows_O;
-        except SQLAlchemyError as e:
-            print(e);   
-    def get_rowsDict_simulationIDAndSimulationDateAndTime_dataStage02PhysiologySimulatedData(self,simulation_id_I,simulation_dateAndTime_I):
-        '''Query rows by simulation_id and simulation_dateAndTime from data_stage02_physiology_simulatedData'''
-        try:
-            data = self.session.query(data_stage02_physiology_simulatedData).filter(
-                    data_stage02_physiology_simulatedData.simulation_dateAndTime.like(simulation_dateAndTime_I),
-                    data_stage02_physiology_simulatedData.simulation_id.like(simulation_id_I),
-                    data_stage02_physiology_simulatedData.used_.is_(True)).all();
-            fva_data_O = {};
-            sra_data_O = {};
-            if data: 
-                for d in data:
-                    if d.rxn_id in fva_data_O:
-                        print('duplicate rxn_id found!');
-                    else:
-                        fva_data_O[d.rxn_id]={
-                            'minimum':d.fva_minimum,
-                            'maximum':d.fva_maximum};
-                        sra_data_O[d.rxn_id]={'gr':d.sra_gr,
-                            'gr_ratio':d.sra_gr_ratio};
-            return fva_data_O,sra_data_O;
-        except SQLAlchemyError as e:
-            print(e);    
-
     def get_rows_dataStage02PhysiologySimulatedData(self,
                 tables_I,
                 query_I,

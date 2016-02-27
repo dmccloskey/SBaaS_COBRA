@@ -28,16 +28,16 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
         models = models_I;
         # get simulation information
         simulation_info_all = [];
-        simulation_info_all = self.get_rows_simulationIDAndSimulationType_dataStage02PhysiologySimulation(simulation_id_I,'sampling');
+        simulation_info_all = self.get_rows_simulationID_dataStage02PhysiologySimulation(simulation_id_I);
         if not simulation_info_all:
             print('simulation not found!')
             return;
         simulation_info = simulation_info_all[0]; # unique constraint guarantees only 1 row will be returned
         # get simulation parameters
         simulation_parameters_all = [];
-        simulation_parameters_all = self.get_rows_simulationID_dataStage02PhysiologySimulationParameters(simulation_id_I);
+        simulation_parameters_all = self.get_rows_simulationID_dataStage02PhysiologySamplingParameters(simulation_id_I);
         if not simulation_parameters_all:
-            print('simulation not found!')
+            print('simulation parameters not found!')
             return;
         simulation_parameters = simulation_parameters_all[0]; # unique constraint guarantees only 1 row will be returned
         # get the cobra model
@@ -101,7 +101,7 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
         simulation_info = simulation_info_all[0]; # unique constraint guarantees only 1 row will be returned
         # get simulation parameters
         simulation_parameters_all = [];
-        simulation_parameters_all = self.get_rows_simulationID_dataStage02PhysiologySimulationParameters(simulation_id_I);
+        simulation_parameters_all = self.get_rows_simulationID_dataStage02PhysiologySamplingParameters(simulation_id_I);
         if not simulation_parameters_all:
             print('simulation not found!')
             return;

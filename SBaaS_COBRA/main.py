@@ -33,6 +33,7 @@ sys.path.append(pg_settings.datadir_settings['github']+'/ddt_python')
 from SBaaS_COBRA.stage02_physiology_simulatedData_execute import stage02_physiology_simulatedData_execute
 simulatedData01 = stage02_physiology_simulatedData_execute(session,engine,pg_settings.datadir_settings);
 simulatedData01.initialize_supportedTables();
+#simulatedData01.drop_dataStage02_physiology_simulatedData();
 simulatedData01.initialize_dataStage02_physiology_simulatedData();
 
 #make the COBRA table
@@ -58,34 +59,45 @@ simulations = [
         ]
 
 #for simulation in simulations:
-#     #fba
-#     simulatedData01.execute_fba(simulation_id_I=simulation,
-#                         rxn_ids_I=[],
-#                         models_I = cobramodels,
-#                         )
-#     #pfba
-#     simulatedData01.execute_pfba(simulation_id_I=simulation,
-#                         rxn_ids_I=[],
-#                         models_I = cobramodels,
-#                         )
-#     #fva
-#     simulatedData01.execute_fva(simulation_id_I=simulation,
-#                        rxn_ids_I=[],
-#                        models_I = cobramodels,
-#                        )
-#     #sra
-#     simulatedData01.execute_sra(simulation_id_I=simulation,
-#                         rxn_ids_I=[],
-#                         models_I = cobramodels,
-#                         )
+     ##fba
+     #simulatedData01.execute_fba(simulation_id_I=simulation,
+     #                    rxn_ids_I=[],
+     #                    models_I = cobramodels,
+     #                    method_I='pfba',
+     #                    allow_loops_I = True,
+     #                    options_I = {},
+     #                    solver_id_I='cglpk',
+     #                    )
+     ##fva
+     #simulatedData01.execute_fva(simulation_id_I=simulation,
+     #                   rxn_ids_I=[],
+     #                   models_I = cobramodels,
+     #                   method_I='fva',
+     #                   allow_loops_I = True,
+     #                    options_I = {},
+     #                   solver_id_I='cglpk',
+     #                   )
+     ##sra
+     #simulatedData01.execute_sra(simulation_id_I=simulation,
+     #                    rxn_ids_I=[],
+     #                    models_I = cobramodels,
+     #                    method_I='fba',
+     #                    options_I = {},
+     #                    solver_id_I='cglpk',
+     #                    )
 
 data_dir = 'F:/Users/dmccloskey-sbrg/Dropbox (UCSD SBRG)/MATLAB/sampling_physiology';
 
 # import sampling results
-for simulation in simulations:
-    sampledData01.reset_dataStage02_physiology_sampledData(simulation_id_I=simulation);
-    sampledData01.execute_analyzeSamplingPoints(simulation_id_I=simulation,
-        rxn_ids_I=[],
-        data_dir_I = data_dir,
-        models_I = cobramodels,
-        )
+#for simulation in simulations:
+    #sampledData01.execute_sampling(simulation_id_I=simulation,
+    #    rxn_ids_I=[],
+    #    data_dir_I = data_dir,
+    #    models_I = cobramodels
+    #    )
+    #sampledData01.reset_dataStage02_physiology_sampledData(simulation_id_I=simulation);
+    #sampledData01.execute_analyzeSamplingPoints(simulation_id_I=simulation,
+    #    rxn_ids_I=[],
+    #    data_dir_I = data_dir,
+    #    models_I = cobramodels,
+    #    )

@@ -18,6 +18,7 @@ class stage02_physiology_sampledData_query(sbaas_template_query):
         '''
         tables_supported = {'data_stage02_physiology_sampledPoints':data_stage02_physiology_sampledPoints,
                             'data_stage02_physiology_sampledData':data_stage02_physiology_sampledData,
+                            'data_stage02_physiology_samplingParameters':data_stage02_physiology_samplingParameters,
                         };
         self.set_supportedTables(tables_supported); 
 
@@ -153,6 +154,7 @@ class stage02_physiology_sampledData_query(sbaas_template_query):
         try:
             data_stage02_physiology_sampledPoints.__table__.drop(self.engine,True);
             data_stage02_physiology_sampledData.__table__.drop(self.engine,True);
+            data_stage02_physiology_samplingParameters.__table__.drop(self.engine,True);
         except SQLAlchemyError as e:
             print(e);
     def reset_dataStage02_physiology_sampledData(self,simulation_id_I=None):
@@ -160,6 +162,7 @@ class stage02_physiology_sampledData_query(sbaas_template_query):
             if simulation_id_I:
                 reset = self.session.query(data_stage02_physiology_sampledPoints).filter(data_stage02_physiology_sampledPoints.simulation_id.like(simulation_id_I)).delete(synchronize_session=False);
                 reset = self.session.query(data_stage02_physiology_sampledData).filter(data_stage02_physiology_sampledData.simulation_id.like(simulation_id_I)).delete(synchronize_session=False);
+                reset = self.session.query(data_stage02_physiology_samplingParameters).filter(data_stage02_physiology_samplingParameters.simulation_id.like(simulation_id_I)).delete(synchronize_session=False);
                 self.session.commit();
         except SQLAlchemyError as e:
             print(e);
@@ -167,5 +170,77 @@ class stage02_physiology_sampledData_query(sbaas_template_query):
         try:
             data_stage02_physiology_sampledPoints.__table__.create(self.engine,True);
             data_stage02_physiology_sampledData.__table__.create(self.engine,True);
+            data_stage02_physiology_samplingParameters.__table__.create(self.engine,True);
         except SQLAlchemyError as e:
             print(e);
+
+    
+    ##  Query from data_stage02_physiology_samplingParameters
+    # query rows from data_stage02_physiology_simulation
+    def get_rows_simulationID_dataStage02PhysiologySamplingParameters(self,simulation_id_I):
+        '''Querry rows that are used from the samplingParameters'''
+        try:
+            data = self.session.query(data_stage02_physiology_samplingParameters).filter(
+                    data_stage02_physiology_samplingParameters.simulation_id.like(simulation_id_I),
+                    data_stage02_physiology_samplingParameters.used_.is_(True)).all();
+            rows_O = [];
+            if data: 
+                for d in data:
+                    rows_O.append({
+                            'simulation_id':d.simulation_id,
+                            #'simulation_dateAndTime':d.simulation_dateAndTime,
+                            'solver_id':d.solver_id,
+                            'n_points':d.n_points,
+                            'n_steps':d.n_steps,
+                            'max_time':d.max_time,
+                            'sampler_id':d.sampler_id,
+                            #'solve_time':d.solve_time,
+                            #'solve_time_units':d.solve_time_units,
+                            'used_':d.used_,
+                            'comment_':d.comment_});
+            return rows_O;
+        except SQLAlchemyError as e:
+            print(e);
+    def add_dataStage02PhysiologySamplingParameters(self, data_I):
+        '''add rows of data_stage02_physiology_samplingParameters'''
+        if data_I:
+            for d in data_I:
+                try:
+                    data_add = data_stage02_physiology_samplingParameters(
+                        d['simulation_id'],
+                        #None, #d['simulation_dateAndTime'],
+                        d['solver_id'],
+                        d['n_points'],
+                        d['n_steps'],
+                        d['max_time'],
+                        d['sampler_id'],
+                        #None,
+                        #None,
+                        d['used_'],
+                        d['comment_']);
+                    self.session.add(data_add);
+                except SQLAlchemyError as e:
+                    print(e);
+            self.session.commit();
+    def update_dataStage02PhysiologySamplingParameters(self,data_I):
+        '''update rows of data_stage02_physiology_samplingParameters'''
+        if data_I:
+            for d in data_I:
+                try:
+                    data_update = self.session.query(data_stage02_physiology_samplingParameters).filter(
+                            data_stage02_physiology_samplingParameters.id.like(d['id'])).update(
+                            {'simulation_id':d['simulation_id'],
+                             #'simulation_dateAndTime':d['simulation_dateAndTime'],
+                            'solver_id':d['solver_id'],
+                            'n_points':d['n_points'],
+                            'n_steps':d['n_steps'],
+                             'max_time':d['max_time'],
+                             'sampler_id':d['sampler_id'],
+                             #'solve_time':d['solve_time'],
+                             #'solve_time_units':d['solve_time_units'],
+                            'used_':d['used_'],
+                            'comment_I':d['comment_I']},
+                            synchronize_session=False);
+                except SQLAlchemyError as e:
+                    print(e);
+            self.session.commit();
