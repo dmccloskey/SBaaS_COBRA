@@ -129,8 +129,8 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
                 sampling.get_points_matlab(filename_points,'sampler_out');
                 # check if the model contains loops
                 #loops_bool = self.sampling.check_loops();
-                sampling.simulate_loops(data_fva=settings.workspace_data + '/loops_fva_tmp.json');
-                sampling.find_loops(data_fva=settings.workspace_data + '/loops_fva_tmp.json');
+                sampling.simulate_loops(data_fva=self.settings['workspace_data'] + '/loops_fva_tmp.json',solver_I = simulation_parameters['solver_id']);
+                sampling.find_loops(data_fva=self.settings['workspace_data'] + '/loops_fva_tmp.json');
                 sampling.remove_loopsFromPoints();
                 sampling.descriptive_statistics();
             elif simulation_parameters['sampler_id']=='optGpSampler':
@@ -159,12 +159,13 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
             #self.session.add(row);
             # add data to the database
             sampledData_O = [];
-            for k,v in self.sampling.points_statistics.items():
+            for k,v in sampling.points_statistics.items():
                 row = {'simulation_id':simulation_id_I,
                     'simulation_dateAndTime':sampling.simulation_dateAndTime,
                     'rxn_id':k,
                     'flux_units':'mmol*gDW-1*hr-1',
                     'sampling_points':None, #v['points'],
+                    'sampling_n':v['n'],
                     'sampling_ave':v['ave'],
                     'sampling_var':v['var'],
                     'sampling_lb':v['lb'],
@@ -200,5 +201,4 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
             self.add_dataStage02PhysiologySampledData(sampledData_O);
         else:
             print('no solution found!');
-        self.session.commit()
     

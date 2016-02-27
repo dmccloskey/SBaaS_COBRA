@@ -146,6 +146,7 @@ class cobra_sampling(calculate_interface):
             objective = [x.id for x in cobra_model.reactions if x.objective_coefficient == 1]
             cobra_model.reactions.get_by_id(objective[0]).upper_bound = fraction_optimal * cobra_model.solution.f;
         # write model to mat
+        cobra_model.description = 'model';
         save_matlab_model(cobra_model,self.data_dir + '/' + filename_model);
         ## write model to xml
         #write_sbml_model(cobra_model,'data/sampling/sampler.xml');
@@ -195,7 +196,7 @@ class cobra_sampling(calculate_interface):
                             conf_intervals=None)
             plt.show()
     # loop removal
-    def check_loops(self,cobra_model_I=None):
+    def check_loops(self,cobra_model_I=None,solver_I = 'cglpk'):
         '''Check if the model contains loops'''
 
         # Change all uptake reactions to 0
@@ -214,12 +215,12 @@ class cobra_sampling(calculate_interface):
         cobra_model.reactions.get_by_id('Ec_biomass_iJO1366_WT_53p95M').upper_bound=1e6
 
         loops_bool = True;
-        cobra_model.optimize(solver='gurobi');
+        cobra_model.optimize(solver=solver_I);
         if not cobra_model.solution.f:
             loops_bool = False;
 
         return loops_bool;
-    def simulate_loops(self,cobra_model_I=None,data_fva='loops_fva.json'):
+    def simulate_loops(self,cobra_model_I=None,data_fva='loops_fva.json',solver_I='cglpk'):
         '''Simulate FVA after closing exchange reactions and setting ATPM to 0
         reactions with flux will be involved in loops'''
         
@@ -240,12 +241,12 @@ class cobra_sampling(calculate_interface):
 
         # calculate the reaction bounds using FVA
         reaction_bounds = flux_variability_analysis(cobra_model, fraction_of_optimum=1.0,
-                                          the_reactions=None, solver='gurobi');
+                                          the_reactions=None, solver=solver_I);
 
         # Update the data file
-        with open(data_fva, 'wb') as outfile:
+        with open(data_fva, 'w') as outfile:
             json.dump(reaction_bounds, outfile, indent=4);
-    def simulate_loops_sbml(self,ijo1366_sbml,data_fva):
+    def simulate_loops_sbml(self,ijo1366_sbml,data_fva,solver_I='cglpk'):
         '''Simulate FVA after closing exchange reactions and setting ATPM to 0
         reactions with flux will be involved in loops'''
 
@@ -261,7 +262,7 @@ class cobra_sampling(calculate_interface):
         # calculate the reaction bounds using FVA
         reaction_bounds = flux_variability_analysis(cobra_model, fraction_of_optimum=0.9,
                                           objective_sense='maximize', the_reactions=None,
-                                          allow_loops=True, solver='gurobi',
+                                          allow_loops=True, solver=solver_I,
                                           the_problem='return', tolerance_optimality=1e-6,
                                           tolerance_feasibility=1e-6, tolerance_barrier=1e-8,
                                           lp_method=1, lp_parallel=0, new_objective=None,
@@ -269,7 +270,7 @@ class cobra_sampling(calculate_interface):
                                           number_of_processes=1, copy_model=False);
 
         # Update the data file
-        with open(data_fva, 'wb') as outfile:
+        with open(data_fva, 'w') as outfile:
             json.dump(reaction_bounds, outfile, indent=4);
     def find_loops(self,data_fva='loops_fva.json'):
         '''extract out loops from simulate_loops'''
@@ -375,6 +376,7 @@ class cobra_sampling(calculate_interface):
         points_statistics = {};
         for k,v in self.points.items():
             # calculate the mean and variance
+            n = len(self.points[k]);
             m,var,lb,ub = self.calculate.calculate_ave_var(self.points[k],confidence_I = 0.95);
             # directly calculate the 95% CI
             lb,ub = self.calculate.calculate_ciFromPoints(self.points[k],alpha=0.05)
@@ -383,6 +385,7 @@ class cobra_sampling(calculate_interface):
             min,max,median,iq_1,iq_3=self.calculate.calculate_interquartiles(self.points[k],iq_range_I = [25,75])
             tmp = {};
             tmp = {
+                'n':n,
                 'ave':m,
                 'var':var,
                 'lb':lb,

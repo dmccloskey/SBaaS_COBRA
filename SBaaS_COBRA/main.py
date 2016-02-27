@@ -41,6 +41,12 @@ exCOBRA01 = models_COBRA_execute(session,engine,pg_settings.datadir_settings);
 exCOBRA01.initialize_supportedTables();
 exCOBRA01.initialize_COBRA_models();
 
+#make the simulatedData table
+from SBaaS_COBRA.stage02_physiology_sampledData_execute import stage02_physiology_sampledData_execute
+sampledData01 = stage02_physiology_sampledData_execute(session,engine,pg_settings.datadir_settings);
+sampledData01.initialize_supportedTables();
+sampledData01.initialize_dataStage02_physiology_sampledData();
+
 #test the model
 test_result = exCOBRA01.execute_testModel(model_id_I="140407_iDM2014_irreversible");
 
@@ -51,7 +57,7 @@ simulations = [
         'WTEColi_113C80_U13C20_02_140407_iDM2014_irreversible_OxicWtGlc_0',
         ]
 
-for simulation in simulations:
+#for simulation in simulations:
 #     #fba
 #     simulatedData01.execute_fba(simulation_id_I=simulation,
 #                         rxn_ids_I=[],
@@ -62,13 +68,24 @@ for simulation in simulations:
 #                         rxn_ids_I=[],
 #                         models_I = cobramodels,
 #                         )
-    #fva
-    simulatedData01.execute_fva(simulation_id_I=simulation,
-                        rxn_ids_I=[],
-                        models_I = cobramodels,
-                        )
+#     #fva
+#     simulatedData01.execute_fva(simulation_id_I=simulation,
+#                        rxn_ids_I=[],
+#                        models_I = cobramodels,
+#                        )
 #     #sra
 #     simulatedData01.execute_sra(simulation_id_I=simulation,
 #                         rxn_ids_I=[],
 #                         models_I = cobramodels,
 #                         )
+
+data_dir = 'F:/Users/dmccloskey-sbrg/Dropbox (UCSD SBRG)/MATLAB/sampling_physiology';
+
+# import sampling results
+for simulation in simulations:
+    sampledData01.reset_dataStage02_physiology_sampledData(simulation_id_I=simulation);
+    sampledData01.execute_analyzeSamplingPoints(simulation_id_I=simulation,
+        rxn_ids_I=[],
+        data_dir_I = data_dir,
+        models_I = cobramodels,
+        )

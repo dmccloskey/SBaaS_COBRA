@@ -81,9 +81,10 @@ class stage02_physiology_simulatedData_execute(stage02_physiology_simulatedData_
         OUTPUT:
         '''
         pass;
-    def execute_srd(self,):
+    def execute_srd(self,method_I='moma'):
         '''
         INPUT:
+        method_I = string, fba or moma
         OUTPUT:
         '''
         pass;
@@ -93,4 +94,16 @@ class stage02_physiology_simulatedData_execute(stage02_physiology_simulatedData_
         OUTPUT:
         '''
         pass;
+    def execute_moma(self,):
+        '''
+        https://cobrapy.readthedocs.org/en/latest/cobra.flux_analysis.html#module-cobra.flux_analysis.moma
+        INPUT:
+        OUTPUT:
+        '''
+    def execute_fba_loopless(self,):
+        '''
+        https://cobrapy.readthedocs.org/en/latest/loopless.html
+        INPUT:
+        OUTPUT:
+        '''
     
