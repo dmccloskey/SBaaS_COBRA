@@ -48,11 +48,11 @@ sampledData01 = stage02_physiology_sampledData_execute(session,engine,pg_setting
 sampledData01.initialize_supportedTables();
 sampledData01.initialize_dataStage02_physiology_sampledData();
 
-#test the model
-test_result = exCOBRA01.execute_testModel(model_id_I="140407_iDM2014_irreversible");
+##test the model
+#test_result = exCOBRA01.execute_testModel(model_id_I="140407_iDM2014_irreversible");
 
-#pre-load the models
-cobramodels = exCOBRA01.get_models(model_ids_I=["140407_iDM2014_irreversible"]);
+##pre-load the models
+#cobramodels = exCOBRA01.get_models(model_ids_I=["140407_iDM2014_irreversible"]);
 
 simulations = [
         'WTEColi_113C80_U13C20_02_140407_iDM2014_irreversible_OxicWtGlc_0',
@@ -101,3 +101,5 @@ data_dir = 'F:/Users/dmccloskey-sbrg/Dropbox (UCSD SBRG)/MATLAB/sampling_physiol
     #    data_dir_I = data_dir,
     #    models_I = cobramodels,
     #    )
+
+sampledData01.export_dataStage02PhysiologySampledPoints_js('ALEsKOs01_iJO1366_OxicEvo04EcoliGlc');

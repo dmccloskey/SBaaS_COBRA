@@ -70,17 +70,21 @@ class cobra_sampling(calculate_interface):
         self.points = points_dict;
         #self.mixed_fraction = mixed_fraction;
         self.simulation_dateAndTime = simulation_dateAndTime;
-    def get_points_matlab(self,matlab_data,sampler_model_name='sampler_out'):
+    def get_points_matlab(self,matlab_data=None,sampler_model_name='sampler_out'):
         '''load sampling points from MATLAB'''
 
         # extract information about the file
         import os, time
         from datetime import datetime
         from stat import ST_SIZE, ST_MTIME
+        if matlab_data:
+            filename=self.data_dir + '/' + matlab_data;
+        else:
+            filename=self.data_dir;
         try:
-            st = os.stat(self.data_dir + '/' + matlab_data)
+            st = os.stat(filename)
         except IOError:
-            print("failed to get information about", self.data_dir + '/' + matlab_data)
+            print("failed to get information about", filename)
             return;
         else:
             file_size = st[ST_SIZE]
@@ -89,22 +93,22 @@ class cobra_sampling(calculate_interface):
 
         # load model from MATLAB file
         try:
-            model = load_matlab_model(self.data_dir + '/' + matlab_data,sampler_model_name);
+            model = load_matlab_model(filename,sampler_model_name);
         except NotImplementedError as e:
             print(e);
-            model_tmp = h5py.File(self.data_dir + '/' + matlab_data,'r')['sampler_out'];
+            model_tmp = h5py.File(filename,'r')['sampler_out'];
             #model = matlab_cobra_struct_to_python_cobra_object(matlab_struct)
             model = self.model;
 
         # load sample points from MATLAB file into numpy array
         try:
-            points = scipy.io.loadmat(self.data_dir + '/' + matlab_data)[sampler_model_name]['points'][0][0];
-            mixed_fraction=scipy.io.loadmat(self.data_dir + '/' + matlab_data)['mixedFrac'][0][0];
+            points = scipy.io.loadmat(filename)[sampler_model_name]['points'][0][0];
+            mixed_fraction=scipy.io.loadmat(filename)['mixedFrac'][0][0];
         except NotImplementedError as e:
             print(e);
-            points = h5py.File(self.data_dir + '/' + matlab_data,'r')[sampler_model_name]['points'];
+            points = h5py.File(filename,'r')[sampler_model_name]['points'];
             points = numpy.array(points);
-            mixed_fraction=h5py.File(self.data_dir + '/' + matlab_data,'r')['mixedFrac'][0][0];
+            mixed_fraction=h5py.File(filename,'r')['mixedFrac'][0][0];
         #mat = scipy.io.loadmat('data/EvoWt.mat')
         #points = mat['model_WT_sampler_out']['points'][0][0]
 

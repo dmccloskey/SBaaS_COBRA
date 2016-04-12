@@ -50,6 +50,18 @@ class stage02_physiology_sampledData_query(sbaas_template_query):
             return rows_O;
         except SQLAlchemyError as e:
             print(e);   
+    def get_rows_simulationID_dataStage02PhysiologySampledData(self,simulation_id_I):
+        '''Query rows that are used from the sampledData'''
+        try:
+            data = self.session.query(data_stage02_physiology_sampledData).filter(
+                    data_stage02_physiology_sampledData.model_id.like(model_id_I),
+                    data_stage02_physiology_sampledData.simulation_id.like(simulation_id_I),
+                    data_stage02_physiology_sampledData.experiment_id.like(experiment_id_I),
+                    data_stage02_physiology_sampledData.used_.is_(True)).all();
+            rows_O = [d.__repr__dict__() for d in data];
+            return rows_O;
+        except SQLAlchemyError as e:
+            print(e);  
     def get_rowsDict_experimentIDAndModelIDAndSampleNameAbbreviations_dataStage02PhysiologySampledData(self,experiment_id_I,model_id_I,sample_name_abbreviation_I):
         '''Query rows that are used from the sampledData'''
         try:
