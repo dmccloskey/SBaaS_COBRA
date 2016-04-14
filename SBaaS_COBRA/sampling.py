@@ -1,25 +1,4 @@
-# System
-from sys import exit
-from math import log, sqrt, exp
-import operator, json, csv
-from copy import copy
-# Dependencies from 3rd party
-import h5py
-import scipy.io
-import numpy
-from numpy import histogram, mean, std, loadtxt, savetxt
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-# Resources
-from python_statistics.calculate_interface import calculate_interface
-from molmass.molmass import Formula
-# Dependencies from cobra
-from cobra.io.mat import load_matlab_model,save_matlab_model
-#from cobra.mlab import matlab_cobra_struct_to_python_cobra_object
-from cobra.io.sbml import create_cobra_model_from_sbml_file
-from cobra.flux_analysis import flux_variability_analysis, single_deletion
-from cobra.flux_analysis.parsimonious import optimize_minimal_flux
-from cobra.flux_analysis.objective import update_objective
+from .sampling_dependencies import *
 
 class cobra_sampling(calculate_interface):
 
@@ -70,103 +49,11 @@ class cobra_sampling(calculate_interface):
         self.points = points_dict;
         #self.mixed_fraction = mixed_fraction;
         self.simulation_dateAndTime = simulation_dateAndTime;
-    def get_points_matlab(self,matlab_data=None,sampler_model_name='sampler_out'):
-        '''load sampling points from MATLAB'''
-
-        # extract information about the file
-        import os, time
-        from datetime import datetime
-        from stat import ST_SIZE, ST_MTIME
-        if matlab_data:
-            filename=self.data_dir + '/' + matlab_data;
-        else:
-            filename=self.data_dir;
-        try:
-            st = os.stat(filename)
-        except IOError:
-            print("failed to get information about", filename)
-            return;
-        else:
-            file_size = st[ST_SIZE]
-            simulation_dateAndTime_struct = time.localtime(st[ST_MTIME])
-            simulation_dateAndTime = datetime.fromtimestamp(time.mktime(simulation_dateAndTime_struct))
-
-        # load model from MATLAB file
-        try:
-            model = load_matlab_model(filename,sampler_model_name);
-        except NotImplementedError as e:
-            print(e);
-            model_tmp = h5py.File(filename,'r')['sampler_out'];
-            #model = matlab_cobra_struct_to_python_cobra_object(matlab_struct)
-            model = self.model;
-
-        # load sample points from MATLAB file into numpy array
-        try:
-            points = scipy.io.loadmat(filename)[sampler_model_name]['points'][0][0];
-            mixed_fraction=scipy.io.loadmat(filename)['mixedFrac'][0][0];
-        except NotImplementedError as e:
-            print(e);
-            points = h5py.File(filename,'r')[sampler_model_name]['points'];
-            points = numpy.array(points);
-            mixed_fraction=h5py.File(filename,'r')['mixedFrac'][0][0];
-        #mat = scipy.io.loadmat('data/EvoWt.mat')
-        #points = mat['model_WT_sampler_out']['points'][0][0]
-
-        points_dict = {};
-        for i,r in enumerate(model.reactions):
-            # convert names:
-            r_id_conv = r.id.replace('-','_DASH_');
-            r_id_conv = r_id_conv.replace('(','_LPAREN_');
-            r_id_conv = r_id_conv.replace(')','_RPAREN_');
-            # extract points
-            points_dict[r_id_conv]=points[i,:];
-
-        self.points = points_dict;
-        self.model = model;
-        self.mixed_fraction = mixed_fraction;
-        self.simulation_dateAndTime = simulation_dateAndTime;
     # export functions
     def export_points_numpy(self,filename):
         '''export sampling points'''
 
         savetxt(filename,self.points);
-    def export_sampling_matlab(self,cobra_model,fraction_optimal = None, filename_model='sample_model.mat',filename_script='sample_script.m', filename_points='points.mat',
-                               solver_id_I='glpk',n_points_I = None, n_steps_I = 20000, max_time_I = None):
-        '''export model and script for sampling using matlab cobra_toolbox'''
-        ## copy the model:
-        #cobra_model_copy = cobra_model.copy();
-        # convert numerical input to string
-        n_points,n_steps,max_time = '[]','[]','[]';
-        if n_points_I:
-            n_points = n_points_I;
-        if n_steps_I:
-            n_steps = n_steps_I;
-        if max_time_I:
-            max_time = max_time_I;
-        # confine the objective to a fraction of maximum optimal
-        if fraction_optimal:
-            # optimize
-            cobra_model.optimize(solver_id_I);
-            objective = [x.id for x in cobra_model.reactions if x.objective_coefficient == 1]
-            cobra_model.reactions.get_by_id(objective[0]).upper_bound = fraction_optimal * cobra_model.solution.f;
-        # write model to mat
-        cobra_model.description = 'model';
-        save_matlab_model(cobra_model,self.data_dir + '/' + filename_model);
-        ## write model to xml
-        #write_sbml_model(cobra_model,'data/sampling/sampler.xml');
-        # write the sampling script to file
-        #[sampleStructOut, mixedFraction] = gpSampler(sampleStruct, nPoints, bias, maxTime, maxSteps, threads, nPointsCheck)
-        mat_script = "% initialize with " + solver_id_I + "\n";
-        mat_script +="load('" + self.data_dir + '/' + filename_model + "')\n";
-        mat_script +="initCobraToolbox();\n";
-        mat_script +="% sample\n";
-        mat_script +="[sampler_out, mixedFrac] = gpSampler(" + cobra_model.description
-        mat_script +=(", %s, [], %s, %s, [], true);\n" %(n_points,n_steps,max_time));
-        mat_script +="[sampler_out, mixedFrac] = gpSampler(sampler_out";
-        mat_script +=(", %s, [], %s, %s, [], true);\n" %(n_points,n_steps,max_time));
-        mat_script +="save('"+ self.data_dir + '/' + filename_points + "','sampler_out', 'mixedFrac');";
-        with open(self.data_dir + '/' + filename_script,'w') as f:
-            f.write(mat_script);
     # plotting functions
     def plot_points_histogram(self,reaction_lst=[]):
         '''plot sampling points as a histogram'''
@@ -384,7 +271,7 @@ class cobra_sampling(calculate_interface):
             m,var,lb,ub = self.calculate.calculate_ave_var(self.points[k],confidence_I = 0.95);
             # directly calculate the 95% CI
             lb,ub = self.calculate.calculate_ciFromPoints(self.points[k],alpha=0.05)
-            #lb,ub = self.calculate.bootstrap(self.points[k]['points'], num_samples=100000, statistic=numpy.mean, alpha=0.05)
+            #lb,ub = self.calculate.bootstrap(self.points[k]['points'], num_samples=100000, statistic=np.mean, alpha=0.05)
             # calculate the min, max, median, and interquartile ranges
             min,max,median,iq_1,iq_3=self.calculate.calculate_interquartiles(self.points[k],iq_range_I = [25,75])
             tmp = {};
@@ -412,7 +299,7 @@ class cobra_sampling(calculate_interface):
         for k,v in self.points.items():
             if first_loop:
                 for met in self.model.metabolites:
-                    metabolite_points[met.id]=numpy.zeros_like(v);
+                    metabolite_points[met.id]=np.zeros_like(v);
                 first_loop = False;
             for i,flux in enumerate(v):
                 for p in self.model.reactions.get_by_id(k).products:
@@ -431,7 +318,7 @@ class cobra_sampling(calculate_interface):
         for k,v in self.points.items():
             if first_loop:       
                 for sub in subsystems:
-                    subsystem_points[sub]=numpy.zeros_like(v);
+                    subsystem_points[sub]=np.zeros_like(v);
                 first_loop = False;
             for i,flux in enumerate(v):
                 subsystem_points[self.model.reactions.get_by_id(k).subsystem][i]+=abs(flux);
@@ -445,10 +332,10 @@ class cobra_sampling(calculate_interface):
         for i in range(n_points):
             total=0.0;
             for k,v in points.items():
-                total+=numpy.abs(v[i]);
+                total+=np.abs(v[i]);
             for k,v in points.items():
                 if i==0:
-                    points_normalized[k]=numpy.zeros_like(v);
+                    points_normalized[k]=np.zeros_like(v);
                 points_normalized[k][i] = v[i]/total
         self.points = points_normalized;
     def normalize_points2CarbonInput(self):
@@ -470,7 +357,7 @@ class cobra_sampling(calculate_interface):
                             n12C = 0
                             if 'C' not in Formula(formula_str)._elements and 0 in Formula(formula_str)._elements['C']:
                                 n12C += Formula(formula_str)._elements['C'][0]; #get the # of Carbons
-                            total+=numpy.abs(v[i])*n12C;
+                            total+=np.abs(v[i])*n12C;
                     elif self.model.reactions.get_by_id(k).products and v[i] > 0:
                         # e.g. --> glc-D
                         mets = self.model.reactions.get_by_id(k).reactants
@@ -479,10 +366,10 @@ class cobra_sampling(calculate_interface):
                             n12C = 0
                             if 'C' not in Formula(formula_str)._elements and 0 in Formula(formula_str)._elements['C']:
                                 n12C += Formula(formula_str)._elements['C'][0]; #get the # of Carbons
-                            total+=numpy.abs(v[i])*n12C;
+                            total+=np.abs(v[i])*n12C;
             for k,v in points.items():
                 if i==0:
-                    points_normalized[k]=numpy.zeros_like(v);
+                    points_normalized[k]=np.zeros_like(v);
                 points_normalized[k][i] = v[i]/total
         self.points = points_normalized;
     def normalize_points2Input(self):
@@ -498,13 +385,13 @@ class cobra_sampling(calculate_interface):
                 if k in system_boundaries:
                     if self.model.reactions.get_by_id(k).reactants and v[i] < 0:
                         # e.g. glc-D -->
-                        total+=numpy.abs(v[i]);
+                        total+=np.abs(v[i]);
                     elif self.model.reactions.get_by_id(k).products and v[i] > 0:
                         # e.g. --> glc-D
-                        total+=numpy.abs(v[i]);
+                        total+=np.abs(v[i]);
             for k,v in points.items():
                 if i==0:
-                    points_normalized[k]=numpy.zeros_like(v);
+                    points_normalized[k]=np.zeros_like(v);
                 points_normalized[k][i] = v[i]/total
         self.points = points_normalized;
     # add data
@@ -522,103 +409,6 @@ class cobra_sampling(calculate_interface):
         self.mixed_fraction = None;
         self.loops = {};
         self.calculate = calculate_interface();
-
-class matlab_sampling(cobra_sampling):
-
-    def __init__(self,matlab_path_I):
-        if matlab_path_I:self.matlab_path =  matlab_path_I;
-        else: self.matlab_path = 'C:/Users/dmccloskey-sbrg/Documents/MATLAB/sampling';
-        self.points = {};
-        self.mixed_fraction = None;
-        self.model = None;
-        self.simulation_dateAndTime = None;
-        self.loops = {};
-        self.calculate = calculate_interface();
-
-    def get_points_matlab(self,matlab_data,sampler_model_name):
-        '''load sampling points from MATLAB'''
-
-        # extract information about the file
-        import os, time
-        from datetime import datetime
-        from stat import ST_SIZE, ST_MTIME
-        try:
-            st = os.stat(self.matlab_path + '/' + matlab_data)
-        except IOError:
-            print("failed to get information about", filename)
-            return;
-        else:
-            file_size = st[ST_SIZE]
-            simulation_dateAndTime_struct = time.localtime(st[ST_MTIME])
-            simulation_dateAndTime = datetime.fromtimestamp(time.mktime(simulation_dateAndTime_struct))
-
-        # load model from MATLAB file
-        model = load_matlab_model(self.matlab_path + '/' + matlab_data,sampler_model_name);
-
-        # load sample points from MATLAB file into numpy array
-        points = scipy.io.loadmat(self.matlab_path + '/' + matlab_data)[sampler_model_name]['points'][0][0];
-        mixed_fraction=scipy.io.loadmat(self.matlab_path + '/' + matlab_data)['mixedFrac'][0][0];
-        #mat = scipy.io.loadmat('data/EvoWt.mat')
-        #points = mat['model_WT_sampler_out']['points'][0][0]
-
-        points_dict = {};
-        for i,r in enumerate(model.reactions):
-            # convert names:
-            r_id_conv = r.id.replace('-','_DASH_');
-            r_id_conv = r_id_conv.replace('(','_LPAREN_');
-            r_id_conv = r_id_conv.replace(')','_RPAREN_');
-            # extract points
-            #m,var,lb,ub = self.calculate.calculate_ave_var(points[i,:],confidence_I = 0.95)
-            points_dict[r_id_conv] = {'points':points[i,:]
-                                 ##'mean':mean(points[i,:]),
-                                 #'ave':m,
-                                 ##'std':std(points[i,:]),
-                                 #'var':var,
-                                 #'lb':lb,
-                                 #'ub':ub
-                                 }
-
-        self.points = points_dict;
-        self.model = model;
-        self.mixed_fraction = mixed_fraction;
-        self.simulation_dateAndTime = simulation_dateAndTime;
-
-    def export_sampling_matlab(self,cobra_model,fraction_optimal = None, filename_model='sample_model.mat',filename_script='sample_script.m', filename_points='points.mat',
-                               solver_id_I='gurobi',n_points_I = None, n_steps_I = 20000, max_time_I = None):
-        '''export model and script for sampling using matlab cobra_toolbox'''
-        ## copy the model:
-        #cobra_model_copy = cobra_model.copy();
-        # convert numerical input to string
-        n_points,n_steps,max_time = '[]','[]','[]';
-        if n_points_I:
-            n_points = n_points_I;
-        if n_steps_I:
-            n_steps = n_steps_I;
-        if max_time_I:
-            max_time = max_time_I;
-        # confine the objective to a fraction of maximum optimal
-        if fraction_optimal:
-            # optimize
-            cobra_model.optimize(solver_id_I);
-            objective = [x.id for x in cobra_model.reactions if x.objective_coefficient == 1]
-            cobra_model.reactions.get_by_id(objective[0]).upper_bound = fraction_optimal * cobra_model.solution.f;
-        # write model to mat
-        save_matlab_model(cobra_model,self.matlab_path + '/' + filename_model);
-        ## write model to xml
-        #write_sbml_model(cobra_model,'data/sampling/sampler.xml');
-        # write the sampling script to file
-        #[sampleStructOut, mixedFraction] = gpSampler(sampleStruct, nPoints, bias, maxTime, maxSteps, threads, nPointsCheck)
-        mat_script = "% initialize with Tomlab_CPLEX\n";
-        mat_script +="load('" + self.matlab_path + '/' + filename_model + "')\n";
-        mat_script +="initCobraToolbox();\n";
-        mat_script +="% sample\n";
-        mat_script +="[sampler_out, mixedFrac] = gpSampler(" + cobra_model.description
-        mat_script +=(", %s, [], %s, %s, [], true);\n" %(n_points,n_steps,max_time));
-        mat_script +="[sampler_out, mixedFrac] = gpSampler(sampler_out";
-        mat_script +=(", %s, [], %s, %s, [], true);\n" %(n_points,n_steps,max_time));
-        mat_script +="save('"+ self.matlab_path + '/' + filename_points + "','sampler_out', 'mixedFrac');";
-        with open(self.matlab_path + '/' + filename_script,'w') as f:
-            f.write(mat_script);
 
 class cobra_sampling_n(calculate_interface):
 
@@ -681,7 +471,7 @@ class cobra_sampling_n(calculate_interface):
                     else:
                         cond2 = np.zeros(n_points);
                     mean_difference = cond2.mean()-cond1.mean();
-                    median_difference = numpy.median(cond2) - numpy.median(cond1) 
+                    median_difference = np.median(cond2) - np.median(cond1) 
                     #pvalue = self.calculate.permutation_resampling(cond1,cond2);
                     pvalue = self.calculate.calculate_pvalue_permutation(cond1,cond2);
                     fold_change = cond2.mean()/cond1.mean();

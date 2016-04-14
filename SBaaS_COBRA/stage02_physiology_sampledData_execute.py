@@ -2,11 +2,12 @@
 from .stage02_physiology_sampledData_io import stage02_physiology_sampledData_io
 from .stage02_physiology_simulation_query import stage02_physiology_simulation_query
 from .stage02_physiology_measuredData_query import stage02_physiology_measuredData_query
-from .sampling import cobra_sampling,cobra_sampling_n
 from SBaaS_models.models_COBRA_dependencies import models_COBRA_dependencies
 # resources
 from python_statistics.calculate_interface import calculate_interface
 from .sampling import cobra_sampling,cobra_sampling_n
+from .matlab_sampling import matlab_sampling
+from .optGpSampler_sampling import optGpSampler_sampling
 import datetime
 class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
                                             stage02_physiology_simulation_query,
@@ -55,8 +56,8 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
             cobra_model_copy.reactions.get_by_id(rxn['rxn_id']).upper_bound = rxn['flux_ub'];
         # Test model
         if modelsCOBRA.test_model(cobra_model_I=cobra_model_copy):
-            sampling = cobra_sampling(data_dir_I = data_dir);
             if simulation_parameters['sampler_id']=='gpSampler':
+                sampling = matlab_sampling(data_dir_I = data_dir);
                 filename_model = simulation_id_I + '.mat';
                 filename_script = simulation_id_I + '.m';
                 filename_points = simulation_id_I + '_points' + '.mat';
@@ -66,6 +67,7 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
                     n_steps_I = simulation_parameters['n_steps'],\
                     max_time_I = simulation_parameters['max_time']);
             elif simulation_parameters['sampler_id']=='optGpSampler':
+                sampling = optGpSampler_sampling(data_dir_I = data_dir);
                 return;
             else:
                 print('sampler_id not recognized');
@@ -121,8 +123,8 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
             cobra_model_copy.reactions.get_by_id(rxn['rxn_id']).upper_bound = rxn['flux_ub'];
         # Test each model
         if modelsCOBRA.test_model(cobra_model_I=cobra_model_copy):
-            sampling = cobra_sampling(data_dir_I = data_dir);
             if simulation_parameters['sampler_id']=='gpSampler':
+                sampling = matlab_sampling(data_dir_I = data_dir);
                 # load the results of sampling
                 filename_points = simulation_id_I + '_points' + '.mat';
                 sampling.get_points_matlab(filename_points,'sampler_out');
@@ -133,6 +135,7 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
                 sampling.remove_loopsFromPoints();
                 sampling.descriptive_statistics();
             elif simulation_parameters['sampler_id']=='optGpSampler':
+                sampling = optGpSampler_sampling(data_dir_I = data_dir);
                 return;
             else:
                 print('sampler_id not recognized');
