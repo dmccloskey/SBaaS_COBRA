@@ -93,11 +93,11 @@ class stage02_physiology_simulatedData_query(sbaas_template_query):
             querydelete = sbaas_base_query_delete(session_I=self.session,engine_I=self.engine,settings_I=self.settings,data_I=self.data);
             for table in tables_I:
                 query = {};
-                query['delete_from'] = table;
+                query['delete_from'] = [{'table_name':table}];
                 query['where'] = [{
                         'table_name':table,
                         'column_name':'simulation_id',
-		                'value':self.convert_string2StringString(simulation_id_I),
+		                'value':simulation_id_I,
 		                'operator':'LIKE',
                         'connector':'AND'
                         }

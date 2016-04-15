@@ -1,7 +1,6 @@
 #SBaaS
 from .stage02_physiology_measuredData_io import stage02_physiology_measuredData_io
 from .stage02_physiology_simulation_query import stage02_physiology_simulation_query
-from SBaaS_quantification.stage01_quantification_averages_query import stage01_quantification_averages_query
 from SBaaS_physiology.stage01_physiology_rates_query import stage01_physiology_rates_query
 from SBaaS_MFA.stage02_isotopomer_fittedNetFluxes_query import stage02_isotopomer_fittedNetFluxes_query
 from SBaaS_models.models_COBRA_dependencies import models_COBRA_dependencies
@@ -11,39 +10,8 @@ from math import sqrt
 
 class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io,
                                                   stage02_physiology_simulation_query,
-                                                      stage01_quantification_averages_query,
-                                                      stage01_physiology_rates_query,
-                                                      stage02_isotopomer_fittedNetFluxes_query):
+                                                      stage01_physiology_rates_query):
 
-    def execute_makeMetabolomicsData_intracellular(self,experiment_id_I,data_I=[],compartment_id_I='c'):
-        '''Get the currated metabolomics data from data_stage01_quantification_averagesMIGeo'''
-        # get rows:
-        
-        met_id_conv_dict = {'Hexose_Pool_fru_glc-D':['glc-D','fru-D'],
-                            'Pool_2pg_3pg':['2pg','3pg'],
-                            '23dpg':['13dpg']};
-        cobradependencies = models_COBRA_dependencies();
-        data_O = [];
-        if data_I:
-            data = data_I;
-        else:
-            data = [];
-            data = self.get_rows_experimentID_dataStage01AveragesMIgeo(experiment_id_I);
-        for d in data:
-            if d['component_group_name'] in list(met_id_conv_dict.keys()):
-                met2conv = d['component_group_name'];
-                for met_conv in met_id_conv_dict[met2conv]:
-                    row_tmp = copy.copy(d)
-                    row_tmp['component_group_name'] = met_conv;
-                    data_O.append(row_tmp);
-            else:
-                data_O.append(d);
-        for d in data_O:
-            d['met_id']=cobradependencies.format_metid(d['component_group_name'],compartment_id_I);
-            d['measured']=True;
-            d['comment_']=None;
-        #add data to the DB
-        self.add_dataStage02PhysiologyMetabolomicsData(data_O);
     def execute_makeFluxomicsData(self,IDsQuantification2SimulationIDsIsotopomer_I = {},
                                   criteria_I = 'flux_lb/flux_ub',
                                   flip_rxn_direction_I=[]):
@@ -62,12 +30,18 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
         INPUT not yet implemented:
         flip_rxn_direction_I = list of reaction_ids to flip the direction of flux
         '''
+
+        isotopomer_fittedNetFluxes_query=stage02_isotopomer_fittedNetFluxes_query(self.session,self.engine,self.settings)
+
         data_O = [];
-        for simulation_id in list(IDsQuantification2SimulationIDsIsotopomer_I.keys()):
+        for simulation_id in list(IDsQuantification2SimulationIDsIsotopomer_I.keys()): 
             # get the fittedNetFluxes
             fittedNetFluxes = [];
-            fittedNetFluxes = self.get_rows_simulationIDAndSimulationDateAndTimeAndFluxUnits_dataStage02IsotopomerfittedNetFluxes(simulation_id,
-                IDsQuantification2SimulationIDsIsotopomer_I[simulation_id]['simulation_dateAndTime'],
+            #simulation_dateAndTime = self.convert_string2datetime(IDsQuantification2SimulationIDsIsotopomer_I[simulation_id]['simulation_dateAndTime'])
+            #fittedNetFluxes = isotopomer_fittedNetFluxes_query.get_rows_simulationIDAndSimulationDateAndTimeAndFluxUnits_dataStage02IsotopomerfittedNetFluxes(simulation_id,
+            #    simulation_dateAndTime,
+            #    IDsQuantification2SimulationIDsIsotopomer_I[simulation_id]['flux_units']);
+            fittedNetFluxes = isotopomer_fittedNetFluxes_query.get_rows_simulationIDAndFluxUnits_dataStage02IsotopomerfittedNetFluxes(simulation_id,
                 IDsQuantification2SimulationIDsIsotopomer_I[simulation_id]['flux_units']);
             if fittedNetFluxes:
                 for d in fittedNetFluxes:
@@ -83,7 +57,7 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
                     tmp = {'experiment_id':IDsQuantification2SimulationIDsIsotopomer_I[simulation_id]['experiment_id'],
                         'model_id':IDsQuantification2SimulationIDsIsotopomer_I[simulation_id]['model_id'],
                         'sample_name_abbreviation':IDsQuantification2SimulationIDsIsotopomer_I[simulation_id]['sample_name_abbreviation'],
-                        'time_point':IDsQuantification2SimulationIDsIsotopomer_I[simulation_id]['time_point'],
+                        #'time_point':IDsQuantification2SimulationIDsIsotopomer_I[simulation_id]['time_point'],
                         'rxn_id':d['rxn_id'],
                         'flux_average':d['flux'],
                         'flux_stdev':d['flux_stdev'],
@@ -95,7 +69,8 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
                     data_O.append(tmp);
         # add data to the database
         self.add_dataStage02PhysiologyMeasuredFluxes(data_O);
-    def execute_addMeasuredFluxes(self,experiment_id_I, ko_list={}, flux_dict={}, model_ids_I=[], sample_name_abbreviations_I=[],time_points_I=[]):
+    def execute_addMeasuredFluxes(self,
+            experiment_id_I, ko_list={}, flux_dict={}, model_ids_I=[], sample_name_abbreviations_I=[],time_points_I=[]):
         '''Add flux data for physiological simulation'''
         #Input:
             #flux_dict = {};
@@ -146,22 +121,6 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
                                     'used_':True,
                                     'comment_':None}
                             data_O.append(data_tmp);
-                            ##add data to the database
-                            #row = [];
-                            #row = data_stage02_physiology_measuredFluxes(
-                            #    experiment_id_I,
-                            #    model_id,
-                            #    sna,
-                            #    tp,
-                            #    k,
-                            #    v['ave'],
-                            #    v['stdev'],
-                            #    v['lb'], 
-                            #    v['ub'],
-                            #    v['units'],
-                            #    True,
-                            #    None);
-                            #self.session.add(row);
                     if ko_list:
                         for k in ko_list[model_id][sna][tp]:
                             # record the data
@@ -178,27 +137,15 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
                                     'used_':True,
                                     'comment_':None}
                             data_O.append(data_tmp);
-                            #add data to the database
-                            #row = [];
-                            #row = data_stage02_physiology_measuredFluxes(
-                            #    experiment_id_I,
-                            #    model_id,
-                            #    sna,
-                            #    tp,
-                            #    k,
-                            #    0.0,
-                            #    0.0,
-                            #    0.0, 
-                            #    0.0,
-                            #    'mmol*gDCW-1*hr-1',
-                            #    True,
-                            #    None);
-                            #self.session.add(row);
         #add data to the database:
         self.add_dataStage02PhysiologyMeasuredFluxes(data_O);
-        #self.session.commit();
-    def execute_makeMeasuredFluxes(self,experiment_id_I, metID2RxnID_I = {}, sample_name_abbreviations_I = [], met_ids_I = [],
-                                   correct_EX_glc_LPAREN_e_RPAREN_I = True):
+    def execute_makeMeasuredFluxes(self,
+            experiment_id_I,
+            metID2RxnID_I = {},
+            sample_name_abbreviations_I = [],
+            met_ids_I = [],
+            correct_EX_glc_LPAREN_e_RPAREN_I = True
+            ):
         '''Collect and flux data from data_stage01_physiology_ratesAverages for physiological simulation
         INPUT:
         metID2RxnID_I = e.g. {'glc-D':{'model_id':'140407_iDM2014','rxn_id':'EX_glc_LPAREN_e_RPAREN_'},

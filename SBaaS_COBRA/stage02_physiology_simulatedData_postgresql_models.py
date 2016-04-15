@@ -249,7 +249,7 @@ class data_stage02_physiology_simulatedData_fbaDual(Base):
                 row_dict_I,
                 ):
         self.flux_units=row_dict_I['flux_units'];
-        self.fba_flux=row_dict_I['fba_flux'];
+        self.fba_shadowPrice=row_dict_I['fba_shadowPrice'];
         self.fba_method=row_dict_I['fba_method'];
         self.met_id=row_dict_I['met_id'];
         self.simulation_dateAndTime=row_dict_I['simulation_dateAndTime'];
