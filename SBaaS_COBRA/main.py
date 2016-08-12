@@ -68,7 +68,12 @@ sampledData01.initialize_dataStage02_physiology_sampledData();
 #test_result = exCOBRA01.execute_testModel(model_id_I="140407_iDM2014_irreversible");
 
 #pre-load the models
-cobramodels = exCOBRA01.get_models(model_ids_I=["151026_iDM2015"]);
+cobramodels = exCOBRA01.get_models(model_ids_I=["150526_iDM2015"]);
+rxns = [rxn.id for rxn in cobramodels["150526_iDM2015"].reactions]
+print(str(len(rxns)))
+exCOBRA01.revert2reversible(cobramodels["150526_iDM2015"],ignore_reflection=True)
+rxns = [rxn.id for rxn in cobramodels["150526_iDM2015"].reactions]
+print(str(len(rxns)))
 
 simulations = [
         #'WTEColi_113C80_U13C20_02_140407_iDM2014_irreversible_OxicWtGlc_0',
@@ -76,14 +81,15 @@ simulations = [
         ]
 
 for simulation in simulations:
-    simulatedData01.reset_dataStage02_physiology_simulatedData(
-            tables_I = ['data_stage02_physiology_simulatedData_fva',
-                        'data_stage02_physiology_simulatedData_fbaPrimal',
-                        'data_stage02_physiology_simulatedData_fbaDual',
-                        'data_stage02_physiology_simulatedData_sra',
-                        ],
-            simulation_id_I = simulation,
-            warn_I=False)
+    print("running simulation " + simulation);
+    #simulatedData01.reset_dataStage02_physiology_simulatedData(
+    #        tables_I = ['data_stage02_physiology_simulatedData_fva',
+    #                    'data_stage02_physiology_simulatedData_fbaPrimal',
+    #                    'data_stage02_physiology_simulatedData_fbaDual',
+    #                    'data_stage02_physiology_simulatedData_sra',
+    #                    ],
+    #        simulation_id_I = simulation,
+    #        warn_I=False)
     #data = simulatedData01.execute_testConstraintsIndividual(simulation_id_I=simulation,
     #                    rxn_ids_I=[],
     #                    models_I = cobramodels,
@@ -100,24 +106,24 @@ for simulation in simulations:
     #                    diagnose_threshold_I=0.98,
     #                    diagnose_break_I=0.1)
     #for d in data: print(d)
-    #fba
-    simulatedData01.execute_fba(simulation_id_I=simulation,
-                        rxn_ids_I=[],
-                        models_I = cobramodels,
-                        method_I='fba',
-                        allow_loops_I = True,
-                        options_I = {},
-                        solver_id_I='cglpk',
-                        )
-    #fva
-    simulatedData01.execute_fva(simulation_id_I=simulation,
-                    rxn_ids_I=[],
-                    models_I = cobramodels,
-                    method_I='fva',
-                    allow_loops_I = True,
-                        options_I = {},
-                    solver_id_I='cglpk',
-                    )
+    ##fba
+    #simulatedData01.execute_fba(simulation_id_I=simulation,
+    #                    rxn_ids_I=[],
+    #                    models_I = cobramodels,
+    #                    method_I='fba',
+    #                    allow_loops_I = True,
+    #                    options_I = {},
+    #                    solver_id_I='cglpk',
+    #                    )
+    ##fva
+    #simulatedData01.execute_fva(simulation_id_I=simulation,
+    #                rxn_ids_I=[],
+    #                models_I = cobramodels,
+    #                method_I='fva',
+    #                allow_loops_I = True,
+    #                    options_I = {},
+    #                solver_id_I='cglpk',
+    #                )
     ##sra
     #simulatedData01.execute_sra(simulation_id_I=simulation,
     #                    rxn_ids_I=[],
@@ -130,12 +136,12 @@ for simulation in simulations:
 data_dir = 'F:/Users/dmccloskey-sbrg/Dropbox (UCSD SBRG)/MATLAB/sampling_physiology';
 
 # import sampling results
-#for simulation in simulations:
-    #sampledData01.execute_sampling(simulation_id_I=simulation,
-    #    rxn_ids_I=[],
-    #    data_dir_I = data_dir,
-    #    models_I = cobramodels
-    #    )
+for simulation in simulations:
+    sampledData01.execute_sampling(simulation_id_I=simulation,
+        rxn_ids_I=[],
+        data_dir_I = data_dir,
+        models_I = cobramodels
+        )
     #sampledData01.reset_dataStage02_physiology_sampledData(simulation_id_I=simulation);
     #sampledData01.execute_analyzeSamplingPoints(simulation_id_I=simulation,
     #    rxn_ids_I=[],

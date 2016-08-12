@@ -27,6 +27,9 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
                                                               ...}
         criteria_I = string, if 'flux_lb/flux_ub', the lower/upper bounds will be used
                              if 'flux_mean/flux_stdev', the lower/upper bounds will be replaced by mean +/- stdev
+                             if 'least_constraining', the lowest/highest value for the lower/upper bounds will be used
+                                                        i.e., of either the flux_lb or flux_mean-flux_stdev/flux_ub or flux_mean+stdev
+                             if 'most_constraining', the highest/lowest value for the lower/upper bounds will be used
         INPUT not yet implemented:
         flip_rxn_direction_I = list of reaction_ids to flip the direction of flux
         '''
@@ -54,6 +57,16 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
                     if criteria_I == 'flux_mean/flux_stdev':
                         d['flux_lb']=d['flux']-d['flux_stdev']
                         d['flux_ub']=d['flux']+d['flux_stdev']
+                    elif criteria_I == 'least_constraining':
+                        lb=d['flux']-d['flux_stdev']
+                        ub=d['flux']+d['flux_stdev']
+                        if lb<d['flux_lb']:d['flux_lb']=lb
+                        if ub>d['flux_ub']:d['flux_ub']=ub
+                    elif criteria_I == 'most_constraining':
+                        lb=d['flux']-d['flux_stdev']
+                        ub=d['flux']+d['flux_stdev']
+                        if lb>d['flux_lb']:d['flux_lb']=lb
+                        if ub<d['flux_ub']:d['flux_ub']=ub
                     tmp = {'experiment_id':IDsQuantification2SimulationIDsIsotopomer_I[simulation_id]['experiment_id'],
                         'model_id':IDsQuantification2SimulationIDsIsotopomer_I[simulation_id]['model_id'],
                         'sample_name_abbreviation':IDsQuantification2SimulationIDsIsotopomer_I[simulation_id]['sample_name_abbreviation'],

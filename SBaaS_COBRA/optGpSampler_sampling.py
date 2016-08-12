@@ -57,7 +57,7 @@ class optGpSampler_sampling(cobra_sampling):
             filename_model='sample_model.mat',
             filename_script='sample_script.m', 
             filename_points='points.mat',
-            solver_id_I='glpk',
+            solver_id_I='cglpk',
             n_points_I = None, 
             n_steps_I = 20000, 
             max_time_I = None):
@@ -82,7 +82,7 @@ class optGpSampler_sampling(cobra_sampling):
             filename_model='sample_model.pickle',
             filename_script='sample_script.m', 
             filename_points='points.pickle',
-            solver_id_I='glpk',
+            solver_id_I='cglpk',
             n_points_I = None, 
             n_steps_I = 20000,
             n_threads_I = 8,
@@ -185,6 +185,6 @@ class optGpSampler_sampling(cobra_sampling):
             print(e);
 
         self.points = points_dict;
-        self.model = model;
+        #self.model = model;
         #self.mixed_fraction = mixed_fraction;
         self.simulation_dateAndTime = simulation_dateAndTime;

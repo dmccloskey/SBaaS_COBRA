@@ -61,14 +61,26 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
                 filename_model = simulation_id_I + '.mat';
                 filename_script = simulation_id_I + '.m';
                 filename_points = simulation_id_I + '_points' + '.mat';
-                sampling.export_sampling_matlab(cobra_model=cobra_model_copy,filename_model=filename_model,filename_script=filename_script,filename_points=filename_points,\
-                    solver_id_I = simulation_parameters['solver_id'],\
-                    n_points_I = simulation_parameters['n_points'],\
-                    n_steps_I = simulation_parameters['n_steps'],\
+                sampling.export_sampling_matlab(cobra_model=cobra_model_copy,
+                    filename_model=filename_model,
+                    filename_script=filename_script,
+                    filename_points=filename_points,
+                    solver_id_I = simulation_parameters['solver_id'],
+                    n_points_I = simulation_parameters['n_points'],
+                    n_steps_I = simulation_parameters['n_steps'],
                     max_time_I = simulation_parameters['max_time']);
             elif simulation_parameters['sampler_id']=='optGpSampler':
                 sampling = optGpSampler_sampling(data_dir_I = data_dir);
-                return;
+                filename_model = simulation_id_I + '.mat';
+                filename_script = simulation_id_I + '.m';
+                filename_points = simulation_id_I + '_points' + '.txt';
+                sampling.generate_samples(cobra_model=cobra_model_copy,
+                    filename_model=filename_model,
+                    filename_script=filename_script,
+                    filename_points=filename_points,
+                    solver_id_I = simulation_parameters['solver_id'],
+                    n_points_I = simulation_parameters['n_points'],
+                    n_steps_I = simulation_parameters['n_steps']);
             else:
                 print('sampler_id not recognized');
         else:
@@ -128,17 +140,21 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
                 # load the results of sampling
                 filename_points = simulation_id_I + '_points' + '.mat';
                 sampling.get_points_matlab(filename_points,'sampler_out');
-                # check if the model contains loops
-                #loops_bool = self.sampling.check_loops();
-                sampling.simulate_loops(data_fva=self.settings['workspace_data'] + '/loops_fva_tmp.json',solver_I = simulation_parameters['solver_id']);
-                sampling.find_loops(data_fva=self.settings['workspace_data'] + '/loops_fva_tmp.json');
-                sampling.remove_loopsFromPoints();
-                sampling.descriptive_statistics();
             elif simulation_parameters['sampler_id']=='optGpSampler':
                 sampling = optGpSampler_sampling(data_dir_I = data_dir);
-                return;
+                filename_points = simulation_id_I + '_points' + '.txt';
+                sampling.get_points_optGpSampler(filename_points);
             else:
                 print('sampler_id not recognized');
+                return;
+            # check if the model contains loops
+            #loops_bool = self.sampling.check_loops();
+            sampling.simulate_loops(
+                data_fva=self.settings['workspace_data'] + '/loops_fva_tmp.json',
+                solver_I = simulation_parameters['solver_id']);
+            sampling.find_loops(data_fva=self.settings['workspace_data'] + '/loops_fva_tmp.json');
+            sampling.remove_loopsFromPoints();
+            sampling.descriptive_statistics();
             # add data to the database
             row = {'simulation_id':simulation_id_I,
                 'simulation_dateAndTime':sampling.simulation_dateAndTime,

@@ -318,7 +318,7 @@ class stage02_physiology_simulatedData_execute(stage02_physiology_simulatedData_
                 tmp.update(rxn)
                 data_O.append(tmp);      
             else:
-                print('contrained model growth rate = ' + str(cobra_model_copy.solution.f)); 
+                print('contrained model growth rate ' + rxn['rxn_id'] + ' = ' + str(cobra_model_copy.solution.f)); 
         return data_O;
     def execute_testConstraintsCumulative(self,simulation_id_I,
                         rxn_ids_I=[],
