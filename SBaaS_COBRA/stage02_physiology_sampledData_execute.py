@@ -82,7 +82,8 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
                     filename_warmup=filename_warmup,
                     solver_id_I = simulation_parameters['solver_id'],
                     n_points_I = simulation_parameters['n_points'],
-                    n_steps_I = simulation_parameters['n_steps']);
+                    n_steps_I = simulation_parameters['n_steps'],
+                    n_threads_I = simulation_parameters['n_threads']);
                 #sampling.generate_samples(cobra_model=cobra_model_copy,
                 #    filename_points=filename_points,
                 #    solver_id_I = simulation_parameters['solver_id'],

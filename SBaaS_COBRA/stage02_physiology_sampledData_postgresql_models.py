@@ -147,7 +147,7 @@ class data_stage02_physiology_sampledData(Base):
     def __repr__dict__(self):
         return {'id':self.id,
                 'simulation_id':self.simulation_id,
-        'simulation_dateAndTime':self.simulation_dateAndTime,
+        'simulation_dateAndTime':str(self.simulation_dateAndTime),
         #'experiment_id':self.experiment_id,
         #        'model_id':self.model_id,
         #    'sample_name_abbreviation':self.sample_name_abbreviation,
@@ -179,6 +179,7 @@ class data_stage02_physiology_samplingParameters(Base):
     n_points = Column(Integer); # sampling-specific
     n_steps = Column(Integer); # sampling-specific
     max_time = Column(Float); # sampling-specific
+    n_threads = Column(Integer); # sampling-specific
     sampler_id = Column(String); # sampling-specific; gpSampler (Matlab) opGpSampler (Python)
     #solve_time = Column(Float);
     #solve_time_units = Column(String);
@@ -193,6 +194,7 @@ class data_stage02_physiology_samplingParameters(Base):
                 row_dict_I,
                 ):
         self.n_points=row_dict_I['n_points'];
+        self.n_threads=row_dict_I['n_threads'];
         self.solver_id=row_dict_I['solver_id'];
         self.simulation_id=row_dict_I['simulation_id'];
         self.comment_=row_dict_I['comment_'];
@@ -208,6 +210,7 @@ class data_stage02_physiology_samplingParameters(Base):
         solver_id_I,
         n_points_I,
         n_steps_I,
+        n_threads_I,
         max_time_I,
         sampler_id_I,
         #solve_time_I,
@@ -218,6 +221,7 @@ class data_stage02_physiology_samplingParameters(Base):
         self.solver_id=solver_id_I
         self.n_points=n_points_I
         self.n_steps=n_steps_I
+        self.n_threads=n_threads_I
         self.max_time=max_time_I
         self.sampler_id=sampler_id_I
         #self.solve_time=solve_time_I
@@ -232,6 +236,7 @@ class data_stage02_physiology_samplingParameters(Base):
             'solver_id':self.solver_id,
             'n_points':self.n_points,
             'n_steps':self.n_steps,
+            'n_threads':self.n_threads,
             'max_time':self.max_time,
             'sampler_id':self.sampler_id,
             #'solve_time':self.solve_time,

@@ -54,9 +54,7 @@ class stage02_physiology_sampledData_query(sbaas_template_query):
         '''Query rows that are used from the sampledData'''
         try:
             data = self.session.query(data_stage02_physiology_sampledData).filter(
-                    data_stage02_physiology_sampledData.model_id.like(model_id_I),
                     data_stage02_physiology_sampledData.simulation_id.like(simulation_id_I),
-                    data_stage02_physiology_sampledData.experiment_id.like(experiment_id_I),
                     data_stage02_physiology_sampledData.used_.is_(True)).all();
             rows_O = [d.__repr__dict__() for d in data];
             return rows_O;
@@ -136,17 +134,7 @@ class stage02_physiology_sampledData_query(sbaas_template_query):
             data = self.session.query(data_stage02_physiology_sampledPoints).filter(
                     data_stage02_physiology_sampledPoints.simulation_id.like(simulation_id_I),
                     data_stage02_physiology_sampledPoints.used_.is_(True)).all();
-            rows_O = [];
-            if data: 
-                for d in data:
-                    rows_O.append({
-                            'simulation_id':d.simulation_id,
-                            'simulation_dateAndTime':d.simulation_dateAndTime,
-                            'mixed_fraction':d.mixed_fraction,
-                            'data_dir':d.data_dir,
-                            'infeasible_loops':d.infeasible_loops,
-                            'used_':d.used_,
-                            'comment_':d.comment_});
+            rows_O = [d.__repr__dict__() for d in data];
             return rows_O;
         except SQLAlchemyError as e:
             print(e);
@@ -195,21 +183,7 @@ class stage02_physiology_sampledData_query(sbaas_template_query):
             data = self.session.query(data_stage02_physiology_samplingParameters).filter(
                     data_stage02_physiology_samplingParameters.simulation_id.like(simulation_id_I),
                     data_stage02_physiology_samplingParameters.used_.is_(True)).all();
-            rows_O = [];
-            if data: 
-                for d in data:
-                    rows_O.append({
-                            'simulation_id':d.simulation_id,
-                            #'simulation_dateAndTime':d.simulation_dateAndTime,
-                            'solver_id':d.solver_id,
-                            'n_points':d.n_points,
-                            'n_steps':d.n_steps,
-                            'max_time':d.max_time,
-                            'sampler_id':d.sampler_id,
-                            #'solve_time':d.solve_time,
-                            #'solve_time_units':d.solve_time_units,
-                            'used_':d.used_,
-                            'comment_':d.comment_});
+            rows_O = [d.__repr__dict__() for d in data];
             return rows_O;
         except SQLAlchemyError as e:
             print(e);

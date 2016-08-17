@@ -11,6 +11,7 @@ from listDict.listDict import listDict
 from .sampling import cobra_sampling,cobra_sampling_n
 from python_statistics.calculate_histogram import calculate_histogram
 from ddt_python.ddt_container_filterMenuAndChart2dAndTable import ddt_container_filterMenuAndChart2dAndTable
+from ddt_python.ddt_container import ddt_container
 
 
 class stage02_physiology_sampledData_io(stage02_physiology_sampledData_query,
@@ -156,4 +157,190 @@ class stage02_physiology_sampledData_io(stage02_physiology_sampledData_query,
             return data_json_O;
         with open(filename_str,'w') as file:
             file.write(nsvgtable.get_allObjects());
+            
+    def export_dataStage02PhysiologySampledPointsDescriptiveStats_js(self,analysis_id_I,plot_points_I=True,vertical_I=True,data_dir_I='tmp'):
+        '''Export data for a box and whiskers plot
+        INPUT:
+        analysis_id_I = string,
+        plot_points_I = boolean, default=False, raw data points will not be plotted on the same plot
+        vertical_I = boolean, default=True, orient the boxes vertical as opposed to horizontal
+        '''
+        physiology_analysis_query=stage02_physiology_analysis_query(self.session,self.engine,self.settings);
+        physiology_analysis_query.initialize_supportedTables();
+
+        data_O = [];
+        data_points_O = [];
+        #get the analysis information
+        simulation_ids = [];
+        simulation_ids = physiology_analysis_query.get_simulationID_analysisID_dataStage02PhysiologyAnalysis(analysis_id_I);
+        #get the data for the analysis
+        if plot_points_I:
+        #get the replicate data for the analysis
+            #TODO... (copy code from above io function)
+            #data_points_O = [];
+            #data_points_O = quantification_dataPreProcessing_replicates_query.get_rowsAndSampleNameAbbreviations_analysisID_dataStage02QuantificationDataPreProcessingReplicates(analysis_id_I);
+            for simulation in simulation_ids:
+                data_tmp = self.get_rows_simulationID_dataStage02PhysiologySampledData(simulation);
+                data_O.extend(data_tmp);
+        else:
+            for simulation in simulation_ids:
+                data_tmp = self.get_rows_simulationID_dataStage02PhysiologySampledData(simulation);
+                data_O.extend(data_tmp);
+        # make the tile objects
+        parametersobject_O = [];
+        tile2datamap_O = {};
+        filtermenuobject_O = [];
+        dataobject_O = [];
+        # dump chart parameters to a js files
+        data1_keys = [
+            #'analysis_id',
+                      'simulation_id',
+                      'simulation_dateAndTime',
+                      'rxn_id',
+                      'flux_units',
+                    ];
+        data1_nestkeys = ['rxn_id'];
+        data2_keys = [
+            #'analysis_id',
+                      'simulation_id',
+                      'simulation_dateAndTime',
+                      'rxn_id',
+                      'flux_units',
+                    ];
+        data2_nestkeys = ['rxn_id'];
+        if vertical_I:
+            data1_keymap = {
+                        'xdata':'rxn_id',
+                        'ydata':'sampling_ave',
+                        'ydatamean':'sampling_ave',
+                        'ydatalb':'sampling_lb',
+                        'ydataub':'sampling_ub',
+                        'ydatamin':'sampling_min',
+                        'ydatamax':'sampling_max',
+                        'ydataiq1':'sampling_iq_1',
+                        'ydataiq3':'sampling_iq_3',
+                        'ydatamedian':'sampling_median',
+                        'serieslabel':'simulation_id',
+                        'featureslabel':'rxn_id'};
+            data2_keymap = {
+                        'xdata':'rxn_id',
+                        'ydata':'sampling_points',
+                        'serieslabel':'simulation_id',
+                        'featureslabel':'rxn_id'};
+        else:
+            data1_keymap = {
+                        'ydata':'rxn_id',
+                        'xdatamean':'sampling_ave',
+                        'xdata':'sampling_ave',
+                        'xdatalb':'sampling_lb',
+                        'xdataub':'sampling_ub',
+                        'xdatamin':'sampling_min',
+                        'xdatamax':'sampling_max',
+                        'xdataiq1':'sampling_iq_1',
+                        'xdataiq3':'sampling_iq_3',
+                        'xdatamedian':'sampling_median',
+                        'serieslabel':'simulation_id',
+                        'featureslabel':'rxn_id'};
+            data2_keymap = {
+                        'ydata':'rxn_id',
+                        'xdata':'sampling_points',
+                        'serieslabel':'simulation_id',
+                        'featureslabel':'rxn_id'};
+
+        # make the data object
+        dataobject_O.append({"data":data_O,"datakeys":data1_keys,"datanestkeys":data1_nestkeys});
+
+        # make the tile parameter objects
+        formtileparameters_O = {'tileheader':'Filter menu','tiletype':'html','tileid':"filtermenu1",'rowid':"row1",'colid':"col1",
+            'tileclass':"panel panel-default",'rowclass':"row",'colclass':"col-sm-4"};
+        formparameters_O = {'htmlid':'filtermenuform1',"htmltype":'form_01',"formsubmitbuttonidtext":{'id':'submit1','text':'submit'},"formresetbuttonidtext":{'id':'reset1','text':'reset'},"formupdatebuttonidtext":{'id':'update1','text':'update'}};
+        formtileparameters_O.update(formparameters_O);
+        parametersobject_O.append(formtileparameters_O);
+        if plot_points_I:
+            tile2datamap_O.update({"filtermenu1":[1]});
+        else:
+            tile2datamap_O.update({"filtermenu1":[0]});
+        
+        #make the svg object
+        if plot_points_I and vertical_I:
+            dataobject_O.append({"data":data_points_O,"datakeys":data2_keys,"datanestkeys":data2_nestkeys});
+            svgparameters_O = {"svgtype":'boxandwhiskersplot2d_02',
+                               "svgkeymap":[data1_keymap,data2_keymap],
+                                'svgid':'svg1',
+                                "svgmargin":{ 'top': 50, 'right': 150, 'bottom': 50, 'left': 50 },
+                                "svgwidth":500,"svgheight":350,
+                                "svgx1axislabel":"rxn_id",
+                                "svgy1axislabel":"sampling points",
+                                "svgdata2pointsradius":5.0,
+    						    };
+            svgtileparameters_O = {'tileheader':'Custom box and whiskers plot','tiletype':'svg','tileid':"tile2",'rowid':"row1",'colid':"col2",
+                'tileclass':"panel panel-default",'rowclass':"row",'colclass':"col-sm-8"};
+            svgtileparameters_O.update(svgparameters_O);
+            parametersobject_O.append(svgtileparameters_O);
+            tile2datamap_O.update({"tile2":[0,1]});
+        elif not plot_points_I and vertical_I:
+            svgparameters_O = {"svgtype":'boxandwhiskersplot2d_01',
+                               "svgkeymap":[data1_keymap],
+                                'svgid':'svg1',
+                                "svgmargin":{ 'top': 50, 'right': 150, 'bottom': 50, 'left': 50 },
+                                "svgwidth":500,"svgheight":350,
+                                "svgx1axislabel":"rxn_id","svgy1axislabel":"sampling points",
+    						    'svgformtileid':'filtermenu1','svgresetbuttonid':'reset1','svgsubmitbuttonid':'submit1'};
+            svgtileparameters_O = {'tileheader':'Custom box and whiskers plot','tiletype':'svg','tileid':"tile2",'rowid':"row1",'colid':"col2",
+                'tileclass':"panel panel-default",'rowclass':"row",'colclass':"col-sm-8"};
+            svgtileparameters_O.update(svgparameters_O);
+            parametersobject_O.append(svgtileparameters_O);
+            tile2datamap_O.update({"tile2":[0]});
+        elif plot_points_I and not vertical_I:
+            dataobject_O.append({"data":data_points_O,"datakeys":data2_keys,"datanestkeys":data2_nestkeys});
+            svgparameters_O = {"svgtype":'horizontalBoxAndWhiskersPlot2d_02',
+                               "svgkeymap":[data1_keymap,data2_keymap],
+                                'svgid':'svg1',
+                                "svgmargin":{ 'top': 50, 'right': 150, 'bottom': 50, 'left': 50 },
+                                "svgwidth":500,"svgheight":350,
+                                "svgx1axislabel":"sampling points",
+                                "svgy1axislabel":"rxn_id",
+                                "svgdata2pointsradius":5.0,
+    						    };
+            svgtileparameters_O = {'tileheader':'Custom box and whiskers plot','tiletype':'svg','tileid':"tile2",'rowid':"row1",'colid':"col2",
+                'tileclass':"panel panel-default",'rowclass':"row",'colclass':"col-sm-8"};
+            svgtileparameters_O.update(svgparameters_O);
+            parametersobject_O.append(svgtileparameters_O);
+            tile2datamap_O.update({"tile2":[0,1]});
+        elif not plot_points_I and not vertical_I:
+            svgparameters_O = {"svgtype":'horizontalBoxAndWhiskersPlot2d_01',
+                               "svgkeymap":[data1_keymap],
+                                'svgid':'svg1',
+                                "svgmargin":{ 'top': 50, 'right': 150, 'bottom': 50, 'left': 50 },
+                                "svgwidth":500,"svgheight":350,
+                                "svgx1axislabel":"sampling points",
+                                "svgy1axislabel":"rxn_id",
+    						    'svgformtileid':'filtermenu1','svgresetbuttonid':'reset1','svgsubmitbuttonid':'submit1'};
+            svgtileparameters_O = {'tileheader':'Custom box and whiskers plot','tiletype':'svg','tileid':"tile2",'rowid':"row1",'colid':"col2",
+                'tileclass':"panel panel-default",'rowclass':"row",'colclass':"col-sm-8"};
+            svgtileparameters_O.update(svgparameters_O);
+            parametersobject_O.append(svgtileparameters_O);
+            tile2datamap_O.update({"tile2":[0]});
+
+        #make the table object
+        tableparameters_O = {"tabletype":'responsivetable_01',
+                    'tableid':'table1',
+                    "tablefilters":None,
+                    "tableclass":"table  table-condensed table-hover",
+    			    'tableformtileid':'filtermenu1','tableresetbuttonid':'reset1','tablesubmitbuttonid':'submit1'};
+        tabletileparameters_O = {'tileheader':'descriptiveStats','tiletype':'table','tileid':"tile3",'rowid':"row2",'colid':"col1",
+            'tileclass':"panel panel-default",'rowclass':"row",'colclass':"col-sm-12"};
+        tabletileparameters_O.update(tableparameters_O);
+        parametersobject_O.append(tabletileparameters_O);
+        tile2datamap_O.update({"tile3":[0]});
+
+        # dump the data to a json file
+        ddtutilities = ddt_container(parameters_I = parametersobject_O,data_I = dataobject_O,tile2datamap_I = tile2datamap_O,filtermenu_I = filtermenuobject_O);
+        if data_dir_I=='tmp':
+            filename_str = self.settings['visualization_data'] + '/tmp/ddt_data.js'
+        elif data_dir_I=='data_json':
+            data_json_O = ddtutilities.get_allObjects_js();
+            return data_json_O;
+        with open(filename_str,'w') as file:
+            file.write(ddtutilities.get_allObjects());
    

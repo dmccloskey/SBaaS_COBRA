@@ -74,7 +74,9 @@ class optGpSampler_sampling(cobra_sampling):
         return fr_mix
 
     def calculate_mixFraction(self):
-        ''' '''
+        '''Convert points and warmup points to numpy arrays
+        and calculate the mixed fraction
+        '''
         samples1_lst = []
         samples2_lst = []
         for k in self.points.keys():
