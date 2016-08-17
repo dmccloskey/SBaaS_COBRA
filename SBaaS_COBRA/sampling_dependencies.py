@@ -4,16 +4,28 @@ from math import log, sqrt, exp
 import operator, json, csv
 from copy import copy
 # Dependencies from 3rd party
-import h5py
-import scipy.io
-import numpy as np
-from numpy import histogram, mean, std, loadtxt, savetxt
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import pandas as pd
+try:
+    import h5py
+except Exception as e:
+    print(e);
+try:
+    import scipy.io
+    import numpy as np
+    from numpy import histogram, mean, std, loadtxt, savetxt
+    import pandas as pd
+except Exception as e:
+    print(e);
+try:
+    import matplotlib as mpl
+    import matplotlib.pyplot as plt
+except Exception as e:
+    print(e);
 # Resources
-from python_statistics.calculate_interface import calculate_interface
-from molmass.molmass import Formula
+try:
+    from python_statistics.calculate_interface import calculate_interface
+    from molmass.molmass import Formula
+except Exception as e:
+    print(e);
 # Dependencies from cobra
 try:
     from cobra.io.mat import load_matlab_model,save_matlab_model
@@ -22,7 +34,7 @@ try:
     from cobra.io.json import load_json_model, save_json_model
     from cobra.flux_analysis import flux_variability_analysis, single_deletion
     from cobra.flux_analysis.parsimonious import optimize_minimal_flux
-    from cobra.flux_analysis.objective import update_objective
+    #from cobra.flux_analysis.objective import update_objective
 except Exception as e:
     print(e);
 # Dependencies from optGpSampler

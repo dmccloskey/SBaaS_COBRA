@@ -133,20 +133,21 @@ for simulation in simulations:
     #                    solver_id_I='cglpk',
     #                    )
 
-data_dir = 'F:/Users/dmccloskey-sbrg/Dropbox (UCSD SBRG)/MATLAB/sampling_physiology';
+#data_dir = 'F:/Users/dmccloskey-sbrg/Dropbox (UCSD SBRG)/MATLAB/sampling_physiology';
+data_dir = pg_settings.datadir_settings['workspace_data']+'/_output';
 
 # import sampling results
 for simulation in simulations:
-    sampledData01.execute_sampling(simulation_id_I=simulation,
-        rxn_ids_I=[],
-        data_dir_I = data_dir,
-        models_I = cobramodels
-        )
-    #sampledData01.reset_dataStage02_physiology_sampledData(simulation_id_I=simulation);
-    #sampledData01.execute_analyzeSamplingPoints(simulation_id_I=simulation,
+    #sampledData01.execute_sampling(simulation_id_I=simulation,
     #    rxn_ids_I=[],
     #    data_dir_I = data_dir,
-    #    models_I = cobramodels,
+    #    models_I = cobramodels
     #    )
+    sampledData01.reset_dataStage02_physiology_sampledData(simulation_id_I=simulation);
+    sampledData01.execute_analyzeSamplingPoints(simulation_id_I=simulation,
+        rxn_ids_I=[],
+        data_dir_I = data_dir,
+        models_I = cobramodels,
+        )
 
 #sampledData01.export_dataStage02PhysiologySampledPoints_js('ALEsKOs01_iJO1366_OxicEvo04EcoliGlc');

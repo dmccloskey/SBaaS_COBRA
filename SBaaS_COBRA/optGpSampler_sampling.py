@@ -1,5 +1,27 @@
-from .sampling import cobra_sampling
-from .sampling_dependencies import *
+try:
+    from .sampling import cobra_sampling
+except Exception as e:
+    print(e);
+#except ImportError as e:
+#    print(e);
+    try:
+        from sampling.sampling import cobra_sampling
+    #except ImportError as e:
+    #    print(e);
+    except Exception as e:
+        print(e);
+try:
+    from .sampling_dependencies import *
+except Exception as e:
+    print(e);
+#except ImportError as e:
+#    print(e);
+    try:
+        from sampling.sampling_dependencies import *
+    #except ImportError as e:
+    #    print(e);
+    except Exception as e:
+        print(e);
 
 class optGpSampler_sampling(cobra_sampling):
     def mix_fraction(self, sample1, sample2, **kwargs):
@@ -19,7 +41,7 @@ class optGpSampler_sampling(cobra_sampling):
 
 
         """
-        from numpy import min, isnan, median, outer
+        from numpy import min, isnan, median, outer, ones
     
         if 'fixed' not in kwargs:
             fixed = []
@@ -51,37 +73,66 @@ class optGpSampler_sampling(cobra_sampling):
 
         return fr_mix
 
+    def calculate_mixFraction(self):
+        ''' '''
+        samples1_lst = []
+        samples2_lst = []
+        for k in self.points.keys():
+            samples1_lst.append(self.warmup[k]);
+            samples2_lst.append(self.points[k]);
+        samples1 = np.array(samples1_lst)
+        samples2 = np.array(samples2_lst)
+        self.mixed_fraction = self.mix_fraction(samples1,samples2);
+
     def export_sampling_optGpSampler(self,
             cobra_model,
             fraction_optimal = None, 
-            filename_model='sample_model.mat',
-            filename_script='sample_script.m', 
-            filename_points='points.mat',
+            filename_model='sample_model.json',
+            filename_script='sample_script.py', 
+            filename_points='points.json',
+            filename_warmup='warmup.json',
             solver_id_I='cglpk',
             n_points_I = None, 
-            n_steps_I = 20000, 
-            max_time_I = None):
+            n_steps_I = 20000,
+            n_threads_I = 128,
+            verbose_I = 1,
+            ):
         '''export model and script for sampling using optGpSampler'''
 
         if n_points_I:
             n_points = n_points_I;
         if n_steps_I:
             n_steps = n_steps_I;
-        if max_time_I:
-            max_time = max_time_I;
-        # confine the objective to a fraction of maximum optimal
-        if fraction_optimal:
-            # optimize
-            cobra_model.optimize(solver_id_I);
-            objective = [x.id for x in cobra_model.reactions if x.objective_coefficient == 1]
-            cobra_model.reactions.get_by_id(objective[0]).upper_bound = fraction_optimal * cobra_model.solution.f;
+        if n_threads_I:
+            n_threads = n_threads_I;
+        if solver_id_I=='cglpk':
+           solver_id = 'glpk';
+        else:
+           solver_id = solver_id_I;
+        # export the model as json
+        save_json_model(cobra_model,self.data_dir + '/' + filename_model);
+        # make the sampling script
+        script = 'from sampling.sampling_dependencies import *\n';
+        script += 'from sampling.optGpSampler_sampling import optGpSampler_sampling\n';
+        script += 'cobra_model = load_json_model("%s");\n'%filename_model;        
+        script += 'sampling = optGpSampler_sampling(data_dir_I = "/");\n';
+        script += 'sampling.generate_samples(cobra_model=cobra_model,';
+        script += 'filename_points = "%s",'%filename_points;
+        script += 'filename_warmup = "%s",'%filename_warmup;
+        script += 'solver_id_I = "%s",'%solver_id;
+        script += 'n_points_I = %s,'%n_points;
+        script += 'n_steps_I = %s,'%n_steps;
+        script += 'n_threads_I = %s);\n'%n_threads;
+        # export the sampling script
+        with open(self.data_dir + '/' + filename_script,'w') as file:
+            file.write(script);
+            file.close();
 
     def generate_samples(self,
             cobra_model,
             fraction_optimal = None, 
-            filename_model='sample_model.pickle',
-            filename_script='sample_script.m', 
-            filename_points='points.pickle',
+            filename_points='points.json',
+            filename_warmup='warmup.json',
             solver_id_I='cglpk',
             n_points_I = None, 
             n_steps_I = 20000,
@@ -136,55 +187,18 @@ class optGpSampler_sampling(cobra_sampling):
         max_dev_null = abs(sModel.S * samples).max();
         max_dev_lb = max((LBS.T - samples).max(), 0);
         max_dev_ub = max((samples - UBS.T).max(), 0)
-        print("Maximum deviation from the nullspace = " + max_dev_null);
-        print("Maximum violation of lb = " + max_dev_ub);
-        print("Maximum violation of ub = " + max_dev_lb);
+        print("Maximum deviation from the nullspace = " + str(max_dev_null));
+        print("Maximum violation of lb = " + str(max_dev_ub));
+        print("Maximum violation of ub = " + str(max_dev_lb));
 
         points_dict = {};
-        points_dict = {k:samples[i,:] for k,i in enumerate(model.reactions)};
+        points_dict = {k:list(samples[i,:]) for i,k in enumerate(model.reactions)};
+        warmup_dict = {};
+        warmup_dict = {k:list(warmup[i,:]) for i,k in enumerate(model.reactions)};
         self.points = points_dict;
-        self.export_points_numpy(filename_points);
+        self.warmup = warmup_dict;
+        self.export_points_json(filename_points);
+        self.export_warmup_json(filename_warmup);
 
         #samples = pd.DataFrame(data=samples.T, columns=[i for i in model.reactions])
         #dump(samples, open(filename_points,'w'));
-
-    def get_points_optGpSampler(self,optGpSampler_data=None,
-                                #sampler_model='sampler_out'
-                                ):
-        '''load sampling points from optGpSampler'''
-
-        # extract information about the file
-        import os, time
-        from datetime import datetime
-        from stat import ST_SIZE, ST_MTIME
-        if optGpSampler_data:
-            filename=self.data_dir + '/' + optGpSampler_data;
-        else:
-            filename=self.data_dir;
-        try:
-            st = os.stat(filename)
-        except IOError:
-            print("failed to get information about", filename)
-            return;
-        else:
-            file_size = st[ST_SIZE]
-            simulation_dateAndTime_struct = time.localtime(st[ST_MTIME])
-            simulation_dateAndTime = datetime.fromtimestamp(time.mktime(simulation_dateAndTime_struct))
-
-        ## load model from MATLAB file
-        #try:
-        #    model = load_json_model(sampler_model);
-        #except NotImplementedError as e:
-        #    print(e);
-        #    model = self.model;
-
-        # load sample points from file into numpy array
-        try:
-            points_dict = self.get_points_numpy(filename)
-        except NotImplementedError as e:
-            print(e);
-
-        self.points = points_dict;
-        #self.model = model;
-        #self.mixed_fraction = mixed_fraction;
-        self.simulation_dateAndTime = simulation_dateAndTime;

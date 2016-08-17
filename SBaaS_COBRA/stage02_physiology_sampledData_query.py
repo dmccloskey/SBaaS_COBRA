@@ -174,7 +174,7 @@ class stage02_physiology_sampledData_query(sbaas_template_query):
             if simulation_id_I:
                 reset = self.session.query(data_stage02_physiology_sampledPoints).filter(data_stage02_physiology_sampledPoints.simulation_id.like(simulation_id_I)).delete(synchronize_session=False);
                 reset = self.session.query(data_stage02_physiology_sampledData).filter(data_stage02_physiology_sampledData.simulation_id.like(simulation_id_I)).delete(synchronize_session=False);
-                reset = self.session.query(data_stage02_physiology_samplingParameters).filter(data_stage02_physiology_samplingParameters.simulation_id.like(simulation_id_I)).delete(synchronize_session=False);
+                #reset = self.session.query(data_stage02_physiology_samplingParameters).filter(data_stage02_physiology_samplingParameters.simulation_id.like(simulation_id_I)).delete(synchronize_session=False);
                 self.session.commit();
         except SQLAlchemyError as e:
             print(e);

@@ -71,16 +71,23 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
                     max_time_I = simulation_parameters['max_time']);
             elif simulation_parameters['sampler_id']=='optGpSampler':
                 sampling = optGpSampler_sampling(data_dir_I = data_dir);
-                filename_model = simulation_id_I + '.mat';
-                filename_script = simulation_id_I + '.m';
-                filename_points = simulation_id_I + '_points' + '.txt';
-                sampling.generate_samples(cobra_model=cobra_model_copy,
+                filename_model = simulation_id_I + '.json';
+                filename_script = simulation_id_I + '.py';
+                filename_points = simulation_id_I + '_points' + '.json';
+                filename_warmup = simulation_id_I + '_warmup' + '.json';
+                sampling.export_sampling_optGpSampler(cobra_model=cobra_model_copy,
                     filename_model=filename_model,
                     filename_script=filename_script,
                     filename_points=filename_points,
+                    filename_warmup=filename_warmup,
                     solver_id_I = simulation_parameters['solver_id'],
                     n_points_I = simulation_parameters['n_points'],
                     n_steps_I = simulation_parameters['n_steps']);
+                #sampling.generate_samples(cobra_model=cobra_model_copy,
+                #    filename_points=filename_points,
+                #    solver_id_I = simulation_parameters['solver_id'],
+                #    n_points_I = simulation_parameters['n_points'],
+                #    n_steps_I = simulation_parameters['n_steps']);
             else:
                 print('sampler_id not recognized');
         else:
@@ -141,9 +148,14 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
                 filename_points = simulation_id_I + '_points' + '.mat';
                 sampling.get_points_matlab(filename_points,'sampler_out');
             elif simulation_parameters['sampler_id']=='optGpSampler':
-                sampling = optGpSampler_sampling(data_dir_I = data_dir);
-                filename_points = simulation_id_I + '_points' + '.txt';
-                sampling.get_points_optGpSampler(filename_points);
+                sampling = optGpSampler_sampling(
+                    data_dir_I = data_dir,
+                    model_I=cobra_model_copy);
+                filename_points = simulation_id_I + '_points' + '.json';
+                filename_warmup = simulation_id_I + '_warmup' + '.json';
+                sampling.get_points_json(filename_points);
+                sampling.get_warmup_json(filename_warmup);
+                sampling.calculate_mixFraction();
             else:
                 print('sampler_id not recognized');
                 return;

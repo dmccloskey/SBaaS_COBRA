@@ -1,6 +1,17 @@
-from .sampling_dependencies import *
+try:
+    from .sampling_dependencies import *
+except Exception as e:
+    print(e);
+#except ImportError as e:
+#    print(e);
+    try:
+        from sampling.sampling_dependencies import *
+    #except ImportError as e:
+    #    print(e);
+    except Exception as e:
+        print(e);
 
-class cobra_sampling(calculate_interface):
+class cobra_sampling():
 
     def __init__(self,data_dir_I=None,model_I=None,loops_I=[]):#,sampler_I=None):
         if data_dir_I:self.data_dir =  data_dir_I;
@@ -12,11 +23,16 @@ class cobra_sampling(calculate_interface):
         #if sampler_I: self.sampler = sampler_I;
         #else: self.sampler = [];
         self.points = {};
+        self.warmup = {};
         self.points_statistics = {};
         self.points_metabolite = {};
         self.points_subsystem = {};
         self.mixed_fraction = None;
-        self.calculate = calculate_interface();
+        try:
+            self.calculate = calculate_interface();
+        except Exception as e:
+            print(e);
+            self.calculate = None;
     # import functions
     def get_points_numpy(self,numpy_data,model_sbml=None):
         '''load sampling points from numpy file'''
@@ -49,11 +65,69 @@ class cobra_sampling(calculate_interface):
         self.points = points_dict;
         #self.mixed_fraction = mixed_fraction;
         self.simulation_dateAndTime = simulation_dateAndTime;
+    def get_points_json(self,json_data=None):
+        '''load sampling points from json file'''
+
+        # extract information about the file
+        import os, time
+        from datetime import datetime
+        from stat import ST_SIZE, ST_MTIME
+        if json_data:
+            filename=self.data_dir + '/' + json_data;
+        else:
+            filename=self.data_dir;
+
+        try:
+            st = os.stat(filename)
+            file_size = st[ST_SIZE]
+            simulation_dateAndTime_struct = time.localtime(st[ST_MTIME])
+            simulation_dateAndTime = datetime.fromtimestamp(time.mktime(simulation_dateAndTime_struct))
+        except IOError:
+            print("failed to get information about", filename)
+            return;
+
+        points_dict = json.load(open(filename));
+
+        self.points = points_dict;
+        #self.mixed_fraction = mixed_fraction;
+        self.simulation_dateAndTime = simulation_dateAndTime;
+    def get_warmup_json(self,json_data=None):
+        '''load sampling warmup points from json file'''
+
+        # extract information about the file
+        import os, time
+        from datetime import datetime
+        from stat import ST_SIZE, ST_MTIME
+        if json_data:
+            filename=self.data_dir + '/' + json_data;
+        else:
+            filename=self.data_dir;
+
+        try:
+            st = os.stat(filename)
+            file_size = st[ST_SIZE]
+            simulation_dateAndTime_struct = time.localtime(st[ST_MTIME])
+            simulation_dateAndTime = datetime.fromtimestamp(time.mktime(simulation_dateAndTime_struct))
+        except IOError:
+            print("failed to get information about", filename)
+            return;
+
+        warmup_dict = json.load(open(filename));
+
+        self.warmup = warmup_dict;
     # export functions
     def export_points_numpy(self,filename):
         '''export sampling points'''
 
         savetxt(filename,self.points);
+    def export_points_json(self,filename):
+        '''export sampling points'''
+        with open(filename,'w') as file:
+            json.dump(self.points,file, indent=4);
+    def export_warmup_json(self,filename):
+        '''export sampling warmup points'''
+        with open(filename,'w') as file:
+            json.dump(self.warmup,file, indent=4);
     # plotting functions
     def plot_points_histogram(self,reaction_lst=[]):
         '''plot sampling points as a histogram'''
@@ -130,9 +204,13 @@ class cobra_sampling(calculate_interface):
         cobra_model.reactions.get_by_id('Ec_biomass_iJO1366_WT_53p95M').lower_bound=0.0
         cobra_model.reactions.get_by_id('Ec_biomass_iJO1366_WT_53p95M').upper_bound=1e6
 
-        # calculate the reaction bounds using FVA
-        reaction_bounds = flux_variability_analysis(cobra_model, fraction_of_optimum=1.0,
-                                          the_reactions=None, solver=solver_I);
+        try:
+            # calculate the reaction bounds using FVA
+            reaction_bounds = flux_variability_analysis(cobra_model, fraction_of_optimum=1.0,
+                                              the_reactions=None, solver=solver_I);
+        except Exception as e:
+            print(e);
+            reaction_bounds = '';
 
         # Update the data file
         with open(data_fva, 'w') as outfile:
@@ -168,9 +246,10 @@ class cobra_sampling(calculate_interface):
 
         data_loops = json.load(open(data_fva))
         rxn_loops = [];
-        for k,v in data_loops.items():
-            if abs(v['minimum'])>1.0 or abs(v['maximum'])>1.0:
-                rxn_loops.append(k);
+        if data_loops:
+            for k,v in data_loops.items():
+                if abs(v['minimum'])>1.0 or abs(v['maximum'])>1.0:
+                    rxn_loops.append(k);
         #return rxn_loops
         self.loops = rxn_loops;
     def remove_loopsFromPoints(self):
@@ -410,7 +489,7 @@ class cobra_sampling(calculate_interface):
         self.loops = {};
         self.calculate = calculate_interface();
 
-class cobra_sampling_n(calculate_interface):
+class cobra_sampling_n():
 
     def __init__(self,data_dir_I=None,model_I=None,loops_I=[],sample_ids_I=[],samplers_I=None,control_I=False):
         #   control_I = True: sample_ids_I[0]=control,sample_ids_I[1:]=perturbation
@@ -431,7 +510,11 @@ class cobra_sampling_n(calculate_interface):
         self.points = [];
         self.points_metabolites = [];
         self.points_subsystems = [];
-        self.calculate = calculate_interface();
+        try:
+            self.calculate = calculate_interface();
+        except Exception as e:
+            print(e);
+            self.calculate = None;
         self.data = [];
 
     def calculate_pairWiseTest(self):
