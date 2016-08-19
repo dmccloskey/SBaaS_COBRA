@@ -97,6 +97,10 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
                                rxn_ids_I=[],
                                data_dir_I='C:/Users/dmccloskey-sbrg/Documents/MATLAB/sampling_physiology',
                                models_I = {},
+                               points_overview_I=True,
+                               flux_stats_I=True,
+                               metabolite_stats_I=False,
+                               subsystem_stats_I=False,
                                ):
         '''Load and analyze sampling points
         INPUT:
@@ -104,6 +108,12 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
         rxn_ids_I = [] of strings, list of reaction ids
         data_dir_I = string, directory of the sampled points file
         models_I = {} string:cobra_model object, model_id:cobra_model
+        points_overview_I = boolean, if True, the sampled points overview will be added to the database
+        flux_stats_I = boolean, if True, sampled points descriptive statistics will be calcluated
+        metabolite_stats_I = boolean, if True, sampled points will be converted to metabolite flux sum values
+                                               and descriptive statistics will be calculated
+        subsystem_stats_I = boolean, if True, sampled points will be converted to subsystem flux sum values
+                                               and descriptive statistics will be calculated
         OUTPUT:
         '''
 
@@ -167,69 +177,97 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
                 solver_I = simulation_parameters['solver_id']);
             sampling.find_loops(data_fva=self.settings['workspace_data'] + '/loops_fva_tmp.json');
             sampling.remove_loopsFromPoints();
-            sampling.descriptive_statistics();
-            # add data to the database
-            row = {'simulation_id':simulation_id_I,
-                'simulation_dateAndTime':sampling.simulation_dateAndTime,
-                'mixed_fraction':sampling.mixed_fraction,
-                'data_dir':data_dir_I+'/'+filename_points,
-                'infeasible_loops':sampling.loops,
-                'used_':True,
-                'comment_':None
-                };
-            self.add_dataStage02PhysiologySampledPoints([row])
-            #row = None;
-            #row = data_stage02_physiology_sampledPoints(
-            #    simulation_id_I,
-            #    sampling.simulation_dateAndTime,
-            #    sampling.mixed_fraction,
-            #    sampling.matlab_path+'/'+filename_points,
-            #    sampling.loops,
-            #    True,
-            #    None);
-            #self.session.add(row);
-            # add data to the database
-            sampledData_O = [];
-            for k,v in sampling.points_statistics.items():
+            # add points overview to the database
+            if points_overview_I:
                 row = {'simulation_id':simulation_id_I,
                     'simulation_dateAndTime':sampling.simulation_dateAndTime,
-                    'rxn_id':k,
-                    'flux_units':'mmol*gDW-1*hr-1',
-                    'sampling_points':None, #v['points'],
-                    'sampling_n':v['n'],
-                    'sampling_ave':v['ave'],
-                    'sampling_var':v['var'],
-                    'sampling_lb':v['lb'],
-                    'sampling_ub':v['ub'],
-                    'sampling_ci':0.95,
-                    'sampling_min':v['min'],
-                    'sampling_max':v['max'],
-                    'sampling_median':v['median'],
-                    'sampling_iq_1':v['iq_1'],
-                    'sampling_iq_3':v['iq_3'],
+                    'mixed_fraction':sampling.mixed_fraction,
+                    'data_dir':data_dir_I+'/'+filename_points,
+                    'infeasible_loops':sampling.loops,
                     'used_':True,
-                    'comment_':None};
-                sampledData_O.append(row);
-                #row = None;
-                #row = data_stage02_physiology_sampledData(
-                #    simulation_id_I,
-                #    sampling.simulation_dateAndTime,
-                #    k,
-                #    'mmol*gDW-1*hr-1',
-                #    None, #v['points'],
-                #    v['ave'],
-                #    v['var'],
-                #    v['lb'],
-                #    v['ub'],
-                #    v['min'],
-                #    v['max'],
-                #    v['median'],
-                #    v['iq_1'],
-                #    v['iq_3'],
-                #    True,
-                #    None);
-                #self.session.add(row);
-            self.add_dataStage02PhysiologySampledData(sampledData_O);
+                    'comment_':None
+                    };
+                self.add_dataStage02PhysiologySampledPoints([row])
+            # calculate the flux descriptive statistics
+            if flux_stats_I:
+                sampling.descriptive_statistics(points_I='flux');
+                # add data to the database
+                sampledData_O = [];
+                for k,v in sampling.points_statistics.items():
+                    row = {'simulation_id':simulation_id_I,
+                        'simulation_dateAndTime':sampling.simulation_dateAndTime,
+                        'rxn_id':k,
+                        'flux_units':'mmol*gDW-1*hr-1',
+                        'sampling_points':None, #v['points'],
+                        'sampling_n':v['n'],
+                        'sampling_ave':v['ave'],
+                        'sampling_var':v['var'],
+                        'sampling_lb':v['lb'],
+                        'sampling_ub':v['ub'],
+                        'sampling_ci':0.95,
+                        'sampling_min':v['min'],
+                        'sampling_max':v['max'],
+                        'sampling_median':v['median'],
+                        'sampling_iq_1':v['iq_1'],
+                        'sampling_iq_3':v['iq_3'],
+                        'used_':True,
+                        'comment_':None};
+                    sampledData_O.append(row);
+                self.add_rows_table('data_stage02_physiology_sampledData',sampledData_O);
+            # calculate descriptive stats for metabolites
+            if metabolite_stats_I:
+                sampling.convert_points2MetabolitePoints();
+                sampling.descriptive_statistics(points_I='metabolite');
+                # add data to the database
+                sampledData_O = [];
+                for k,v in sampling.points_statistics.items():
+                    row = {'simulation_id':simulation_id_I,
+                        'simulation_dateAndTime':sampling.simulation_dateAndTime,
+                        'met_id':k,
+                        'flux_units':'mmol*gDW-1*hr-1',
+                        'sampling_points':None, #v['points'],
+                        'sampling_n':v['n'],
+                        'sampling_ave':v['ave'],
+                        'sampling_var':v['var'],
+                        'sampling_lb':v['lb'],
+                        'sampling_ub':v['ub'],
+                        'sampling_ci':0.95,
+                        'sampling_min':v['min'],
+                        'sampling_max':v['max'],
+                        'sampling_median':v['median'],
+                        'sampling_iq_1':v['iq_1'],
+                        'sampling_iq_3':v['iq_3'],
+                        'used_':True,
+                        'comment_':None};
+                    sampledData_O.append(row);
+                self.add_rows_table('data_stage02_physiology_sampledMetaboliteData',sampledData_O);
+            # calculate descriptive stats for subsystems
+            if subsystem_stats_I:
+                sampling.convert_points2SubsystemPoints();
+                sampling.descriptive_statistics(points_I='subsystem');
+                # add data to the database
+                sampledData_O = [];
+                for k,v in sampling.points_statistics.items():
+                    row = {'simulation_id':simulation_id_I,
+                        'simulation_dateAndTime':sampling.simulation_dateAndTime,
+                        'subsystem_id':k,
+                        'flux_units':'mmol*gDW-1*hr-1',
+                        'sampling_points':None, #v['points'],
+                        'sampling_n':v['n'],
+                        'sampling_ave':v['ave'],
+                        'sampling_var':v['var'],
+                        'sampling_lb':v['lb'],
+                        'sampling_ub':v['ub'],
+                        'sampling_ci':0.95,
+                        'sampling_min':v['min'],
+                        'sampling_max':v['max'],
+                        'sampling_median':v['median'],
+                        'sampling_iq_1':v['iq_1'],
+                        'sampling_iq_3':v['iq_3'],
+                        'used_':True,
+                        'comment_':None};
+                    sampledData_O.append(row);
+                self.add_rows_table('data_stage02_physiology_sampledSubsystemData',sampledData_O);
         else:
             print('no solution found!');
     

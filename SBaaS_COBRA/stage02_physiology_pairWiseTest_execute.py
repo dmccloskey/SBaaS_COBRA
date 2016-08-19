@@ -1,5 +1,8 @@
 #SBaaS
 from .stage02_physiology_pairWiseTest_io import stage02_physiology_pairWiseTest_io
+from .stage02_physiology_simulation_query import stage02_physiology_simulation_query
+from .stage02_physiology_sampledData_query import stage02_physiology_sampledData_query
+from .stage02_physiology_analysis_query import stage02_physiology_analysis_query
 # resources
 from python_statistics.calculate_interface import calculate_interface
 from .sampling import cobra_sampling,cobra_sampling_n
@@ -12,9 +15,15 @@ from cobra.manipulation.modify import convert_to_irreversible
 
 class stage02_physiology_pairWiseTest_execute(stage02_physiology_pairWiseTest_io):
     #TODO:
-    def execute_samplingPairWiseTests(self,simulation_ids_I=[],
+    def execute_samplingPairWiseTests(self,analysis_id_I=[],
                     rxn_ids_I=[],
                     control_I=False,
+                    redundancy_I=False,
+                    remove_loops_I=True,
+                    remove_no_flux_I=True,
+                    normalize_I=True,
+                    compare_metabolitePoints_I=True,
+                    compare_subsystemPoints_I=True,
                     data_dir_I='C:/Users/dmccloskey-sbrg/Documents/MATLAB/sampling_physiology',
                     models_I = {},
                     ):
@@ -31,11 +40,19 @@ class stage02_physiology_pairWiseTest_execute(stage02_physiology_pairWiseTest_io
         data_dir = data_dir_I;
         models = models_I;
 
+        physiology_simulation_query = stage02_physiology_simulation_query(self.session,self.engine,self.settings);
+        physiology_sampledData_query = stage02_physiology_sampledData_query(self.session,self.engine,self.settings);
+        physiology_analysis_query = stage02_physiology_analysis_query(self.session,self.engine,self.settings);
+
+        #get the simulations
+        simulation_ids = [];
+        simulation_ids = physiology_analysis_query.get_simulationID_analysisID_dataStage02PhysiologyAnalysis(analysis_id_I);
+
         # get simulation information
         simulation_info_all = [];
-        for simulation_id in simulation_ids_I:
+        for simulation_id in simulation_ids:
             simulation_info_1_all = [];
-            simulation_info_1_all = self.get_rows_simulationID_dataStage02PhysiologySimulation(simulation_id);
+            simulation_info_1_all = physiology_simulation_query.get_rows_simulationID_dataStage02PhysiologySimulation(simulation_id);
             if not simulation_info_1_all:
                 print('simulation not found!')
                 return;
@@ -43,9 +60,9 @@ class stage02_physiology_pairWiseTest_execute(stage02_physiology_pairWiseTest_io
             simulation_info_all.append(simulation_1_info);
         # get sampled_data
         sampledPoints_all = [];
-        for simulation_id in simulation_ids_I:
+        for simulation_id in simulation_ids:
             sampledPoints_1_all = [];
-            sampledPoints_1_all = self.get_rows_simulationID_dataStage02PhysiologySampledPoints(simulation_id);
+            sampledPoints_1_all = physiology_sampledData_query.get_rows_simulationID_dataStage02PhysiologySampledPoints(simulation_id);
             if not sampledPoints_1_all:
                 print('simulation not found!')
                 return;
@@ -53,9 +70,9 @@ class stage02_physiology_pairWiseTest_execute(stage02_physiology_pairWiseTest_io
             sampledPoints_all.append(sampledPoints_1_info);
         # get simulation parameters
         simulation_parameters_all = [];
-        for simulation_id in simulation_ids_I:
+        for simulation_id in simulation_ids:
             simulation_parameters_1_all = [];
-            simulation_parameters_1_all = self.get_rows_simulationID_dataStage02PhysiologySimulationParameters(simulation_id);
+            simulation_parameters_1_all = physiology_sampledData_query.get_rows_simulationID_dataStage02PhysiologySamplingParameters(simulation_id);
             if not simulation_parameters_1_all:
                 print('simulation not found!')
                 return;
@@ -78,7 +95,14 @@ class stage02_physiology_pairWiseTest_execute(stage02_physiology_pairWiseTest_io
         # extract out sampling parameters
         sampler_ids = [x['sampler_id'] for x in simulation_parameters_all]
         # make filename points
-        filename_points = [s + '_points' + '.mat' for s in simulation_ids_I];
+        filename_points = [];
+        #filename_points = [s + '_points' + '.mat' for s in simulation_ids_I]
+        for i,s in enumerate(simulation_ids):
+            if sampler_ids[i]=='gpSampler':
+                filename = s + '_points' + '.mat';
+            elif sampler_ids[i]=='optGpSampler':
+                filename = s + '_points' + '.json';
+            filename_points.append(filename);
         # perform the analysis
         sampling_n = cobra_sampling_n(data_dir_I=data_dir,
                                       model_I = cobra_model,
@@ -86,36 +110,27 @@ class stage02_physiology_pairWiseTest_execute(stage02_physiology_pairWiseTest_io
                                       sample_ids_I = simulation_ids,
                                       samplers_I = sampler_ids,
                                       control_I = control_I);
-        sampling_n.get_points(filename_points);
+        sampling_n.get_points(filename_points,
+                remove_loops_I=remove_loops_I,
+                remove_no_flux_I=remove_loops_I,
+                normalize_I=remove_loops_I
+                );
         #pairwisetest
-        sampling_n.calculate_pairWiseTest();
+        sampling_n.calculate_pairWiseTest(redundancy_I=redundancy_I);
         # load data into the database
         for d in sampling_n.data:
-            row = None;
-            row = data_stage02_physiology_pairWiseTest(
-                d['sample_id_1'],
-                d['sample_id_2'],
-                d['rxn_id'],
-                'mmol*gDW-1*hr-1',
-                d['mean_difference'],
-                d['test_stat'],
-                d['test_description'],
-                d['pvalue'],
-                None,None,None,None,None,
-                d['fold_change'],
-                True,None
-                )
-            self.session.add(row);
-        self.session.commit();
-        ##pairwisetest_metabolites
-        #sampling_n.calculate_pairWiseTest_metabolites();
-        ## load data into the database
-        #for d in sampling_n.data:
+            d['analysis_id'] = analysis_id_I;
+            d['used_'] = True;
+            d['flux_units'] = 'mmol*gDW-1*hr-1';
+            d['mean']=d['mean_difference'];
+            d['simulation_id_1']=d['sample_id_1'];
+            d['simulation_id_2']=d['sample_id_2'];
+        self.add_rows_table('data_stage02_physiology_pairWiseTest',sampling_n.data)
         #    row = None;
-        #    row = data_stage02_physiology_pairWiseTestMetabolites(
+        #    row = data_stage02_physiology_pairWiseTest(
         #        d['sample_id_1'],
-        #        d['sample_id_2'],
-        #        d['met_id'],
+        #        d[''],
+        #        d['rxn_id'],
         #        'mmol*gDW-1*hr-1',
         #        d['mean_difference'],
         #        d['test_stat'],
@@ -127,23 +142,29 @@ class stage02_physiology_pairWiseTest_execute(stage02_physiology_pairWiseTest_io
         #        )
         #    self.session.add(row);
         #self.session.commit();
-        ##pairwisetest_subsystems
-        #sampling_n.calculate_pairWiseTest_subsystems();
-        ## load data into the database
-        #for d in sampling_n.data:
-        #    row = None;
-        #    row = data_stage02_physiology_pairWiseTestSubsystems(
-        #        d['sample_id_1'],
-        #        d['sample_id_2'],
-        #        d['subsystem_id'],
-        #        'mmol*gDW-1*hr-1',
-        #        d['mean_difference'],
-        #        d['test_stat'],
-        #        d['test_description'],
-        #        d['pvalue'],
-        #        None,None,None,None,None,
-        #        d['fold_change'],
-        #        True,None
-        #        )
-        #    self.session.add(row);
-        #self.session.commit();
+        #pairwisetest_metabolites
+        if compare_metabolitePoints_I:
+            sampling_n.convert_points2MetabolitePoints();
+            sampling_n.calculate_pairWiseTest_metabolites(redundancy_I=redundancy_I);
+            # load data into the database
+            for d in sampling_n.data:
+                d['analysis_id'] = analysis_id_I;
+                d['used_'] = True;
+                d['flux_units'] = 'mmol*gDW-1*hr-1';
+                d['mean']=d['mean_difference'];
+                d['simulation_id_1']=d['sample_id_1'];
+                d['simulation_id_2']=d['sample_id_2'];
+            self.add_rows_table('data_stage02_physiology_pairWiseTestMetabolites',sampling_n.data)
+        #pairwisetest_subsystems
+        if compare_subsystemPoints_I:
+            sampling_n.convert_points2SubsystemPoints();
+            sampling_n.calculate_pairWiseTest_subsystems(redundancy_I=redundancy_I);
+            # load data into the database
+            for d in sampling_n.data:
+                d['analysis_id'] = analysis_id_I;
+                d['used_'] = True;
+                d['flux_units'] = 'mmol*gDW-1*hr-1';
+                d['mean']=d['mean_difference'];
+                d['simulation_id_1']=d['sample_id_1'];
+                d['simulation_id_2']=d['sample_id_2'];
+            self.add_rows_table('data_stage02_physiology_pairWiseTestSubsystems',sampling_n.data)

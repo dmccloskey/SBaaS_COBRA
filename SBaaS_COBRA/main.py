@@ -77,7 +77,7 @@ print(str(len(rxns)))
 
 simulations = [
         #'WTEColi_113C80_U13C20_02_140407_iDM2014_irreversible_OxicWtGlc_0',
-        'ALEsKOs01_151026_iDM2015_full05_OxicEvo04EcoliGlc_0'
+        'ALEsKOs01_151026_iDM2015_full05_OxicEvo04gndEvo01EPEcoliGlc_11'
         ]
 
 for simulation in simulations:
@@ -132,29 +132,67 @@ for simulation in simulations:
     #                    options_I = {},
     #                    solver_id_I='cglpk',
     #                    )
+    
+data_dir = 'F:/Users/dmccloskey-sbrg/Dropbox (UCSD SBRG)/Phenomics_ALEsKOs01/sampling'
 
-#data_dir = 'F:/Users/dmccloskey-sbrg/Dropbox (UCSD SBRG)/MATLAB/sampling_physiology';
-data_dir = pg_settings.datadir_settings['workspace_data']+'/_output';
-
-## import sampling results
-#for simulation in simulations:
+# import sampling results
+for simulation in simulations:
 #    #sampledData01.execute_sampling(simulation_id_I=simulation,
 #    #    rxn_ids_I=[],
 #    #    data_dir_I = data_dir,
 #    #    models_I = cobramodels
 #    #    )
 #    sampledData01.reset_dataStage02_physiology_sampledData(simulation_id_I=simulation);
-#    sampledData01.execute_analyzeSamplingPoints(simulation_id_I=simulation,
+    sampledData01.execute_analyzeSamplingPoints(simulation_id_I=simulation,
+        rxn_ids_I=[],
+        data_dir_I = data_dir,
+        models_I = cobramodels,
+        points_overview_I=False,
+        flux_stats_I=False,
+        metabolite_stats_I=True,
+        subsystem_stats_I=True,
+        )
+
+#sampledData01.export_dataStage02PhysiologySampledPoints_js(
+#    'ALEsKOs01_iDM2015_0_evo04_0_11_evo04gnd',
+#        simulation_ids_I = ['ALEsKOs01_151026_iDM2015_full05_OxicEvo04gndEvo01EPEcoliGlc_11'],
+#        rxn_ids_I = ['SUCDi'],
+#        );
+#sampledData01.export_dataStage02PhysiologySampledPointsDescriptiveStats_js(
+#    #'ALEsKOs01_iDM2015_0_11_evo04',
+#    'ALEsKOs01_iDM2015_0_evo04_0_11_evo04gnd',
+#    plot_points_I=False,
+#    vertical_I=True,
+#    data_dir_I='tmp'
+#    )
+
+#make the pairWiseTest Table
+from SBaaS_COBRA.stage02_physiology_pairWiseTest_execute import stage02_physiology_pairWiseTest_execute
+pairWiseTest01 = stage02_physiology_pairWiseTest_execute(session,engine,pg_settings.datadir_settings)
+pairWiseTest01.initialize_supportedTables(); 
+pairWiseTest01.initialize_tables();
+
+analysis_ids = [
+        'ALEsKOs01_iDM2015_0_11_evo04'
+        ]
+
+#for analysis_id in analysis_ids:
+#    print("running analysis_id " + analysis_id);
+#    pairWiseTest01.reset_dataStage02_physiology_pairWiseTest(
+#            tables_I = [],
+#            analysis_id_I = analysis_id,
+#            warn_I=True
+#            )
+#    pairWiseTest01.execute_samplingPairWiseTests(
+#        analysis_id_I = analysis_id,
 #        rxn_ids_I=[],
+#        control_I=False,
+#        redundancy_I=False,
+#        remove_loops_I=False,
+#        remove_no_flux_I=True,
+#        normalize_I=False,
+#        compare_metabolitePoints_I=True,
+#        compare_subsystemPoints_I=True,
 #        data_dir_I = data_dir,
 #        models_I = cobramodels,
-#        )
-
-#sampledData01.export_dataStage02PhysiologySampledPoints_js('ALEsKOs01_iJO1366_OxicEvo04EcoliGlc');
-sampledData01.export_dataStage02PhysiologySampledPointsDescriptiveStats_js(
-    #'ALEsKOs01_iDM2015_0_11_evo04',
-    'ALEsKOs01_iDM2015_0_evo04_0_11_evo04tpiA',
-    plot_points_I=False,
-    vertical_I=True,
-    data_dir_I='tmp'
-    )
+#    )

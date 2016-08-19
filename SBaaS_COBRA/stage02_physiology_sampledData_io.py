@@ -32,6 +32,8 @@ class stage02_physiology_sampledData_io(stage02_physiology_sampledData_query,
 
     def export_dataStage02PhysiologySampledPoints_js(self,
         analysis_id_I,
+        simulation_ids_I = [],
+        rxn_ids_I = [],
         query_I={},
         data_dir_I='tmp'
         ):
@@ -47,6 +49,8 @@ class stage02_physiology_sampledData_io(stage02_physiology_sampledData_query,
         data_O = [];
         #get the analysis info
         simulation_ids = physiology_analysis_query.get_simulationID_analysisID_dataStage02PhysiologyAnalysis(analysis_id_I);
+        if simulation_ids_I:
+            simulation_ids = [s for s in simulation_ids if s in simulation_ids_I];
         for simulation_id in simulation_ids:
             #get the data_dirs for the simulations and read in the points
             sampledPoints = self.get_rows_simulationID_dataStage02PhysiologySampledPoints(simulation_id);
@@ -73,11 +77,15 @@ class stage02_physiology_sampledData_io(stage02_physiology_sampledData_query,
                 sampling.get_points_matlab(matlab_data=None,sampler_model_name='sampler_out');
                 sampling.remove_loopsFromPoints();
             elif simulation_parameters['sampler_id']=='optGpSampler':
-                return;
+                sampling.get_points_json();
+                sampling.remove_loopsFromPoints();
             else:
                 print('sampler_id not recognized');
             #store the sampledPoints
             for k,v in sampling.points.items():
+                if rxn_ids_I: 
+                    if not k in rxn_ids_I: 
+                        continue;
                 n_bins = 100;
                 calc_bins_I = False;
                 x_O,dx_O,y_O = calculatehistogram.histogram(data_I=v,n_bins_I=n_bins,calc_bins_I=calc_bins_I);

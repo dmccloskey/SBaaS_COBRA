@@ -16,6 +16,8 @@ class stage02_physiology_pairWiseTest_query(sbaas_template_query):
         '''Set the supported tables dict for stage02_physiology_pairWiseTest
         '''
         tables_supported = {'data_stage02_physiology_pairWiseTest':data_stage02_physiology_pairWiseTest,
+                            'data_stage02_physiology_pairWiseTestMetabolites':data_stage02_physiology_pairWiseTestMetabolites,
+                            'data_stage02_physiology_pairWiseTestSubsystems':data_stage02_physiology_pairWiseTestSubsystems,
                         };
         self.set_supportedTables(tables_supported);  
     ## Query from data_stage02_physiology_pairWiseTest# Query data from data_stage02_physiology_pairWiseTest
@@ -80,20 +82,27 @@ class stage02_physiology_pairWiseTest_query(sbaas_template_query):
         except SQLAlchemyError as e:
             print(e);
 
-    def initialize_dataStage02_physiology_pairWiseTest(self):
+    def reset_dataStage02_physiology_pairWiseTest(self,
+            tables_I = [],
+            analysis_id_I = None,
+            warn_I=True):
         try:
-            data_stage02_physiology_pairWiseTest.__table__.create(self.engine,True);
-        except SQLAlchemyError as e:
-            print(e);
-    def drop_dataStage02_physiology_pairWiseTest(self):
-        try:
-            data_stage02_physiology_pairWiseTest.__table__.drop(self.engine,True);
-        except SQLAlchemyError as e:
-            print(e);
-    def reset_dataStage02_physiology_pairWiseTest(self,pairWiseTest_id_I = None):
-        try:
-            if pairWiseTest_id_I:
-                reset = self.session.query(data_stage02_physiology_pairWiseTest).filter(data_stage02_physiology_pairWiseTest.pairWiseTest_id.like(pairWiseTest_id_I)).delete(synchronize_session=False);
-                self.session.commit();
-        except SQLAlchemyError as e:
+            if not tables_I:
+                tables_I = list(self.get_supportedTables().keys());
+            querydelete = sbaas_base_query_delete(session_I=self.session,engine_I=self.engine,settings_I=self.settings,data_I=self.data);
+            for table in tables_I:
+                query = {};
+                query['delete_from'] = [{'table_name':table}];
+                query['where'] = [{
+                        'table_name':table,
+                        'column_name':'analysis_id',
+                        'value':analysis_id_I,
+		                'operator':'LIKE',
+                        'connector':'AND'
+                        }
+	                ];
+                table_model = self.convert_tableStringList2SqlalchemyModelDict([table]);
+                query = querydelete.make_queryFromString(table_model,query);
+                querydelete.reset_table_sqlalchemyModel(query_I=query,warn_I=warn_I);
+        except Exception as e:
             print(e);

@@ -2,6 +2,7 @@ from SBaaS_base.postgresql_orm_base import *
 class data_stage02_physiology_pairWiseTest(Base):
     __tablename__ = 'data_stage02_physiology_pairWiseTest'
     id = Column(Integer, Sequence('data_stage02_physiology_pairWiseTest_id_seq'), primary_key=True)
+    analysis_id = Column(String(500))
     simulation_id_1 = Column(String(500))
     simulation_id_2 = Column(String(500))
     #simulation_dateAndTime = Column(DateTime);
@@ -24,12 +25,13 @@ class data_stage02_physiology_pairWiseTest(Base):
     comment_ = Column(Text);
 
     __table_args__ = (
-            UniqueConstraint('simulation_id_1','simulation_id_2','rxn_id'),
+            UniqueConstraint('analysis_id','simulation_id_1','simulation_id_2','rxn_id'),
             )
 
     def __init__(self, 
                 row_dict_I,
                 ):
+        self.analysis_id=row_dict_I['analysis_id'];
         self.pvalue_corrected=row_dict_I['pvalue_corrected'];
         self.comment_=row_dict_I['comment_'];
         self.used_=row_dict_I['used_'];
@@ -47,7 +49,8 @@ class data_stage02_physiology_pairWiseTest(Base):
         self.simulation_id_2=row_dict_I['simulation_id_2'];
         self.simulation_id_1=row_dict_I['simulation_id_1'];
 
-    def __set__row__(self,simulation_id_1_I,simulation_id_2_I,
+    def __set__row__(self,
+            analysis_id_I,simulation_id_1_I,simulation_id_2_I,
         #simulation_dateAndTime_I,
         #experiment_id_I,model_id_I,
         #    sample_name_abbreviation_I,
@@ -57,6 +60,7 @@ class data_stage02_physiology_pairWiseTest(Base):
                  ci_lb_I, ci_ub_I, ci_level_I,
                  fold_change_I,
                  used__I,comment__I):
+        self.analysis_id=analysis_id_I
         self.simulation_id_1=simulation_id_1_I
         self.simulation_id_2=simulation_id_2_I
         #self.simulation_dateAndTime=simulation_dateAndTime_I
@@ -80,6 +84,7 @@ class data_stage02_physiology_pairWiseTest(Base):
 
     def __repr__dict__(self):
         return {'id':self.id,
+            'analysis_id':self.analysis_id,
                 'simulation_id_1':self.simulation_id_1,
                 'simulation_id_2':self.simulation_id_2,
         #       'simulation_dateAndTime':self.simulation_dateAndTime,
@@ -103,6 +108,7 @@ class data_stage02_physiology_pairWiseTest(Base):
 class data_stage02_physiology_pairWiseTestMetabolites(Base):
     __tablename__ = 'data_stage02_physiology_pairWiseTestMetabolites'
     id = Column(Integer, Sequence('data_stage02_physiology_pairWiseTestMetabolites_id_seq'), primary_key=True)
+    analysis_id = Column(String(500))
     simulation_id_1 = Column(String(500))
     simulation_id_2 = Column(String(500))
     #simulation_dateAndTime = Column(DateTime);
@@ -125,12 +131,13 @@ class data_stage02_physiology_pairWiseTestMetabolites(Base):
     comment_ = Column(Text);
 
     __table_args__ = (
-            UniqueConstraint('simulation_id_1','simulation_id_2','met_id'),
+            UniqueConstraint('analysis_id','simulation_id_1','simulation_id_2','met_id'),
             )
 
     def __init__(self, 
                 row_dict_I,
                 ):
+        self.analysis_id=row_dict_I['analysis_id'];
         self.pvalue_corrected_description=row_dict_I['pvalue_corrected_description'];
         self.used_=row_dict_I['used_'];
         self.comment_=row_dict_I['comment_'];
@@ -148,7 +155,8 @@ class data_stage02_physiology_pairWiseTestMetabolites(Base):
         self.ci_lb=row_dict_I['ci_lb'];
         self.mean=row_dict_I['mean'];
 
-    def __set__row__(self,simulation_id_1_I,simulation_id_2_I,
+    def __set__row__(self,
+            analysis_id_I,simulation_id_1_I,simulation_id_2_I,
         #simulation_dateAndTime_I,
         #experiment_id_I,model_id_I,
         #    sample_name_abbreviation_I,
@@ -158,6 +166,7 @@ class data_stage02_physiology_pairWiseTestMetabolites(Base):
                  ci_lb_I, ci_ub_I, ci_level_I,
                  fold_change_I,
                  used__I,comment__I):
+        self.analysis_id=analysis_id_I
         self.simulation_id_1=simulation_id_1_I
         self.simulation_id_2=simulation_id_2_I
         #self.simulation_dateAndTime=simulation_dateAndTime_I
@@ -181,6 +190,7 @@ class data_stage02_physiology_pairWiseTestMetabolites(Base):
 
     def __repr__dict__(self):
         return {'id':self.id,
+            'analysis_id':self.analysis_id,
                 'simulation_id_1':self.simulation_id_1,
                 'simulation_id_2':self.simulation_id_2,
         #'simulation_dateAndTime':self.simulation_dateAndTime,
@@ -204,6 +214,7 @@ class data_stage02_physiology_pairWiseTestMetabolites(Base):
 class data_stage02_physiology_pairWiseTestSubsystems(Base):
     __tablename__ = 'data_stage02_physiology_pairWiseTestSubsystems'
     id = Column(Integer, Sequence('data_stage02_physiology_pairWiseTestSubsystems_id_seq'), primary_key=True)
+    analysis_id = Column(String(500))
     simulation_id_1 = Column(String(500))
     simulation_id_2 = Column(String(500))
     #simulation_dateAndTime = Column(DateTime);
@@ -226,12 +237,13 @@ class data_stage02_physiology_pairWiseTestSubsystems(Base):
     comment_ = Column(Text);
 
     __table_args__ = (
-            UniqueConstraint('simulation_id_1','simulation_id_2','subsystem_id'),
+            UniqueConstraint('analysis_id','simulation_id_1','simulation_id_2','subsystem_id'),
             )
 
     def __init__(self, 
                 row_dict_I,
                 ):
+        self.analysis_id=row_dict_I['analysis_id'];
         self.mean=row_dict_I['mean'];
         self.simulation_id_1=row_dict_I['simulation_id_1'];
         self.simulation_id_2=row_dict_I['simulation_id_2'];
@@ -249,7 +261,8 @@ class data_stage02_physiology_pairWiseTestSubsystems(Base):
         self.used_=row_dict_I['used_'];
         self.comment_=row_dict_I['comment_'];
 
-    def __set__row__(self,simulation_id_1_I,simulation_id_2_I,
+    def __set__row__(self,
+            analysis_id_I,simulation_id_1_I,simulation_id_2_I,
         #simulation_dateAndTime_I,
         #experiment_id_I,model_id_I,
         #    sample_name_abbreviation_I,
@@ -259,6 +272,7 @@ class data_stage02_physiology_pairWiseTestSubsystems(Base):
                  ci_lb_I, ci_ub_I, ci_level_I,
                  fold_change_I,
                  used__I,comment__I):
+        self.analysis_id=analysis_id_I
         self.simulation_id_1=simulation_id_1_I
         self.simulation_id_2=simulation_id_2_I
         #self.simulation_dateAndTime=simulation_dateAndTime_I
@@ -282,6 +296,7 @@ class data_stage02_physiology_pairWiseTestSubsystems(Base):
 
     def __repr__dict__(self):
         return {'id':self.id,
+            'analysis_id':self.analysis_id,
                 'simulation_id_1':self.simulation_id_1,
                 'simulation_id_2':self.simulation_id_2,
         #'simulation_dateAndTime':self.simulation_dateAndTime,
