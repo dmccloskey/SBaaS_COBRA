@@ -58,7 +58,7 @@ class stage02_physiology_pairWiseTest_execute(stage02_physiology_pairWiseTest_io
                 return;
             simulation_1_info = simulation_info_1_all[0]; # unique constraint guarantees only 1 row will be returned
             simulation_info_all.append(simulation_1_info);
-        # get sampled_data
+        # get sampledPoints
         sampledPoints_all = [];
         for simulation_id in simulation_ids:
             sampledPoints_1_all = [];
@@ -68,6 +68,12 @@ class stage02_physiology_pairWiseTest_execute(stage02_physiology_pairWiseTest_io
                 return;
             sampledPoints_1_info = sampledPoints_1_all[0]; # unique constraint guarantees only 1 row will be returned
             sampledPoints_all.append(sampledPoints_1_info);
+        # get list of rxns to exclude from downstream analyses
+        sampledData_all = [];
+        for simulation_id in simulation_ids:
+            sampledData_1 = [];
+            sampledData_1 = physiology_sampledData_query.get_rxnIDs_simulationID_dataStage02PhysiologySampledData(simulation_id,used__I=False);
+            sampledData_all.append(sampledData_1);
         # get simulation parameters
         simulation_parameters_all = [];
         for simulation_id in simulation_ids:
@@ -110,10 +116,12 @@ class stage02_physiology_pairWiseTest_execute(stage02_physiology_pairWiseTest_io
                                       sample_ids_I = simulation_ids,
                                       samplers_I = sampler_ids,
                                       control_I = control_I);
+
         sampling_n.get_points(filename_points,
                 remove_loops_I=remove_loops_I,
                 remove_no_flux_I=remove_loops_I,
-                normalize_I=remove_loops_I
+                normalize_I=remove_loops_I,
+                remove_points_I=sampledData_all,
                 );
         #pairwisetest
         sampling_n.calculate_pairWiseTest(redundancy_I=redundancy_I);

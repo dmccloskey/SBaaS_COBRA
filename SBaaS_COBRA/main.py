@@ -137,21 +137,46 @@ data_dir = 'F:/Users/dmccloskey-sbrg/Dropbox (UCSD SBRG)/Phenomics_ALEsKOs01/sam
 
 # import sampling results
 for simulation in simulations:
-#    #sampledData01.execute_sampling(simulation_id_I=simulation,
-#    #    rxn_ids_I=[],
-#    #    data_dir_I = data_dir,
-#    #    models_I = cobramodels
-#    #    )
-#    sampledData01.reset_dataStage02_physiology_sampledData(simulation_id_I=simulation);
-    sampledData01.execute_analyzeSamplingPoints(simulation_id_I=simulation,
-        rxn_ids_I=[],
-        data_dir_I = data_dir,
-        models_I = cobramodels,
-        points_overview_I=False,
-        flux_stats_I=False,
-        metabolite_stats_I=True,
-        subsystem_stats_I=True,
-        )
+    print('running simulation ' + simulation);
+    #sampledData01.execute_sampling(simulation_id_I=simulation,
+    #    rxn_ids_I=[],
+    #    data_dir_I = data_dir,
+    #    models_I = cobramodels
+    #    )
+    #sampledData01.reset_dataStage02_physiology_sampledData(
+    #    tables_I = ['data_stage02_physiology_sampledPoints',
+    #               'data_stage02_physiology_sampledData',
+    #               'data_stage02_physiology_sampledMetaboliteData',
+    #               'data_stage02_physiology_sampledSubsystemData',
+    #               ],
+    #    simulation_id_I = simulation,
+    #    warn_I=False
+    #);
+    #sampledData01.execute_analyzeSamplingPoints(simulation_id_I=simulation,
+    #    rxn_ids_I=[],
+    #    data_dir_I = data_dir,
+    #    models_I = cobramodels,
+    #    points_overview_I=False,
+    #    flux_stats_I=False,
+    #    metabolite_stats_I=True,
+    #    subsystem_stats_I=True,
+    #    )
+    #sampledData01.reset_dataStage02_physiology_sampledData(
+    #    tables_I = [
+    #               'data_stage02_physiology_sampledMetaboliteData',
+    #               'data_stage02_physiology_sampledSubsystemData',
+    #               ],
+    #    simulation_id_I = simulation,
+    #    warn_I=False
+    #);
+    #sampledData01.execute_analyzeSamplingMetabolitesAndSubsystemPoints(
+    #    simulation_id_I=simulation,
+    #    rxn_ids_I=[],
+    #    data_dir_I = data_dir,
+    #    models_I = cobramodels,
+    #    metabolite_stats_I=True,
+    #    subsystem_stats_I=True,
+    #    )
 
 #sampledData01.export_dataStage02PhysiologySampledPoints_js(
 #    'ALEsKOs01_iDM2015_0_evo04_0_11_evo04gnd',
@@ -165,6 +190,20 @@ for simulation in simulations:
 #    vertical_I=True,
 #    data_dir_I='tmp'
 #    )
+sampledData01.export_dataStage02PhysiologySampledPointsMetabolitesDescriptiveStats_js(
+    #'ALEsKOs01_iDM2015_0_11_evo04',
+    'ALEsKOs01_iDM2015_0_evo04_0_11_evo04gnd',
+    plot_points_I=False,
+    vertical_I=True,
+    data_dir_I='tmp'
+    )
+sampledData01.export_dataStage02PhysiologySampledPointsSubsystemsDescriptiveStats_js(
+    #'ALEsKOs01_iDM2015_0_11_evo04',
+    'ALEsKOs01_iDM2015_0_evo04_0_11_evo04gnd',
+    plot_points_I=False,
+    vertical_I=True,
+    data_dir_I='tmp'
+    )
 
 #make the pairWiseTest Table
 from SBaaS_COBRA.stage02_physiology_pairWiseTest_execute import stage02_physiology_pairWiseTest_execute
@@ -179,7 +218,10 @@ analysis_ids = [
 #for analysis_id in analysis_ids:
 #    print("running analysis_id " + analysis_id);
 #    pairWiseTest01.reset_dataStage02_physiology_pairWiseTest(
-#            tables_I = [],
+#            tables_I = ['data_stage02_physiology_pairWiseTest',
+#                        'data_stage02_physiology_pairWiseTestMetabolites',
+#                        'data_stage02_physiology_pairWiseTestSubsystems',
+#            ],
 #            analysis_id_I = analysis_id,
 #            warn_I=True
 #            )
@@ -196,3 +238,7 @@ analysis_ids = [
 #        data_dir_I = data_dir,
 #        models_I = cobramodels,
 #    )
+
+#pairWiseTest01.export_dataStage02PhysiologyPairWiseTest_js('ALEsKOs01_iDM2015_0_11_evo04')
+#pairWiseTest01.export_dataStage02PhysiologyPairWiseTestMetabolites_js('ALEsKOs01_iDM2015_0_11_evo04')
+#pairWiseTest01.export_dataStage02PhysiologyPairWiseTestSubsystems_js('ALEsKOs01_iDM2015_0_11_evo04')

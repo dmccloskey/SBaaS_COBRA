@@ -277,6 +277,14 @@ class cobra_sampling():
 
         self.points = points_flux;
         return
+    def remove_points(self,rxn_ids_I=[]):
+        '''
+        remove points
+        INPUT:
+        rxn_ids_I = [] of string, rxn_ids to remove
+        '''
+        for rxn_id in rxn_ids_I:
+            self.points.pop(rxn_id);
     # points QC
     def remove_points_notInSolutionSpace_v1(self):
         '''remove points that are not in the solution space
@@ -702,7 +710,7 @@ class cobra_sampling_n():
     def calculate_pca(self):
         return
 
-    def get_points(self,data_points_I=[],remove_loops_I=True,remove_no_flux_I=True,normalize_I=True):
+    def get_points(self,data_points_I=[],remove_loops_I=True,remove_no_flux_I=True,normalize_I=True,remove_points_I=[]):
         '''Get multiple points from sampling'''
         sampling = cobra_sampling();
         for i,sample_id in enumerate(self.sample_ids):
@@ -714,6 +722,7 @@ class cobra_sampling_n():
             if remove_loops_I: sampling.remove_loopsFromPoints();
             if remove_no_flux_I: sampling.remove_noFluxReactionsFromPoints();
             if normalize_I: sampling.normalize_points2Total();
+            if remove_points_I:sampling.remove_points(remove_points_I[i]);
             #sampling.convert_points2MetabolitePoints();
             #sampling.convert_points2SubsystemPoints()
             self.points.append(sampling.points);

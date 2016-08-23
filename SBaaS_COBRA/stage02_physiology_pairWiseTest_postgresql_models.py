@@ -84,23 +84,24 @@ class data_stage02_physiology_pairWiseTest(Base):
 
     def __repr__dict__(self):
         return {'id':self.id,
-            'analysis_id':self.analysis_id,
-                'simulation_id_1':self.simulation_id_1,
-                'simulation_id_2':self.simulation_id_2,
-        #       'simulation_dateAndTime':self.simulation_dateAndTime,
-        #       'experiment_id':self.experiment_id,
-        #        'model_id':self.model_id,
-        #       'sample_name_abbreviation':self.sample_name_abbreviation,
-                'rxn_id':self.rxn_id,
-                'flux_units':self.flux_units,
-                'sampling_delta_ave':self.sampling_delta_ave,
-                'sampling_delta_var':self.sampling_delta_var,
-                'sampling_delta_lb':self.sampling_delta_lb,
-                'sampling_delta_ub':self.sampling_delta_ub,
-                'z_delta':self.z_delta,
-                'pvalue_delta':self.pvalue_delta,
+                'analysis_id':self.analysis_id,
+                'pvalue_corrected':self.pvalue_corrected,
+                'comment_':self.comment_,
                 'used_':self.used_,
-                'comment_':self.comment_}
+                'fold_change':self.fold_change,
+                'ci_level':self.ci_level,
+                'ci_ub':self.ci_ub,
+                'ci_lb':self.ci_lb,
+                'mean':self.mean,
+                'pvalue_corrected_description':self.pvalue_corrected_description,
+                'pvalue':self.pvalue,
+                'test_description':self.test_description,
+                'test_stat':self.test_stat,
+                'flux_units':self.flux_units,
+                'rxn_id':self.rxn_id,
+                'simulation_id_2':self.simulation_id_2,
+                'simulation_id_1':self.simulation_id_1,
+                }
     
     def __repr__json__(self):
         return json.dumps(self.__repr__dict__())
@@ -190,23 +191,23 @@ class data_stage02_physiology_pairWiseTestMetabolites(Base):
 
     def __repr__dict__(self):
         return {'id':self.id,
-            'analysis_id':self.analysis_id,
-                'simulation_id_1':self.simulation_id_1,
-                'simulation_id_2':self.simulation_id_2,
-        #'simulation_dateAndTime':self.simulation_dateAndTime,
-        #'experiment_id':self.experiment_id,
-        #        'model_id':self.model_id,
-        #    'sample_name_abbreviation':self.sample_name_abbreviation,
-                'met_id':self.met_id,
-                'flux_units':self.flux_units,
-                'sampling_delta_ave':self.sampling_delta_ave,
-                'sampling_delta_var':self.sampling_delta_var,
-                'sampling_delta_lb':self.sampling_delta_lb,
-                'sampling_delta_ub':self.sampling_delta_ub,
-                'z_delta':self.z_delta,
-                'pvalue_delta':self.pvalue_delta,
+                'analysis_id':self.analysis_id,
+                'pvalue_corrected':self.pvalue_corrected,
+                'comment_':self.comment_,
                 'used_':self.used_,
-                'comment_':self.comment_}
+                'fold_change':self.fold_change,
+                'ci_level':self.ci_level,
+                'ci_ub':self.ci_ub,
+                'ci_lb':self.ci_lb,
+                'mean':self.mean,
+                'pvalue_corrected_description':self.pvalue_corrected_description,
+                'pvalue':self.pvalue,
+                'test_description':self.test_description,
+                'test_stat':self.test_stat,
+                'flux_units':self.flux_units,
+                'met_id':self.met_id,
+                'simulation_id_2':self.simulation_id_2,
+                'simulation_id_1':self.simulation_id_1,}
     
     def __repr__json__(self):
         return json.dumps(self.__repr__dict__())
@@ -296,23 +297,23 @@ class data_stage02_physiology_pairWiseTestSubsystems(Base):
 
     def __repr__dict__(self):
         return {'id':self.id,
-            'analysis_id':self.analysis_id,
-                'simulation_id_1':self.simulation_id_1,
-                'simulation_id_2':self.simulation_id_2,
-        #'simulation_dateAndTime':self.simulation_dateAndTime,
-        #'experiment_id':self.experiment_id,
-        #        'model_id':self.model_id,
-        #    'sample_name_abbreviation':self.sample_name_abbreviation,
-                'subsystem_id':self.subsystem_id,
-                'flux_units':self.flux_units,
-                'sampling_delta_ave':self.sampling_delta_ave,
-                'sampling_delta_var':self.sampling_delta_var,
-                'sampling_delta_lb':self.sampling_delta_lb,
-                'sampling_delta_ub':self.sampling_delta_ub,
-                'z_delta':self.z_delta,
-                'pvalue_delta':self.pvalue_delta,
+                'analysis_id':self.analysis_id,
+                'pvalue_corrected':self.pvalue_corrected,
+                'comment_':self.comment_,
                 'used_':self.used_,
-                'comment_':self.comment_}
+                'fold_change':self.fold_change,
+                'ci_level':self.ci_level,
+                'ci_ub':self.ci_ub,
+                'ci_lb':self.ci_lb,
+                'mean':self.mean,
+                'pvalue_corrected_description':self.pvalue_corrected_description,
+                'pvalue':self.pvalue,
+                'test_description':self.test_description,
+                'test_stat':self.test_stat,
+                'flux_units':self.flux_units,
+                'subsystem_id':self.subsystem_id,
+                'simulation_id_2':self.simulation_id_2,
+                'simulation_id_1':self.simulation_id_1,}
     
     def __repr__json__(self):
         return json.dumps(self.__repr__dict__())

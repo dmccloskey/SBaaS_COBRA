@@ -61,7 +61,37 @@ class stage02_physiology_sampledData_query(sbaas_template_query):
             rows_O = [d.__repr__dict__() for d in data];
             return rows_O;
         except SQLAlchemyError as e:
-            print(e);  
+            print(e);
+    def get_rows_simulationID_dataStage02PhysiologySampledMetaboliteData(self,simulation_id_I):
+        '''Query rows that are used from the sampledData'''
+        try:
+            data = self.session.query(data_stage02_physiology_sampledMetaboliteData).filter(
+                    data_stage02_physiology_sampledMetaboliteData.simulation_id.like(simulation_id_I),
+                    data_stage02_physiology_sampledMetaboliteData.used_.is_(True)).all();
+            rows_O = [d.__repr__dict__() for d in data];
+            return rows_O;
+        except SQLAlchemyError as e:
+            print(e);
+    def get_rows_simulationID_dataStage02PhysiologySampledSubsystemData(self,simulation_id_I):
+        '''Query rows that are used from the sampledData'''
+        try:
+            data = self.session.query(data_stage02_physiology_sampledSubsystemData).filter(
+                    data_stage02_physiology_sampledSubsystemData.simulation_id.like(simulation_id_I),
+                    data_stage02_physiology_sampledSubsystemData.used_.is_(True)).all();
+            rows_O = [d.__repr__dict__() for d in data];
+            return rows_O;
+        except SQLAlchemyError as e:
+            print(e);
+    def get_rxnIDs_simulationID_dataStage02PhysiologySampledData(self,simulation_id_I,used__I=True):
+        '''Query rows that are used from the sampledData'''
+        try:
+            data = self.session.query(data_stage02_physiology_sampledData.rxn_id).filter(
+                    data_stage02_physiology_sampledData.simulation_id.like(simulation_id_I),
+                    data_stage02_physiology_sampledData.used_.is_(used__I)).all();
+            rows_O = [d.rxn_id for d in data];
+            return rows_O;
+        except SQLAlchemyError as e:
+            print(e); 
     def get_rowsDict_experimentIDAndModelIDAndSampleNameAbbreviations_dataStage02PhysiologySampledData(self,experiment_id_I,model_id_I,sample_name_abbreviation_I):
         '''Query rows that are used from the sampledData'''
         try:
@@ -204,46 +234,3 @@ class stage02_physiology_sampledData_query(sbaas_template_query):
             return rows_O;
         except SQLAlchemyError as e:
             print(e);
-    def add_dataStage02PhysiologySamplingParameters(self, data_I):
-        '''add rows of data_stage02_physiology_samplingParameters'''
-        if data_I:
-            for d in data_I:
-                try:
-                    data_add = data_stage02_physiology_samplingParameters(
-                        d['simulation_id'],
-                        #None, #d['simulation_dateAndTime'],
-                        d['solver_id'],
-                        d['n_points'],
-                        d['n_steps'],
-                        d['max_time'],
-                        d['sampler_id'],
-                        #None,
-                        #None,
-                        d['used_'],
-                        d['comment_']);
-                    self.session.add(data_add);
-                except SQLAlchemyError as e:
-                    print(e);
-            self.session.commit();
-    def update_dataStage02PhysiologySamplingParameters(self,data_I):
-        '''update rows of data_stage02_physiology_samplingParameters'''
-        if data_I:
-            for d in data_I:
-                try:
-                    data_update = self.session.query(data_stage02_physiology_samplingParameters).filter(
-                            data_stage02_physiology_samplingParameters.id.like(d['id'])).update(
-                            {'simulation_id':d['simulation_id'],
-                             #'simulation_dateAndTime':d['simulation_dateAndTime'],
-                            'solver_id':d['solver_id'],
-                            'n_points':d['n_points'],
-                            'n_steps':d['n_steps'],
-                             'max_time':d['max_time'],
-                             'sampler_id':d['sampler_id'],
-                             #'solve_time':d['solve_time'],
-                             #'solve_time_units':d['solve_time_units'],
-                            'used_':d['used_'],
-                            'comment_I':d['comment_I']},
-                            synchronize_session=False);
-                except SQLAlchemyError as e:
-                    print(e);
-            self.session.commit();
