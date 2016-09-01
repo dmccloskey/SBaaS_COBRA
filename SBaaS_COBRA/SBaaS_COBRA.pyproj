@@ -34,6 +34,10 @@
     <Compile Include="stage02_physiology_analysis_io.py" />
     <Compile Include="stage02_physiology_analysis_postgresql_models.py" />
     <Compile Include="stage02_physiology_analysis_query.py" />
+    <Compile Include="stage02_physiology_graphData_execute.py" />
+    <Compile Include="stage02_physiology_graphData_io.py" />
+    <Compile Include="stage02_physiology_graphData_postgresql_models.py" />
+    <Compile Include="stage02_physiology_graphData_query.py" />
     <Compile Include="stage02_physiology_measuredData_execute.py" />
     <Compile Include="stage02_physiology_measuredData_io.py" />
     <Compile Include="stage02_physiology_measuredData_postgresql_models.py" />
