@@ -84,9 +84,10 @@ class stage02_physiology_graphData_execute(stage02_physiology_graphData_io):
                     tmp1['path_ci_level']=sp['path_ci_level']
                     tmp1['path_min']=sp['path_min']
                     data_O.append(tmp1);
-                    tmp2 = copy.copy(tmp);
-                    tmp2['paths']=sp['all_paths']
-                    data_graphs_O.append(tmp2);
+                    for path in sp['all_paths']:
+                        tmp2 = copy.copy(tmp);
+                        tmp2['paths']=path;
+                        data_graphs_O.append(tmp2);
                 #for sp in shortestPaths:
                 #dict_keys(['stop', 'params', 'path_n', 'all_paths', 'path_iq_1', 'path_var', 'path_ci_lb', 'path_cv', 'path_iq_3', 'path_ci_ub', 'path_average', 'path_max', 'path_median', 'start', 'algorithm', 'path_ci_level', 'path_min'])
                 #    str = "start: %s, stop: %s, min: %s, max: %s, average: %s, " \
