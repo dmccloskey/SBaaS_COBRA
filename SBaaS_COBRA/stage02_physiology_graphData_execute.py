@@ -11,7 +11,7 @@ class stage02_physiology_graphData_execute(stage02_physiology_graphData_io):
             algorithms_params_I,
             nodes_startAndStop_I,
             exclusion_list_I=[],
-            weights_I=[]
+            weights_I=[],
             ):
         '''
         compute the shortest paths
@@ -69,8 +69,8 @@ class stage02_physiology_graphData_execute(stage02_physiology_graphData_io):
                     tmp['params']=sp['params']
                     tmp['path_start']=sp['start']
                     tmp['algorithm']=sp['algorithm']
+                    tmp['path_stop']=sp['stop']
                     tmp1 = copy.copy(tmp);
-                    tmp1['path_stop']=sp['stop']
                     tmp1['path_n']=sp['path_n']
                     tmp1['path_iq_1']=sp['path_iq_1']
                     tmp1['path_var']=sp['path_var']
