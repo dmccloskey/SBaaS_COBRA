@@ -129,7 +129,7 @@ class stage02_physiology_pairWiseTest_execute(stage02_physiology_pairWiseTest_io
         for d in sampling_n.data:
             d['analysis_id'] = analysis_id_I;
             d['used_'] = True;
-            d['flux_units'] = 'mmol*gDW-1*hr-1';
+            d['flux_units'] = 'geometricFC(mean)';
             d['mean']=d['mean_difference'];
             d['simulation_id_1']=d['sample_id_1'];
             d['simulation_id_2']=d['sample_id_2'];
@@ -158,7 +158,7 @@ class stage02_physiology_pairWiseTest_execute(stage02_physiology_pairWiseTest_io
             for d in sampling_n.data:
                 d['analysis_id'] = analysis_id_I;
                 d['used_'] = True;
-                d['flux_units'] = 'mmol*gDW-1*hr-1';
+                d['flux_units'] = 'geometricFC(mean_metSum)';
                 d['mean']=d['mean_difference'];
                 d['simulation_id_1']=d['sample_id_1'];
                 d['simulation_id_2']=d['sample_id_2'];
@@ -171,7 +171,7 @@ class stage02_physiology_pairWiseTest_execute(stage02_physiology_pairWiseTest_io
             for d in sampling_n.data:
                 d['analysis_id'] = analysis_id_I;
                 d['used_'] = True;
-                d['flux_units'] = 'mmol*gDW-1*hr-1';
+                d['flux_units'] = 'geometricFC(mean_subsystemSum)';
                 d['mean']=d['mean_difference'];
                 d['simulation_id_1']=d['sample_id_1'];
                 d['simulation_id_2']=d['sample_id_2'];

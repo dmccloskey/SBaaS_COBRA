@@ -100,123 +100,88 @@ for met in exclusion_mets:
 #    )
 
 analysis_ids = [
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04gndEcoliGlc_0',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04gndEvo01EPEcoliGlc_11',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04gndEvo02EPEcoliGlc_11',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04gndEvo03EPEcoliGlc_11',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEcoliGlc_0',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo01EPEcoliGlc_11',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo02EPEcoliGlc_11',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo03EPEcoliGlc_11',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo04EPEcoliGlc_11',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo05EPEcoliGlc_11',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo06EPEcoliGlc_11',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo07EPEcoliGlc_11',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo08EPEcoliGlc_11',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04ptsHIcrrEcoliGlc_0',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04ptsHIcrrEvo01EPEcoliGlc_11',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04ptsHIcrrEvo02EPEcoliGlc_11',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04ptsHIcrrEvo03EPEcoliGlc_11',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04ptsHIcrrEvo04EPEcoliGlc_11',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04sdhCBEcoliGlc_0',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04sdhCBEvo01EPEcoliGlc_11',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04sdhCBEvo02EPEcoliGlc_11',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04sdhCBEvo03EPEcoliGlc_11',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04tpiAEcoliGlc_0',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04tpiAEvo01EPEcoliGlc_11',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04tpiAEvo02EPEcoliGlc_11',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04tpiAEvo03EPEcoliGlc_11',
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04tpiAEvo04EPEcoliGlc_11',
-    ]
-nodes_startAndStop = {
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04gndEcoliGlc_0':{'nodes_start':['6pgc_c','ru5p_DASH_D_c'],'analysis_id':'ALEsKOs01_0_evo04_0_11_evo04gnd','sample_name_abbreviation_2':'OxicEvo04gndEcoliGlc','sample_name_abbreviation_1':'OxicEvo04EcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04gndEvo01EPEcoliGlc_11':{'nodes_start':['6pgc_c','ru5p_DASH_D_c'],'analysis_id':'ALEsKOs01_0_11_evo04gnd','sample_name_abbreviation_2':'OxicEvo04gndEvo01EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04gndEcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04gndEvo02EPEcoliGlc_11':{'nodes_start':['6pgc_c','ru5p_DASH_D_c'],'analysis_id':'ALEsKOs01_0_11_evo04gnd','sample_name_abbreviation_2':'OxicEvo04gndEvo02EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04gndEcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04gndEvo03EPEcoliGlc_11':{'nodes_start':['6pgc_c','ru5p_DASH_D_c'],'analysis_id':'ALEsKOs01_0_11_evo04gnd','sample_name_abbreviation_2':'OxicEvo04gndEvo03EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04gndEcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEcoliGlc_0':{'nodes_start':['g6p_c','f6p_c'],'analysis_id':'ALEsKOs01_0_evo04_0_11_evo04pgi','sample_name_abbreviation_2':'OxicEvo04pgiEcoliGlc','sample_name_abbreviation_1':'OxicEvo04EcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo01EPEcoliGlc_11':{'nodes_start':['g6p_c','f6p_c'],'analysis_id':'ALEsKOs01_0_11_evo04pgi','sample_name_abbreviation_2':'OxicEvo04pgiEvo01EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04pgiEcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo02EPEcoliGlc_11':{'nodes_start':['g6p_c','f6p_c'],'analysis_id':'ALEsKOs01_0_11_evo04pgi','sample_name_abbreviation_2':'OxicEvo04pgiEvo02EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04pgiEcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo03EPEcoliGlc_11':{'nodes_start':['g6p_c','f6p_c'],'analysis_id':'ALEsKOs01_0_11_evo04pgi','sample_name_abbreviation_2':'OxicEvo04pgiEvo03EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04pgiEcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo04EPEcoliGlc_11':{'nodes_start':['g6p_c','f6p_c'],'analysis_id':'ALEsKOs01_0_11_evo04pgi','sample_name_abbreviation_2':'OxicEvo04pgiEvo04EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04pgiEcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo05EPEcoliGlc_11':{'nodes_start':['g6p_c','f6p_c'],'analysis_id':'ALEsKOs01_0_11_evo04pgi','sample_name_abbreviation_2':'OxicEvo04pgiEvo05EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04pgiEcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo06EPEcoliGlc_11':{'nodes_start':['g6p_c','f6p_c'],'analysis_id':'ALEsKOs01_0_11_evo04pgi','sample_name_abbreviation_2':'OxicEvo04pgiEvo06EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04pgiEcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo07EPEcoliGlc_11':{'nodes_start':['g6p_c','f6p_c'],'analysis_id':'ALEsKOs01_0_11_evo04pgi','sample_name_abbreviation_2':'OxicEvo04pgiEvo07EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04pgiEcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo08EPEcoliGlc_11':{'nodes_start':['g6p_c','f6p_c'],'analysis_id':'ALEsKOs01_0_11_evo04pgi','sample_name_abbreviation_2':'OxicEvo04pgiEvo08EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04pgiEcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04ptsHIcrrEcoliGlc_0':{'nodes_start':['pep_c','pyr_c'],'analysis_id':'ALEsKOs01_0_evo04_0_11_evo04ptsHIcrr','sample_name_abbreviation_2':'OxicEvo04ptsHIcrrEcoliGlc','sample_name_abbreviation_1':'OxicEvo04EcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04ptsHIcrrEvo01EPEcoliGlc_11':{'nodes_start':['pep_c','pyr_c'],'analysis_id':'ALEsKOs01_0_11_evo04ptsHIcrr','sample_name_abbreviation_2':'OxicEvo04ptsHIcrrEvo01EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04ptsHIcrrEcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04ptsHIcrrEvo02EPEcoliGlc_11':{'nodes_start':['pep_c','pyr_c'],'analysis_id':'ALEsKOs01_0_11_evo04ptsHIcrr','sample_name_abbreviation_2':'OxicEvo04ptsHIcrrEvo02EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04ptsHIcrrEcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04ptsHIcrrEvo03EPEcoliGlc_11':{'nodes_start':['pep_c','pyr_c'],'analysis_id':'ALEsKOs01_0_11_evo04ptsHIcrr','sample_name_abbreviation_2':'OxicEvo04ptsHIcrrEvo03EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04ptsHIcrrEcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04ptsHIcrrEvo04EPEcoliGlc_11':{'nodes_start':['pep_c','pyr_c'],'analysis_id':'ALEsKOs01_0_11_evo04ptsHIcrr','sample_name_abbreviation_2':'OxicEvo04ptsHIcrrEvo04EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04ptsHIcrrEcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04sdhCBEcoliGlc_0':{'nodes_start':['succ_c','fum_c'],'analysis_id':'ALEsKOs01_0_evo04_0_11_evo04sdhCB','sample_name_abbreviation_2':'OxicEvo04sdhCBEcoliGlc','sample_name_abbreviation_1':'OxicEvo04EcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04sdhCBEvo01EPEcoliGlc_11':{'nodes_start':['succ_c','fum_c'],'analysis_id':'ALEsKOs01_0_11_evo04sdhCB','sample_name_abbreviation_2':'OxicEvo04sdhCBEvo01EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04sdhCBEcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04sdhCBEvo02EPEcoliGlc_11':{'nodes_start':['succ_c','fum_c'],'analysis_id':'ALEsKOs01_0_11_evo04sdhCB','sample_name_abbreviation_2':'OxicEvo04sdhCBEvo02EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04sdhCBEcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04sdhCBEvo03EPEcoliGlc_11':{'nodes_start':['succ_c','fum_c'],'analysis_id':'ALEsKOs01_0_11_evo04sdhCB','sample_name_abbreviation_2':'OxicEvo04sdhCBEvo03EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04sdhCBEcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04tpiAEcoliGlc_0':{'nodes_start':['dhap_c','g3p_c'],'analysis_id':'ALEsKOs01_0_evo04_0_11_evo04tpiA','sample_name_abbreviation_2':'OxicEvo04tpiAEcoliGlc','sample_name_abbreviation_1':'OxicEvo04EcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04tpiAEvo01EPEcoliGlc_11':{'nodes_start':['dhap_c','g3p_c'],'analysis_id':'ALEsKOs01_0_11_evo04tpiA','sample_name_abbreviation_2':'OxicEvo04tpiAEvo01EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04tpiAEvo01EPEcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04tpiAEvo02EPEcoliGlc_11':{'nodes_start':['dhap_c','g3p_c'],'analysis_id':'ALEsKOs01_0_11_evo04tpiA','sample_name_abbreviation_2':'OxicEvo04tpiAEvo02EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04tpiAEvo01EPEcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04tpiAEvo03EPEcoliGlc_11':{'nodes_start':['dhap_c','g3p_c'],'analysis_id':'ALEsKOs01_0_11_evo04tpiA','sample_name_abbreviation_2':'OxicEvo04tpiAEvo03EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04tpiAEvo01EPEcoliGlc'},
-'ALEsKOs01_151026_iDM2015_full05_OxicEvo04tpiAEvo04EPEcoliGlc_11':{'nodes_start':['dhap_c','g3p_c'],'analysis_id':'ALEsKOs01_0_11_evo04tpiA','sample_name_abbreviation_2':'OxicEvo04tpiAEvo04EPEcoliGlc','sample_name_abbreviation_1':'OxicEvo04tpiAEvo01EPEcoliGlc'},
-    
+'ALEsKOs01_iDM2015_0_evo04_0_11_evo04gnd',
+'ALEsKOs01_iDM2015_0_evo04_0_11_evo04pgi',
+'ALEsKOs01_iDM2015_0_evo04_0_11_evo04ptsHIcrr',
+'ALEsKOs01_iDM2015_0_evo04_0_11_evo04sdhCB',
+'ALEsKOs01_iDM2015_0_evo04_0_11_evo04tpiA',
+#'ALEsKOs01_iDM2015_0_11_evo04',
+]
+nodes_startAndStop = {'ALEsKOs01_iDM2015_0_evo04_0_11_evo04gnd':{'nodes_start':['6pgc_c','ru5p_DASH_D_c','nadp_c','nadph_c'],'analysis_id':'ALEsKOs01_0_evo04_0_11_evo04gnd','sample_name_abbreviation_1':['OxicEvo04EcoliGlc','OxicEvo04gndEcoliGlc'],'sample_name_abbreviation_2':['OxicEvo04gndEvo01EPEcoliGlc','OxicEvo04gndEvo02EPEcoliGlc','OxicEvo04gndEvo03EPEcoliGlc','OxicEvo04gndEcoliGlc']},
+'ALEsKOs01_iDM2015_0_evo04_0_11_evo04pgi':{'nodes_start':['g6p_c','f6p_c'],'analysis_id':'ALEsKOs01_0_evo04_0_11_evo04pgi','sample_name_abbreviation_1':['OxicEvo04EcoliGlc','OxicEvo04pgiEcoliGlc'],'sample_name_abbreviation_2':['OxicEvo04pgiEvo01EPEcoliGlc','OxicEvo04pgiEvo02EPEcoliGlc','OxicEvo04pgiEvo03EPEcoliGlc','OxicEvo04pgiEvo04EPEcoliGlc','OxicEvo04pgiEvo05EPEcoliGlc','OxicEvo04pgiEvo06EPEcoliGlc','OxicEvo04pgiEvo07EPEcoliGlc','OxicEvo04pgiEvo08EPEcoliGlc','OxicEvo04pgiEcoliGlc']},
+'ALEsKOs01_iDM2015_0_evo04_0_11_evo04ptsHIcrr':{'nodes_start':['pep_c','pyr_c','glc_DASH_D_c','g6p_c'],'analysis_id':'ALEsKOs01_0_evo04_0_11_evo04ptsHIcrr','sample_name_abbreviation_1':['OxicEvo04EcoliGlc','OxicEvo04ptsHIcrrEcoliGlc'],'sample_name_abbreviation_2':['OxicEvo04ptsHIcrrEvo01EPEcoliGlc','OxicEvo04ptsHIcrrEvo02EPEcoliGlc','OxicEvo04ptsHIcrrEvo03EPEcoliGlc','OxicEvo04ptsHIcrrEvo04EPEcoliGlc','OxicEvo04ptsHIcrrEcoliGlc']},
+'ALEsKOs01_iDM2015_0_evo04_0_11_evo04sdhCB':{'nodes_start':['succ_c','fum_c'],'analysis_id':'ALEsKOs01_0_evo04_0_11_evo04sdhCB','sample_name_abbreviation_1':['OxicEvo04EcoliGlc','OxicEvo04sdhCBEcoliGlc'],'sample_name_abbreviation_2':['OxicEvo04sdhCBEvo01EPEcoliGlc','OxicEvo04sdhCBEvo02EPEcoliGlc','OxicEvo04sdhCBEvo03EPEcoliGlc','OxicEvo04sdhCBEcoliGlc']},
+'ALEsKOs01_iDM2015_0_evo04_0_11_evo04tpiA':{'nodes_start':['dhap_c','g3p_c'],'analysis_id':'ALEsKOs01_0_evo04_0_11_evo04tpiA','sample_name_abbreviation_1':['OxicEvo04EcoliGlc','OxicEvo04tpiAEcoliGlc'],'sample_name_abbreviation_2':['OxicEvo04tpiAEvo01EPEcoliGlc','OxicEvo04tpiAEvo02EPEcoliGlc','OxicEvo04tpiAEvo03EPEcoliGlc','OxicEvo04tpiAEvo04EPEcoliGlc','OxicEvo04tpiAEcoliGlc']},
 }
+
 #metabolites not in the model
 mets_ignore = []
 from SBaaS_models.models_COBRA_dependencies import models_COBRA_dependencies
 COBRA_dependencies = models_COBRA_dependencies();
 
-#for analysis_id in analysis_ids:
-#    print("running analysis_id " + analysis_id);
-#    graphData01.reset_dataStage02_physiology_graphData(
-#        tables_I = ['data_stage02_physiology_graphData_shortestPathStats',
-#                    'data_stage02_physiology_graphData_shortestPaths',
-#        ],
-#        analysis_id_I = analysis_id,
-#        warn_I=False
-#        )
-#    #query the stop nodes
-#    cmd = 'SELECT component_group_name '
-#    cmd += 'FROM "data_stage02_quantification_pairWiseTest" '
-#    cmd += "WHERE analysis_id LIKE '%s' " %(nodes_startAndStop[analysis_id]['analysis_id'])
-#    cmd += "AND sample_name_abbreviation_1 LIKE '%s' " %(nodes_startAndStop[analysis_id]['sample_name_abbreviation_1'])
-#    cmd += "AND sample_name_abbreviation_2 LIKE '%s' " %(nodes_startAndStop[analysis_id]['sample_name_abbreviation_2'])
-#    cmd += 'AND used_ AND pvalue_corrected < 0.01 '
-#    cmd += 'AND (fold_change > 2.0 OR fold_change < 0.5) '
-#    cmd += 'GROUP BY component_group_name '
-#    cmd += 'ORDER BY component_group_name ASC;'
-#    try:
-#        ans = session.execute(cmd);
-#        data = ans.fetchall();
-#    except Exception as e:
-#        print(e);
-#        session.rollback();
-#    #parse the names
-#    nodes_stop = [COBRA_dependencies.format_metid(d.component_group_name,"c") for d in data]; 
-#    #generate the nodes_startAndStop_list
-#    nodes_startAndStop_list = [];
-#    for node_start in nodes_startAndStop[analysis_id]['nodes_start']:
-#        for node_stop in nodes_stop:
-#            node_stop.replace('23dpg_c','13dpg_c')
-#            node_stop.replace('Pool_2pg_3pg_c','3pg_c')
-#            if node_start == node_stop:
-#                continue;
-#            if node_stop in mets_ignore:
-#                continue;
-#            nodes_startAndStop_list.append([node_start,node_stop])
-#    for node_start in nodes_stop:
-#        node_start.replace('23dpg_c','13dpg_c')
-#        node_start.replace('Pool_2pg_3pg_c','3pg_c')
-#        if node_start in mets_ignore:
-#            continue;
-#        for node_stop in nodes_startAndStop[analysis_id]['nodes_start']:
-#            if node_start == node_stop:
-#                continue;
-#            nodes_startAndStop_list.append([node_start,node_stop])
-#    # calculate the shortest paths
-#    graphData01.execute_findShortestPaths(
-#        analysis_id_I = analysis_id,
-#        algorithms_params_I = algorithms_params,
-#        nodes_startAndStop_I = nodes_startAndStop_list,
-#        exclusion_list_I = exclusion_list,
-#        weights_I='stage02_physiology_sampledData_query'
-#    )
+for analysis_id in analysis_ids:
+    print("running analysis_id " + analysis_id);
+    graphData01.reset_dataStage02_physiology_graphData(
+        tables_I = ['data_stage02_physiology_graphData_shortestPathStats',
+                    'data_stage02_physiology_graphData_shortestPaths',
+        ],
+        analysis_id_I = analysis_id,
+        warn_I=False
+        )
+    #query the stop nodes
+    cmd = 'SELECT component_group_name '
+    cmd += 'FROM "data_stage02_quantification_pairWiseTest" '
+    cmd += "WHERE analysis_id LIKE '%s' " %(nodes_startAndStop[analysis_id]['analysis_id'])
+    sna1 = ','.join(nodes_startAndStop[analysis_id]['sample_name_abbreviation_1'])
+    cmd += "AND sample_name_abbreviation_1 =ANY ('{%s}'::text[]) " %(sna1)
+    sna2 = ','.join(nodes_startAndStop[analysis_id]['sample_name_abbreviation_2'])
+    cmd += "AND sample_name_abbreviation_1 =ANY ('{%s}'::text[]) " %(sna2)
+    cmd += 'AND used_ AND pvalue_corrected < 0.01 '
+    cmd += 'AND (fold_change > 2.0 OR fold_change < 0.5) '
+    cmd += 'GROUP BY component_group_name '
+    cmd += 'ORDER BY component_group_name ASC;'
+    try:
+        ans = session.execute(cmd);
+        data = ans.fetchall();
+    except Exception as e:
+        print(e);
+        session.rollback();
+    #parse the names
+    nodes_stop = [COBRA_dependencies.format_metid(d.component_group_name,"c") for d in data]; 
+    #generate the nodes_startAndStop_list
+    nodes_startAndStop_list = [];
+    #downstream from the perturbation
+    for node_start in nodes_startAndStop[analysis_id]['nodes_start']:
+        for node_stop in nodes_stop:
+            node_stop = node_stop.replace('23dpg_c','13dpg_c')
+            node_stop = node_stop.replace('Pool_2pg_3pg_c','3pg_c')
+            node_stop = node_stop.replace('adpglc_c','glycogen_c')
+            node_stop = node_stop.replace('udpglcur_c','uacgam_c')
+            if node_start == node_stop:
+                continue;
+            if node_stop in mets_ignore:
+                continue;
+            nodes_startAndStop_list.append([node_start,node_stop])
+    #upstream from the perturbation
+    for node_start in nodes_stop:
+        node_start = node_start.replace('23dpg_c','13dpg_c')
+        node_start = node_start.replace('Pool_2pg_3pg_c','3pg_c')
+        node_start = node_start.replace('adpglc_c','glycogen_c')
+        node_start = node_start.replace('udpglcur_c','uacgam_c')
+        if node_start in mets_ignore:
+            continue;
+        for node_stop in nodes_startAndStop[analysis_id]['nodes_start']:
+            if node_start == node_stop:
+                continue;
+            nodes_startAndStop_list.append([node_start,node_stop])
+    # calculate the shortest paths
+    graphData01.execute_findShortestPaths(
+        analysis_id_I = analysis_id,
+        algorithms_params_I = algorithms_params,
+        nodes_startAndStop_I = nodes_startAndStop_list,
+        exclusion_list_I = exclusion_list,
+        weights_I='stage02_physiology_sampledData_query'
+    )
 
-graphData01.export_dataStage02PhysiologyGraphDataShortestPathStats_js('ALEsKOs01_151026_iDM2015_full05_OxicEvo04gndEvo01EPEcoliGlc_11')
+#graphData01.export_dataStage02PhysiologyGraphDataShortestPathStats_js('ALEsKOs01_151026_iDM2015_full05_OxicEvo04gndEvo01EPEcoliGlc_11')
+graphData01.export_dataStage02PhysiologyGraphDataShortestPaths_js('ALEsKOs01_151026_iDM2015_full05_OxicEvo04gndEvo01EPEcoliGlc_11')

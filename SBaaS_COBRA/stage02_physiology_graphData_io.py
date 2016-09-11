@@ -58,57 +58,55 @@ class stage02_physiology_graphData_io(stage02_physiology_graphData_query,
         '''export graph of shortest paths'''
 
         data_O = [];
+        data_reactions_O = [];
         data_tmp = self.get_rows_analysisID_dataStage02PhysiologyGraphDataShortestPaths(analysis_id_I);
         for d in data_tmp:
             d['path_id'] = d['path_start'] + '-->' + d['path_stop']
-            if np.isnan(d['path_ci_lb']):d['path_ci_lb']=d['path_average'];
-            if np.isnan(d['path_ci_ub']):d['path_ci_ub']=d['path_average'];
             data_O.append(d);
-
-        # break into individual reactions
-        data_reactions = [];
-        for d in data_O:
-            d['flux']=1;
-            left = dependencies.convert_bioCycList2List(d['left']);
-            right = dependencies.convert_bioCycList2List(d['right']);
-            reaction = d['gene'];
-            for l in left:
-                tmp = copy.copy(d);
-                tmp['left'] = l;
-                tmp['right'] = reaction;
-                data_reactions.append(tmp);
-            for r in right:
-                tmp = copy.copy(d);
-                tmp['left'] = reaction;
-                tmp['right'] = r;
-                data_reactions.append(tmp);
+            for i,p in enumerate(d['paths']):
+                if i==0: continue;
+                tmp = {};
+                tmp['left']=d['paths'][i-1];
+                tmp['right']=p;
+                link_id = p;
+                node_id = 'rxn';
+                if i%2==0:
+                    link_id=d['paths'][i-1];
+                    node_id = 'met';
+                tmp['link_id']=link_id;
+                tmp['weight']=1;
+                tmp['node_id']=node_id;
+                tmp['path_id'] = d['path_id'];
+                tmp['path_start'] = d['path_start']
+                tmp['path_stop'] = d['path_stop']
+                tmp['algorithm'] = d['algorithm']
+                tmp['analysis_id'] = d['analysis_id']
+                tmp['simulation_id'] = d['simulation_id']
+                data_reactions_O.append(tmp);
 
         # make the data parameters
         data1_keys = [
-                    'gene',
-                    'parent_classes',
-                    'left',
-                    'right',
-                    'in_pathway',
-                    'name'
+                    'simulation_id',
+                    'path_start',
+                    'path_stop',
+                    'algorithm',
                     ];
         data1_nestkeys = [
             'left',
-            #'name',
             'right',
                           ];
-        data1_keymap = {'xdata':'parent_classes',
-                        'ydata':'mode',
-                        'serieslabel':'mode',
+        data1_keymap = {'xdata':'node_id',
+                        'ydata':'weight',
+                        'serieslabel':'algorithm',
                         'featureslabel':''};
 
         data2_keymap = {
-            'xdata':'parent_classes',
-            'ydata':'flux',
-            'xdatalabel':'parent_classes',
-            'ydatalabel':'name',
-            'serieslabel':'regulator',
-            'featureslabel':'transcription_unit',
+            'xdata':'node_id',
+            'ydata':'weight',
+            'xdatalabel':'',
+            'ydatalabel':'',
+            'serieslabel':'algorithm',
+            'featureslabel':'',
             #'tooltiplabel':'component_name',
             };
 
@@ -126,7 +124,7 @@ class stage02_physiology_graphData_io(stage02_physiology_graphData_query,
         
         nsvgtable = ddt_container_filterMenuAndChart2dAndTable();
         nsvgtable.make_filterMenuAndChart2dAndTable(
-            data_filtermenu=data_reactions,
+            data_filtermenu=data_reactions_O,
             data_filtermenu_keys=data1_keys,
             data_filtermenu_nestkeys=data1_nestkeys,
             data_filtermenu_keymap=data1_keymap,
@@ -137,7 +135,7 @@ class stage02_physiology_graphData_io(stage02_physiology_graphData_query,
             data_table_nestkeys=None,
             data_table_keymap=None,
             data_svg=None,
-            data_table=None,
+            data_table=data_O,
             #svgtype='sankeydiagram2d_01',
             svgtype='forcedirectedgraph2d_01',
             tabletype='responsivetable_01',
@@ -146,10 +144,10 @@ class stage02_physiology_graphData_io(stage02_physiology_graphData_query,
             tablekeymap = [data1_keymap],
             svgkeymap = [data2_keymap],
             formtile2datamap=[0],
-            tabletile2datamap=[0],
+            tabletile2datamap=[1],
             svgtile2datamap=[0],
             svgfilters=None,
-            svgtileheader='BioCyc Reaction',
+            svgtileheader='Shortest Path',
             tablefilters=None,
             tableheaders=None,
             svgparameters_I= svgparameters,
@@ -224,14 +222,14 @@ class stage02_physiology_graphData_io(stage02_physiology_graphData_query,
                         'ydataiq1':'path_iq_1',
                         'ydataiq3':'path_iq_3',
                         'ydatamedian':'path_median',
-                        #'serieslabel':'simulation_id',
-                        'serieslabel':'algorithm',
+                        'serieslabel':'simulation_id',
+                        #'serieslabel':'algorithm',
                         'featureslabel':'path_id'};
             data2_keymap = {
                         'xdata':'path_id',
                         'ydata':'path_length',
-                        #'serieslabel':'simulation_id',
-                        'serieslabel':'algorithm',
+                        'serieslabel':'simulation_id',
+                        #'serieslabel':'algorithm',
                         'featureslabel':'path_id'};
         else:
             data1_keymap = {
