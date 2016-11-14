@@ -1,4 +1,4 @@
-# System
+﻿# System
 import json
 # SBaaS
 from .stage02_physiology_sampledData_query import stage02_physiology_sampledData_query
@@ -166,7 +166,7 @@ class stage02_physiology_sampledData_io(stage02_physiology_sampledData_query,
         with open(filename_str,'w') as file:
             file.write(nsvgtable.get_allObjects());
             
-    def export_dataStage02PhysiologySampledPointsDescriptiveStats_js(self,analysis_id_I,plot_points_I=True,vertical_I=True,data_dir_I='tmp'):
+    def export_dataStage02PhysiologySampledPointsDescriptiveStats_js(self,analysis_id_I,plot_points_I=False,vertical_I=True,data_dir_I='tmp'):
         '''Export data for a box and whiskers plot
         INPUT:
         analysis_id_I = string,
