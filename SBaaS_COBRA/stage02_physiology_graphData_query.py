@@ -1,4 +1,4 @@
-#SBaaS
+﻿#SBaaS
 from .stage02_physiology_graphData_postgresql_models import *
 
 from SBaaS_base.sbaas_base import sbaas_base
@@ -10,6 +10,9 @@ from SBaaS_base.sbaas_base_query_select import sbaas_base_query_select
 from SBaaS_base.sbaas_base_query_delete import sbaas_base_query_delete
 
 from SBaaS_base.sbaas_template_query import sbaas_template_query
+
+#resources
+from sqlalchemy import or_
 
 class stage02_physiology_graphData_query(sbaas_template_query):
     def initialize_supportedTables(self):
@@ -65,6 +68,44 @@ class stage02_physiology_graphData_query(sbaas_template_query):
         try:
             data = self.session.query(data_stage02_physiology_graphData_shortestPaths).filter(
                     data_stage02_physiology_graphData_shortestPaths.analysis_id.like(analysis_id_I),
+                    data_stage02_physiology_graphData_shortestPaths.used_.is_(True)).order_by(
+                    data_stage02_physiology_graphData_shortestPaths.analysis_id.asc(),
+                    data_stage02_physiology_graphData_shortestPaths.simulation_id.asc(),
+                    data_stage02_physiology_graphData_shortestPaths.path_start.asc(),
+                    data_stage02_physiology_graphData_shortestPaths.path_stop.asc(),
+                    data_stage02_physiology_graphData_shortestPaths.algorithm.asc()).all();
+            data_O = [d.__repr__dict__() for d in data];
+            return data_O;
+        except SQLAlchemyError as e:
+            print(e);
+    def get_rows_analysisIDs_dataStage02PhysiologyGraphDataShortestPathStats(self,analysis_ids_I):
+        """get rows by analysis ID from data_stage02_physiology_graphData_shortestPathStats
+        NOTES:
+        multiple LIKE implemented from 
+        http://stackoverflow.com/questions/28270708/sqlalchemy-filter-query-column-like-any-array
+        """
+        try:
+            data = self.session.query(data_stage02_physiology_graphData_shortestPathStats).filter(
+                    or_(*[data_stage02_physiology_graphData_shortestPathStats.analysis_id.like(name) for name in analysis_ids_I]),
+                    data_stage02_physiology_graphData_shortestPathStats.used_.is_(True)).order_by(
+                    data_stage02_physiology_graphData_shortestPathStats.analysis_id.asc(),
+                    data_stage02_physiology_graphData_shortestPathStats.simulation_id.asc(),
+                    data_stage02_physiology_graphData_shortestPathStats.path_start.asc(),
+                    data_stage02_physiology_graphData_shortestPathStats.path_stop.asc(),
+                    data_stage02_physiology_graphData_shortestPathStats.algorithm.asc()).all();
+            data_O = [d.__repr__dict__() for d in data];
+            return data_O;
+        except SQLAlchemyError as e:
+            print(e);
+    def get_rows_analysisIDs_dataStage02PhysiologyGraphDataShortestPaths(self,analysis_ids_I):
+        """get rows by analysis ID from data_stage02_physiology_graphData_shortestPathStats
+        NOTES:
+        multiple LIKE implemented from 
+        http://stackoverflow.com/questions/28270708/sqlalchemy-filter-query-column-like-any-array
+        """
+        try:
+            data = self.session.query(data_stage02_physiology_graphData_shortestPaths).filter(
+                    or_(*[data_stage02_physiology_graphData_shortestPaths.analysis_id.like(name) for name in analysis_ids_I]),
                     data_stage02_physiology_graphData_shortestPaths.used_.is_(True)).order_by(
                     data_stage02_physiology_graphData_shortestPaths.analysis_id.asc(),
                     data_stage02_physiology_graphData_shortestPaths.simulation_id.asc(),
