@@ -150,3 +150,55 @@ class data_stage02_physiology_measuredFluxes(Base):
     def __repr__json__(self):
         return json.dumps(self.__repr__dict__())
 
+class data_stage02_physiology_measuredCoverage(Base):
+    __tablename__ = 'data_stage02_physiology_measuredCoverage'
+    id = Column(Integer, Sequence('data_stage02_physiology_measuredCoverage_id_seq'), primary_key=True)
+    experiment_id = Column(String(50))
+    model_id = Column(String(50))
+    sample_name_abbreviation = Column(String(100))
+    model_component = Column(String(100))
+    data_component = Column(String(100))
+    n_model_components = Column(Integer)
+    n_mapped_components = Column(Integer)
+    fraction_mapped = Column(Float)
+    used_ = Column(Boolean)
+    comment_ = Column(Text)
+    #__table_args__ = (UniqueConstraint('experiment_id','sample_name_abbreviation','model_id','model_component','data_component'),)
+    def __init__(self,row_dict_I,):
+        self.experiment_id = row_dict_I['experiment_id']
+        self.sample_name_abbreviation = row_dict_I['sample_name_abbreviation']
+        self.model_id = row_dict_I['model_id']
+        self.model_component = row_dict_I['model_component']
+        self.data_component = row_dict_I['data_component']
+        self.n_model_components = row_dict_I['n_model_components']
+        self.n_mapped_components = row_dict_I['n_mapped_components']
+        self.fraction_mapped = row_dict_I['fraction_mapped']
+        self.used_=row_dict_I['used_']
+        self.comment_=row_dict_I['comment_']
+    def __set__row__(self,experiment_id_I,sample_name_abbreviation_I,model_id_I,model_component_I,data_component_I,n_model_components_I,n_mapped_components_I,fraction_mapped_I,used__I,comment__I):
+        self.experiment_id = experiment_id_I
+        self.sample_name_abbreviation = sample_name_abbreviation_I
+        self.model_id = model_id_I
+        self.model_component = model_component_I
+        self.data_component = data_component_I
+        self.n_model_components = n_model_components_I
+        self.n_mapped_components = n_mapped_components_I
+        self.fraction_mapped = fraction_mapped_I
+        self.used_ = used__I
+        self.comment_ = comment__I
+    def __repr__dict__(self):
+        return {
+        'experiment_id':self.experiment_id,
+        'sample_name_abbreviation':self.sample_name_abbreviation,
+        'model_id':self.model_id,
+        'model_component':self.model_component,
+        'data_component':self.data_component,
+        'n_model_components':self.n_model_components,
+        'n_mapped_components':self.n_mapped_components,
+        'fraction_mapped':self.fraction_mapped,
+        'id':self.id,
+        'used_':self.used_,
+        'comment_':self.comment_,
+        }
+    def __repr__json__(self):
+        return json.dumps(self.__repr__dict__())

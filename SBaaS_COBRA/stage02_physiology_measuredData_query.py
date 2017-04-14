@@ -17,6 +17,7 @@ class stage02_physiology_measuredData_query(sbaas_template_query):
         '''Set the supported tables dict for stage02_physiology_measuredData
         '''
         tables_supported = {'data_stage02_physiology_measuredFluxes':data_stage02_physiology_measuredFluxes,
+                            'data_stage02_physiology_measuredCoverage':data_stage02_physiology_measuredCoverage,
                         };
         self.set_supportedTables(tables_supported);     
     ## Query from data_stage01_physiology_ratesAverages:
