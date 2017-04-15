@@ -160,10 +160,11 @@ class data_stage02_physiology_measuredCoverage(Base):
     data_component = Column(String(100))
     n_model_components = Column(Integer)
     n_mapped_components = Column(Integer)
+    n_measured_components = Column(Integer)
     fraction_mapped = Column(Float)
     used_ = Column(Boolean)
     comment_ = Column(Text)
-    #__table_args__ = (UniqueConstraint('experiment_id','sample_name_abbreviation','model_id','model_component','data_component'),)
+    __table_args__ = (UniqueConstraint('experiment_id','sample_name_abbreviation','model_id','model_component','data_component'),)
     def __init__(self,row_dict_I,):
         self.experiment_id = row_dict_I['experiment_id']
         self.sample_name_abbreviation = row_dict_I['sample_name_abbreviation']
@@ -172,10 +173,11 @@ class data_stage02_physiology_measuredCoverage(Base):
         self.data_component = row_dict_I['data_component']
         self.n_model_components = row_dict_I['n_model_components']
         self.n_mapped_components = row_dict_I['n_mapped_components']
+        self.n_measured_components = row_dict_I['n_measured_components']
         self.fraction_mapped = row_dict_I['fraction_mapped']
         self.used_=row_dict_I['used_']
         self.comment_=row_dict_I['comment_']
-    def __set__row__(self,experiment_id_I,sample_name_abbreviation_I,model_id_I,model_component_I,data_component_I,n_model_components_I,n_mapped_components_I,fraction_mapped_I,used__I,comment__I):
+    def __set__row__(self,experiment_id_I,sample_name_abbreviation_I,model_id_I,model_component_I,data_component_I,n_model_components_I,n_mapped_components_I,n_measured_components_I,fraction_mapped_I,used__I,comment__I):
         self.experiment_id = experiment_id_I
         self.sample_name_abbreviation = sample_name_abbreviation_I
         self.model_id = model_id_I
@@ -183,6 +185,7 @@ class data_stage02_physiology_measuredCoverage(Base):
         self.data_component = data_component_I
         self.n_model_components = n_model_components_I
         self.n_mapped_components = n_mapped_components_I
+        self.n_measured_components = n_measured_components_I
         self.fraction_mapped = fraction_mapped_I
         self.used_ = used__I
         self.comment_ = comment__I
@@ -195,6 +198,7 @@ class data_stage02_physiology_measuredCoverage(Base):
         'data_component':self.data_component,
         'n_model_components':self.n_model_components,
         'n_mapped_components':self.n_mapped_components,
+        'n_measured_components':self.n_measured_components,
         'fraction_mapped':self.fraction_mapped,
         'id':self.id,
         'used_':self.used_,

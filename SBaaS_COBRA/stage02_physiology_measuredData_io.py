@@ -44,6 +44,11 @@ class stage02_physiology_measuredData_io(stage02_physiology_measuredData_query,
         data_dir_I='tmp',
         ):
         """
+        Horizontal pies chart representing the following:
+        model unmapped
+        measured unmapped
+        measured mapped to model
+
         """
 
         
@@ -91,8 +96,7 @@ class stage02_physiology_measuredData_io(stage02_physiology_measuredData_query,
             data_table_keymap=None,
             data_svg=None,
             data_table=data_O,
-            #svgtype='sankeydiagram2d_01',
-            svgtype='forcedirectedgraph2d_01',
+            svgtype='verticalpieschart2d_01',
             tabletype='responsivetable_01',
             svgx1axislabel='',
             svgy1axislabel='',

@@ -328,7 +328,10 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
     def execute_measuredCoverage(
         self,
         model_id_I,
+        experiment_ids_I,
+        sample_name_abbreviations_I,
         genes_I = [],
+        transcripts_I = [],
         proteins_I = [],
         fluxes_I = [],
         metabolites_I = []):
@@ -341,6 +344,8 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
             1. model reactions
         
         INPUT:
+        experiment_id_I = string TODO: needs to be refactored
+        sample_name_abbreviation_I = string TODO: needs to be refactored
         model_id_I = string
         genes_I = list, strings
         proteins_I = list, strings
@@ -351,82 +356,89 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
         data_O = {}
                 
         '''
+        from SBaaS_models.models_COBRA_query import models_COBRA_query
         COBRA_query = models_COBRA_query(self.session,self.engine,self.settings)
-        #query data:
+        #query model data:
         rows = COBRA_query.get_rows_modelID_dataStage02PhysiologyModelReactions(model_id_I);
 
+        #query the gene data:        
+        from SBaaS_resequencing.stage01_resequencing_mutations_query import stage01_resequencing_mutations_query
+        resequencing_mutations_query = stage01_resequencing_mutations_query()
+        resequencing_mutations_query.initialize_supportedTables();
+        genes_rows = resequencing_mutations_query.get_mutations_experimentIDsAndSampleNames_dataStage01ResequencingMutationsAnnotated(
+            experiment_ids_I = experiment_ids_I,
+            sample_names_I = sample_name_abbreviations_I)
+        genes_I = list(set([d['mutation_links'] for d in genes_rows]))
+
+        #query the metabolite data:        
+        from SBaaS_quantification.stage01_quantification_replicatesMI_query import stage01_quantification_replicatesMI_query
+        quantification_replicatesMI_query = stage01_quantification_replicatesMI_query()
+        quantification_replicatesMI_query.initialize_supportedTables();
+        metabolites_rows = quantification_replicatesMI_query.get_rows_experimentIDsAndSampleNames_dataStage01QuantificationReplicatesMI(
+            experiment_ids_I = experiment_ids_I,
+            sample_name_shorts_I = sample_name_abbreviations_I)
+        metabolites_I = list(set([d['component_group_name'] for d in metabolites_rows]))
+
         #parse data:
-        genes_all = [];
-        rxns_all = [];
-        mets_all = [];
-        rxn_genes_mapped = [];
-        rxn_mets_mapped = [];
-        for row in rows:
-            genes_all.extend(row['genes'])
-            rxns_all.append(row['rxn_id'])
-            mets_all.extend(row['reactants_ids']);
-            mets_all.extend(row['products_ids']);
-            if len(list(set(row['genes']+genes_I)))<len(row['genes']+genes_I):
-                rxn_genes_mapped.append(row['rxn_id'])
-            if len(list(set(row['reactants_ids']+row['products_ids']+metabolites_I)))<len(row['reactants_ids']+row['products_ids']+metabolites_I):
-                rxn_mets_mapped.append(row['rxn_id'])
-        genes_unique = list(set(genes_all));
-        rxns_unique = list(set(rxns_all));
-        mets_unique = list(set(mets_all));
-
-        #overlapping genes, proteins, and metabolites
-        genes_mapped = list(set([d for d in genes_all if d in genes_I]))
-        mets_mapped = list(set([d for d in mets_all if d in metabolites_I]))
-        
-        nrxns = len(rxns_unique)
-
-        #calculate coverage for genes
-        ngenes = len(genes_unique)
-        nMappedGenes = len(genes_mapped)
-        nMappedRxnsGenes = len(rxn_genes_mapped)
-
-        #calculate coverage for genes
-        nmets = len(mets_unique)        
-        nMappedMets = len(mets_mapped)
-        nMappedRxnsMets = len(rxn_mets_mapped)
+        nrxns,\
+            genes_mapped,ngenes,nMappedGenes,nMappedRxnsGenes,nMeasuredGenes,\
+            mets_mapped,nmets,nMappedMets,nMappedRxnsMets,nMeasuredMets = self.calculate_measuredCoverage(
+            model_data_I = rows,
+            genes_I =genes_I,
+            transcripts_I = transcripts_I,
+            proteins_I = proteins_I,
+            fluxes_I = fluxes_I,
+            metabolites_I = metabolites_I)
 
         #prepare the output structure
         data_O = {}
         if genes_I:
             data_O['genes2ModelGenes'] = {
+                'experiment_id':experiment_ids_I,
+                'sample_name_abbreviation':None,
                 'model_id':model_id_I,
                 'model_component':'genes',
                 'data_component':'genes',
                 'n_model_components':ngenes,
                 'n_mapped_components':nMappedGenes,
+                'n_measured_components':nMeasuredGenes,
                 'fraction_mapped':float(nMappedGenes)/float(ngenes),
                 'used_':True,
                 };
             data_O['genes2ModelReactions'] = {
+                'experiment_id':experiment_ids_I,
+                'sample_name_abbreviation':None,
                 'model_id':model_id_I,
                 'model_component':'reactions',
                 'data_component':'genes',
                 'n_model_components':nrxns,
                 'n_mapped_components':nMappedRxnsGenes,
+                'n_measured_components':nMeasuredGenes,
                 'fraction_mapped':float(nMappedRxnsGenes)/float(nrxns),
                 'used_':True,
                 };
         if metabolites_I:
             data_O['metabolites2ModelMetabolites'] = {
+                'experiment_id':experiment_ids_I,
+                'sample_name_abbreviation':None,
                 'model_id':model_id_I,
                 'model_component':'metabolites',
                 'data_component':'metabolites',
                 'n_model_components':nmets,
                 'n_mapped_components':nMappedMets,
-                'fraction_mapped':float(nMappedMets)/float(nmaps),
+                'n_measured_components':nMeasuredMets,
+                'fraction_mapped':float(nMappedMets)/float(nmets),
                 'used_':True,
                 };
             data_O['metabolites2ModelReactions'] = {
+                'experiment_id':experiment_ids_I,
+                'sample_name_abbreviation':None,
                 'model_id':model_id_I,
                 'model_component':'reactions',
                 'data_component':'metabolites',
                 'n_model_components':nrxns,
                 'n_mapped_components':nMappedRxnsMets,
+                'n_measured_components':nMeasuredMets,
                 'fraction_mapped':float(nMappedRxnsMets)/float(nrxns),
                 'used_':True,
                 };
@@ -434,5 +446,78 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
             pass;
         if fluxes_I:
             pass;
+        
+        self.add_rows_table('data_stage02_physiology_measuredCoverage',data_O)
 
-        return data_O
+    def calculate_measuredCoverage(
+        self,
+        model_data_I,
+        genes_I = [],
+        transcripts_I = [],
+        proteins_I = [],
+        fluxes_I = [],
+        metabolites_I = []):
+        '''Calculate the model coverage for 
+        A. genes from DNAreseq or RNAseq data that map to
+            1. model genes and 2. model reactions
+        B. metabolites from quantification or isotopomer data that map to 
+            1. model metabolites and 2. model reactions
+        C. fluxes from MFA data that map to
+            1. model reactions
+        
+        INPUT:
+        model_data_I = rows of model table reactions
+        genes_I = list, strings
+        proteins_I = list, strings
+        fluxes_I = list, string
+        metabolites = list, strings
+        
+        OUTPUT:
+        data_O = {}
+                
+        '''
+
+        #parse data:
+        genes_all = [];
+        rxns_all = [];
+        mets_all = [];
+        rxn_genes_mapped = [];
+        rxn_mets_mapped = [];
+        for row in model_data_I:
+            genes_all.extend(row['genes'])
+            rxns_all.append(row['rxn_id'])
+            mets_all.extend(row['reactants_ids']);
+            mets_all.extend(row['products_ids']);
+            if genes_I and \
+                len(list(set(row['genes']+genes_I)))<len(set(row['genes'])+set(genes_I)):
+                rxn_genes_mapped.append(row['rxn_id'])
+            if metabolites_I and \
+                len(list(set(row['reactants_ids']+row['products_ids']+metabolites_I)))<\
+                len(set(row['reactants_ids'])+set(row['products_ids'])+set(metabolites_I)):
+                rxn_mets_mapped.append(row['rxn_id'])
+        genes_unique = list(set(genes_all));
+        rxns_unique = list(set(rxns_all));
+        mets_unique = list(set(mets_all));
+
+        nrxns = len(rxns_unique)
+        genes_mapped,ngenes,nMappedGenes,nMappedRxnsGenes,nMeasuredGenes,\
+            mets_mapped,nmets,nMappedMets,nMappedRxnsMets,nMeasuredMets=None,None,None,None,None,\
+            None,None,None,None,None;
+        
+        if genes_I:
+            #calculate coverage for genes
+            genes_mapped = list(set([d for d in genes_all if d in genes_I]))
+            ngenes = len(genes_unique)
+            nMappedGenes = len(genes_mapped)
+            nMappedRxnsGenes = len(rxn_genes_mapped)
+            nMeasuredGenes = len(set(genes_I))
+
+        if metabolites_I:
+            #calculate coverage for metabolites
+            mets_mapped = list(set([d for d in mets_all if d in metabolites_I]))
+            nmets = len(mets_unique)        
+            nMappedMets = len(mets_mapped)
+            nMappedRxnsMets = len(rxn_mets_mapped)
+            nMeasuredMets = len(set(metabolites_I))
+
+        return nrxns,genes_mapped,ngenes,nMappedGenes,nMappedRxnsGenes,nMeasuredGenes,mets_mapped,nmets,nMappedMets,nMappedRxnsMets,nMeasuredMets
