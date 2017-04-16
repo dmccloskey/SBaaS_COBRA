@@ -366,29 +366,27 @@ class stage02_physiology_measuredData_query(sbaas_template_query):
                     print(e);
             self.session.commit();
 
-    def drop_dataStage02_physiology_measuredData(self):
+    def reset_dataStage02_physiology_measuredData(self,
+            tables_I = [],
+            experiment_id_I = None,
+            warn_I=True):
         try:
-            data_stage02_physiology_metabolomicsData.__table__.drop(self.engine,True);
-            data_stage02_physiology_measuredFluxes.__table__.drop(self.engine,True);
-        except SQLAlchemyError as e:
-            print(e);
-    def reset_dataStage02_physiology_metabolomicsData(self,experiment_id_I = None):
-        try:
-            if experiment_id_I:
-                reset = self.session.query(data_stage02_physiology_metabolomicsData).filter(data_stage02_physiology_metabolomicsData.experiment_id.like(experiment_id_I)).delete(synchronize_session=False);
-                self.session.commit();
-        except SQLAlchemyError as e:
-            print(e);
-    def reset_dataStage02_physiology_measuredFluxes(self,experiment_id_I = None):
-        try:
-            if experiment_id_I:
-                reset = self.session.query(data_stage02_physiology_measuredFluxes).delete(synchronize_session=False);
-                self.session.commit();
-        except SQLAlchemyError as e:
-            print(e);
-    def initialize_dataStage02_physiology_measuredData(self):
-        try:
-            data_stage02_physiology_metabolomicsData.__table__.create(self.engine,True);
-            data_stage02_physiology_measuredFluxes.__table__.create(self.engine,True);
-        except SQLAlchemyError as e:
+            if not tables_I:
+                tables_I = list(self.get_supportedTables().keys());
+            querydelete = sbaas_base_query_delete(session_I=self.session,engine_I=self.engine,settings_I=self.settings,data_I=self.data);
+            for table in tables_I:
+                query = {};
+                query['delete_from'] = [{'table_name':table}];
+                query['where'] = [{
+                        'table_name':table,
+                        'column_name':'experiment_id',
+                        'value':experiment_id_I,
+		                'operator':'LIKE',
+                        'connector':'AND'
+                        }
+	                ];
+                table_model = self.convert_tableStringList2SqlalchemyModelDict([table]);
+                query = querydelete.make_queryFromString(table_model,query);
+                querydelete.reset_table_sqlalchemyModel(query_I=query,warn_I=warn_I);
+        except Exception as e:
             print(e);

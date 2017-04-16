@@ -80,6 +80,10 @@ rbc_sna = rbc_sna_str.split(',')
 snp_sna_str = 'BloodProject01_UID1,BloodProject01_UID10,BloodProject01_UID11,BloodProject01_UID12,BloodProject01_UID13,BloodProject01_UID14,BloodProject01_UID15,BloodProject01_UID16,BloodProject01_UID18,BloodProject01_UID19,BloodProject01_UID2,BloodProject01_UID20,BloodProject01_UID21,BloodProject01_UID22,BloodProject01_UID23,BloodProject01_UID24,BloodProject01_UID25,BloodProject01_UID26,BloodProject01_UID30,BloodProject01_UID35,BloodProject01_UID39,BloodProject01_UID4,BloodProject01_UID41,BloodProject01_UID42,BloodProject01_UID5,BloodProject01_UID6,BloodProject01_UID7,BloodProject01_UID8,BloodProject01_UID9'
 snp_sna = snp_sna_str.split(',')
 
+exmeasuredData01.reset_dataStage02_physiology_measuredData(
+            tables_I = ['data_stage02_physiology_measuredCoverage'],
+            experiment_id_I = 'BloodProject01',
+            warn_I=False)
 #platelet model
 exmeasuredData01.execute_measuredCoverage(
     model_id_I = 'iAT_PLT_636',

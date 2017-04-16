@@ -336,12 +336,17 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
         fluxes_I = [],
         metabolites_I = []):
         '''Calculate the model coverage for 
-        A. genes from DNAreseq or RNAseq data that map to
+        A. genes from DNAreseq data that map to
             1. model genes and 2. model reactions
-        B. metabolites from quantification or isotopomer data that map to 
+        B. transcripts from RNAseq data that map to
+            1. model genes and 2. model reactions
+        C. metabolites from quantification data that map to 
             1. model metabolites and 2. model reactions
-        C. fluxes from MFA data that map to
+        D. fluxes from MFA data that map to
             1. model reactions
+
+        Assumptions:
+        1. all omics data has the same experiment_id and sample_name_abbreviations
         
         INPUT:
         experiment_id_I = string TODO: needs to be refactored
@@ -354,6 +359,9 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
         
         OUTPUT:
         data_O = {}
+
+        TODO: 
+        add support for proteins, transcripts, and fluxes
                 
         '''
         from SBaaS_models.models_COBRA_query import models_COBRA_query
@@ -363,16 +371,16 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
 
         #query the gene data:        
         from SBaaS_resequencing.stage01_resequencing_mutations_query import stage01_resequencing_mutations_query
-        resequencing_mutations_query = stage01_resequencing_mutations_query()
+        resequencing_mutations_query = stage01_resequencing_mutations_query(self.session,self.engine,self.settings)
         resequencing_mutations_query.initialize_supportedTables();
         genes_rows = resequencing_mutations_query.get_mutations_experimentIDsAndSampleNames_dataStage01ResequencingMutationsAnnotated(
             experiment_ids_I = experiment_ids_I,
             sample_names_I = sample_name_abbreviations_I)
-        genes_I = list(set([d['mutation_links'] for d in genes_rows]))
+        genes_I = list(set([m for d in genes_rows for m in d['mutation_links']]))
 
-        #query the metabolite data:        
+        #query the metabolite data:  
         from SBaaS_quantification.stage01_quantification_replicatesMI_query import stage01_quantification_replicatesMI_query
-        quantification_replicatesMI_query = stage01_quantification_replicatesMI_query()
+        quantification_replicatesMI_query = stage01_quantification_replicatesMI_query(self.session,self.engine,self.settings)
         quantification_replicatesMI_query.initialize_supportedTables();
         metabolites_rows = quantification_replicatesMI_query.get_rows_experimentIDsAndSampleNames_dataStage01QuantificationReplicatesMI(
             experiment_ids_I = experiment_ids_I,
@@ -391,9 +399,9 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
             metabolites_I = metabolites_I)
 
         #prepare the output structure
-        data_O = {}
+        data_O = []
         if genes_I:
-            data_O['genes2ModelGenes'] = {
+            data_O.append({
                 'experiment_id':experiment_ids_I,
                 'sample_name_abbreviation':None,
                 'model_id':model_id_I,
@@ -404,8 +412,8 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
                 'n_measured_components':nMeasuredGenes,
                 'fraction_mapped':float(nMappedGenes)/float(ngenes),
                 'used_':True,
-                };
-            data_O['genes2ModelReactions'] = {
+                });
+            data_O.append({
                 'experiment_id':experiment_ids_I,
                 'sample_name_abbreviation':None,
                 'model_id':model_id_I,
@@ -416,9 +424,9 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
                 'n_measured_components':nMeasuredGenes,
                 'fraction_mapped':float(nMappedRxnsGenes)/float(nrxns),
                 'used_':True,
-                };
+                });
         if metabolites_I:
-            data_O['metabolites2ModelMetabolites'] = {
+            data_O.append({
                 'experiment_id':experiment_ids_I,
                 'sample_name_abbreviation':None,
                 'model_id':model_id_I,
@@ -429,8 +437,8 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
                 'n_measured_components':nMeasuredMets,
                 'fraction_mapped':float(nMappedMets)/float(nmets),
                 'used_':True,
-                };
-            data_O['metabolites2ModelReactions'] = {
+                });
+            data_O.append({
                 'experiment_id':experiment_ids_I,
                 'sample_name_abbreviation':None,
                 'model_id':model_id_I,
@@ -441,7 +449,7 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
                 'n_measured_components':nMeasuredMets,
                 'fraction_mapped':float(nMappedRxnsMets)/float(nrxns),
                 'used_':True,
-                };
+                });
         if proteins_I:
             pass;
         if fluxes_I:
@@ -469,13 +477,24 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
         model_data_I = rows of model table reactions
         genes_I = list, strings
         proteins_I = list, strings
+        transcripts_I = list, strings
         fluxes_I = list, string
         metabolites = list, strings
         
         OUTPUT:
-        data_O = {}
+        data_O = ()
+
+        TODO: 
+        add support for proteins, transcripts, and fluxes
                 
         '''
+        from SBaaS_models.models_COBRA_dependencies import models_COBRA_dependencies
+        COBRA_dependencies = models_COBRA_dependencies()
+
+        #reformat the metabolites
+        metabolites_I = [m.replace('23dpg','13dpg')\
+                        .replace('Pool_2pg_3pg','3pg')\
+                        .replace('Hexose_Pool_fru_glc-D','glc_DASH_D')  for m in metabolites_I]
 
         #parse data:
         genes_all = [];
@@ -484,16 +503,21 @@ class stage02_physiology_measuredData_execute(stage02_physiology_measuredData_io
         rxn_genes_mapped = [];
         rxn_mets_mapped = [];
         for row in model_data_I:
-            genes_all.extend(row['genes'])
+            geneids = [COBRA_dependencies.deformat_geneid(g) for g in row['genes']]
+            genes_all.extend(geneids)
             rxns_all.append(row['rxn_id'])
-            mets_all.extend(row['reactants_ids']);
-            mets_all.extend(row['products_ids']);
+            metids_comp = row['reactants_ids'] + row['products_ids']
+            metids = []
+            for m in metids_comp: 
+                m_deform = COBRA_dependencies.deformat_metid(m)
+                metids.append(m_deform)
+            mets_all.extend(metids);
             if genes_I and \
-                len(list(set(row['genes']+genes_I)))<len(set(row['genes'])+set(genes_I)):
+                len(list(set(geneids+genes_I)))<len(list(set(geneids))+list(set(genes_I))):
                 rxn_genes_mapped.append(row['rxn_id'])
             if metabolites_I and \
-                len(list(set(row['reactants_ids']+row['products_ids']+metabolites_I)))<\
-                len(set(row['reactants_ids'])+set(row['products_ids'])+set(metabolites_I)):
+                len(list(set(metids+metabolites_I)))<\
+                len(list(set(metids))+list(set(metabolites_I))):
                 rxn_mets_mapped.append(row['rxn_id'])
         genes_unique = list(set(genes_all));
         rxns_unique = list(set(rxns_all));
