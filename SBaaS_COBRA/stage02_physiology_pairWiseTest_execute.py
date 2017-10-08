@@ -5,7 +5,8 @@ from .stage02_physiology_sampledData_query import stage02_physiology_sampledData
 from .stage02_physiology_analysis_query import stage02_physiology_analysis_query
 # resources
 from python_statistics.calculate_interface import calculate_interface
-from .sampling import cobra_sampling,cobra_sampling_n
+from sampling.sampling import cobra_sampling
+from sampling.sampling_statistics import cobra_sampling_n
 # Dependencies from cobra
 from cobra.io.sbml import create_cobra_model_from_sbml_file, write_cobra_model_to_sbml_file
 from cobra.flux_analysis.variability import flux_variability_analysis

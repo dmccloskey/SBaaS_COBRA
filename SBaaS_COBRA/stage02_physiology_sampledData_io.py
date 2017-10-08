@@ -8,7 +8,8 @@ from SBaaS_base.sbaas_template_io import sbaas_template_io
 from io_utilities.base_importData import base_importData
 from io_utilities.base_exportData import base_exportData
 from listDict.listDict import listDict
-from .sampling import cobra_sampling,cobra_sampling_n
+from sampling.sampling import cobra_sampling
+from sampling.sampling_statistics import cobra_sampling_n
 from python_statistics.calculate_histogram import calculate_histogram
 from ddt_python.ddt_container_filterMenuAndChart2dAndTable import ddt_container_filterMenuAndChart2dAndTable
 from ddt_python.ddt_container import ddt_container

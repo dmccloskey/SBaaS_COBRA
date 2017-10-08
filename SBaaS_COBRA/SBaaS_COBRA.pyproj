@@ -22,14 +22,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="cobra_simulatedData.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="main.py" />
-    <Compile Include="matlab_sampling.py" />
-    <Compile Include="optGpSampler_sampling.py" />
-    <Compile Include="sampling.py" />
-    <Compile Include="sampling_dependencies.py" />
     <Compile Include="stage02_physiology_analysis_execute.py" />
     <Compile Include="stage02_physiology_analysis_io.py" />
     <Compile Include="stage02_physiology_analysis_postgresql_models.py" />

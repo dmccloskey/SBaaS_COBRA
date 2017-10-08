@@ -5,9 +5,13 @@ from .stage02_physiology_measuredData_query import stage02_physiology_measuredDa
 from SBaaS_models.models_COBRA_dependencies import models_COBRA_dependencies
 # resources
 from python_statistics.calculate_interface import calculate_interface
-from .sampling import cobra_sampling,cobra_sampling_n
-from .matlab_sampling import matlab_sampling
-from .optGpSampler_sampling import optGpSampler_sampling
+#from .sampling import cobra_sampling,cobra_sampling_n
+#from .matlab_sampling import matlab_sampling
+#from .optGpSampler_sampling import optGpSampler_sampling
+from sampling.sampling import cobra_sampling
+from sampling.sampling_statistics import cobra_sampling_n, cobra_sampling_statistics
+from sampling.matlab_sampling import matlab_sampling
+from sampling.optGpSampler_sampling import optGpSampler_sampling
 import datetime
 class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
                                             stage02_physiology_simulation_query,
@@ -188,12 +192,24 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
                     'comment_':None
                     };
                 self.add_dataStage02PhysiologySampledPoints([row])
-            # calculate the flux descriptive statistics
+            # calculate the flux descriptive statistics            
+            sampling_stats = cobra_sampling_statistics(
+                data_dir_I = data_dir,
+                model_I=cobra_model_copy,
+                )                
+            sampling_stats.simulation_dateAndTime = sampling.simulation_dateAndTime
+            sampling_stats.loops = sampling.loops
+            sampling_stats.points = sampling.points
+            sampling_stats.warmup = sampling.warmup
+            sampling_stats.points_metabolite = sampling.points_metabolite
+            sampling_stats.points_subsystem = sampling.points_subsystem
+            sampling_stats.mixed_fraction = sampling.mixed_fraction
+            sampling_stats.points_statistics = sampling.points_statistics
             if flux_stats_I:
-                sampling.descriptive_statistics(points_I='flux');
+                sampling_stats.descriptive_statistics(points_I='flux');
                 # add data to the database
                 sampledData_O = [];
-                for k,v in sampling.points_statistics.items():
+                for k,v in sampling_stats.points_statistics.items():
                     row = {'simulation_id':simulation_id_I,
                         'simulation_dateAndTime':sampling.simulation_dateAndTime,
                         'rxn_id':k,
@@ -216,11 +232,11 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
                 self.add_rows_table('data_stage02_physiology_sampledData',sampledData_O);
             # calculate descriptive stats for metabolites
             if metabolite_stats_I:
-                sampling.convert_points2MetabolitePoints();
-                sampling.descriptive_statistics(points_I='metabolite');
+                sampling_stats.convert_points2MetabolitePoints();
+                sampling_stats.descriptive_statistics(points_I='metabolite');
                 # add data to the database
                 sampledData_O = [];
-                for k,v in sampling.points_statistics.items():
+                for k,v in sampling_stats.points_statistics.items():
                     row = {'simulation_id':simulation_id_I,
                         'simulation_dateAndTime':sampling.simulation_dateAndTime,
                         'met_id':k,
@@ -243,11 +259,11 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
                 self.add_rows_table('data_stage02_physiology_sampledMetaboliteData',sampledData_O);
             # calculate descriptive stats for subsystems
             if subsystem_stats_I:
-                sampling.convert_points2SubsystemPoints();
-                sampling.descriptive_statistics(points_I='subsystem');
+                sampling_stats.convert_points2SubsystemPoints();
+                sampling_stats.descriptive_statistics(points_I='subsystem');
                 # add data to the database
                 sampledData_O = [];
-                for k,v in sampling.points_statistics.items():
+                for k,v in sampling_stats.points_statistics.items():
                     row = {'simulation_id':simulation_id_I,
                         'simulation_dateAndTime':sampling.simulation_dateAndTime,
                         'subsystem_id':k,
