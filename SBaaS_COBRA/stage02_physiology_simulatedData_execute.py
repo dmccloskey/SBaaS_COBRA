@@ -280,8 +280,9 @@ class stage02_physiology_simulatedData_execute(stage02_physiology_simulatedData_
         if gr_check_I:
             gr_check = gr_check_I;
         else:
-            cobra_model.optimize(solver=solver_id_I);
-            gr_check = cobra_model.solution.f;
+            cobra_model.solver=solver_id_I
+            cobra_model.optimize();
+            gr_check = cobra_model.objective.value;
         print('original model growth rate = ' + str(gr_check));
         # get rxn_ids
         if rxn_ids_I:
@@ -297,28 +298,29 @@ class stage02_physiology_simulatedData_execute(stage02_physiology_simulatedData_
             cobra_model_copy.reactions.get_by_id(rxn['rxn_id']).lower_bound = rxn['flux_lb'];
             cobra_model_copy.reactions.get_by_id(rxn['rxn_id']).upper_bound = rxn['flux_ub'];
             # Test model
-            cobra_model_copy.optimize(solver=solver_id_I);
-            if not cobra_model_copy.solution.f:
+            cobra_model_copy.solver = solver_id_I
+            cobra_model_copy.optimize();
+            if not cobra_model_copy.objective.value:
                 print('model broken by ' + rxn['rxn_id']);
                 tmp = {};
                 tmp['gr']=0.0;
                 tmp.update(rxn)
                 data_O.append(tmp);  
-            elif cobra_model_copy.solution.f <= diagnose_break_I*gr_check:
+            elif cobra_model_copy.objective.value <= diagnose_break_I*gr_check:
                 print('diagnose_break limit exceeded by ' + rxn['rxn_id']);
                 tmp = {};
-                tmp['gr']=cobra_model_copy.solution.f;
+                tmp['gr']=cobra_model_copy.objective.value;
                 tmp.update(rxn)
                 data_O.append(tmp);    
                 break;     
-            elif cobra_model_copy.solution.f <= diagnose_threshold_I*gr_check:
+            elif cobra_model_copy.objective.value <= diagnose_threshold_I*gr_check:
                 print('diagnose_threshold limit exceeded by ' + rxn['rxn_id']);
                 tmp = {};
-                tmp['gr']=cobra_model_copy.solution.f;
+                tmp['gr']=cobra_model_copy.objective.value;
                 tmp.update(rxn)
                 data_O.append(tmp);      
             else:
-                print('contrained model growth rate ' + rxn['rxn_id'] + ' = ' + str(cobra_model_copy.solution.f)); 
+                print('contrained model growth rate ' + rxn['rxn_id'] + ' = ' + str(cobra_model_copy.objective.value)); 
         return data_O;
     def execute_testConstraintsCumulative(self,simulation_id_I,
                         rxn_ids_I=[],
@@ -358,8 +360,9 @@ class stage02_physiology_simulatedData_execute(stage02_physiology_simulatedData_
         if gr_check_I:
             gr_check = gr_check_I;
         else:
-            cobra_model.optimize(solver=solver_id_I);
-            gr_check = cobra_model.solution.f;
+            cobra_model.solver = solver_id_I
+            cobra_model.optimize();
+            gr_check = cobra_model.objective.value;
         print('original model growth rate = ' + str(gr_check));
         # get rxn_ids
         if rxn_ids_I:
@@ -375,28 +378,29 @@ class stage02_physiology_simulatedData_execute(stage02_physiology_simulatedData_
             cobra_model_copy.reactions.get_by_id(rxn['rxn_id']).lower_bound = rxn['flux_lb'];
             cobra_model_copy.reactions.get_by_id(rxn['rxn_id']).upper_bound = rxn['flux_ub'];
             # Test model
-            cobra_model_copy.optimize(solver=solver_id_I);
-            if not cobra_model_copy.solution.f:
+            cobra_model_copy.solver = solver_id_I
+            cobra_model_copy.optimize();
+            if not cobra_model_copy.objective.value:
                 print('model broken by ' + rxn['rxn_id']);
                 tmp = {};
                 tmp['gr']=0.0;
                 tmp.update(rxn)
                 data_O.append(tmp);  
                 break;     
-            elif cobra_model_copy.solution.f <= diagnose_break_I*gr_check:
+            elif cobra_model_copy.objective.value <= diagnose_break_I*gr_check:
                 print('diagnose_break limit exceeded by ' + rxn['rxn_id']);
                 tmp = {};
-                tmp['gr']=cobra_model_copy.solution.f;
+                tmp['gr']=cobra_model_copy.objective.value;
                 tmp.update(rxn)
                 data_O.append(tmp);    
                 break;     
-            elif cobra_model_copy.solution.f <= diagnose_threshold_I*gr_check:
+            elif cobra_model_copy.objective.value <= diagnose_threshold_I*gr_check:
                 print('diagnose_threshold limit exceeded by ' + rxn['rxn_id']);
                 tmp = {};
-                tmp['gr']=cobra_model_copy.solution.f;
+                tmp['gr']=cobra_model_copy.objective.value;
                 tmp.update(rxn)
                 data_O.append(tmp);      
             else:
-                print('contrained model growth rate = ' + str(cobra_model_copy.solution.f) + ' for rxn_id: ' + rxn['rxn_id']); 
+                print('contrained model growth rate = ' + str(cobra_model_copy.objective.value) + ' for rxn_id: ' + rxn['rxn_id']); 
         return data_O;
     

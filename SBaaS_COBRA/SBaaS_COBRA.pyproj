@@ -51,6 +51,7 @@
     <Compile Include="stage02_physiology_simulation_io.py" />
     <Compile Include="stage02_physiology_simulation_postgresql_models.py" />
     <Compile Include="stage02_physiology_simulation_query.py" />
+    <Compile Include="cobra_simulatedData.py" />
     <Compile Include="__init__.py">
       <SubType>Code</SubType>
     </Compile>

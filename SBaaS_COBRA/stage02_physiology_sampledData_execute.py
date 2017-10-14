@@ -105,6 +105,9 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
                                flux_stats_I=True,
                                metabolite_stats_I=False,
                                subsystem_stats_I=False,
+                               remove_loops = True,
+                               normalize_points2Input = False,
+                               normalize_rnx_ids = []
                                ):
         '''Load and analyze sampling points
         INPUT:
@@ -176,11 +179,12 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
                 return;
             # check if the model contains loops
             #loops_bool = self.sampling.check_loops();
-            sampling.simulate_loops(
-                data_fva=self.settings['workspace_data'] + '/loops_fva_tmp.json',
-                solver_I = simulation_parameters['solver_id']);
-            sampling.find_loops(data_fva=self.settings['workspace_data'] + '/loops_fva_tmp.json');
-            sampling.remove_loopsFromPoints();
+            if remove_loops:
+                sampling.simulate_loops(
+                    data_fva=self.settings['workspace_data'] + '/loops_fva_tmp.json',
+                    solver_I = simulation_parameters['solver_id']);
+                sampling.find_loops(data_fva=self.settings['workspace_data'] + '/loops_fva_tmp.json');
+                sampling.remove_loopsFromPoints();
             # add points overview to the database
             if points_overview_I:
                 row = {'simulation_id':simulation_id_I,
@@ -192,6 +196,11 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
                     'comment_':None
                     };
                 self.add_dataStage02PhysiologySampledPoints([row])
+            if normalize_points2Input:
+                sampling.normalize_points2Input(normalize_rnx_ids)
+                flux_units = "input_normalized"
+            else:
+                flux_units = 'mmol*gDW-1*hr-1'
             # calculate the flux descriptive statistics            
             sampling_stats = cobra_sampling_statistics(
                 data_dir_I = data_dir,
@@ -213,7 +222,7 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
                     row = {'simulation_id':simulation_id_I,
                         'simulation_dateAndTime':sampling.simulation_dateAndTime,
                         'rxn_id':k,
-                        'flux_units':'mmol*gDW-1*hr-1',
+                        'flux_units':flux_units,
                         'sampling_points':None, #v['points'],
                         'sampling_n':v['n'],
                         'sampling_ave':v['ave'],
@@ -240,7 +249,7 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
                     row = {'simulation_id':simulation_id_I,
                         'simulation_dateAndTime':sampling.simulation_dateAndTime,
                         'met_id':k,
-                        'flux_units':'mmol*gDW-1*hr-1_metSum',
+                        'flux_units':flux_units+'_metSum',
                         'sampling_points':None, #v['points'],
                         'sampling_n':v['n'],
                         'sampling_ave':v['ave'],
@@ -267,7 +276,7 @@ class stage02_physiology_sampledData_execute(stage02_physiology_sampledData_io,
                     row = {'simulation_id':simulation_id_I,
                         'simulation_dateAndTime':sampling.simulation_dateAndTime,
                         'subsystem_id':k,
-                        'flux_units':'mmol*gDW-1*hr-1_subsystemSum',
+                        'flux_units':flux_units+'_subsystemSum',
                         'sampling_points':None, #v['points'],
                         'sampling_n':v['n'],
                         'sampling_ave':v['ave'],

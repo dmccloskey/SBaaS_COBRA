@@ -105,41 +105,139 @@ exCOBRA01.initialize_supportedTables();
 exCOBRA01.initialize_tables();
 
 #pre-load the models
-# cobramodels = exCOBRA01.get_models(model_ids_I=["150526_iDM2015"]);
-cobramodels = exCOBRA01.get_models(model_ids_I=["iJO1366"]);
+cobramodels = exCOBRA01.get_models(model_ids_I=["150526_iDM2015"]);
+#cobramodels = exCOBRA01.get_models(model_ids_I=["iJO1366"]);
+
+#pre-load the models
+cobramodels = exCOBRA01.get_models(model_ids_I=["150526_iDM2015"]);
+# cobramodels = exCOBRA01.get_models(model_ids_I=["iJO1366"]);
+
+#revert to reversible
+rxns = [rxn.id for rxn in cobramodels["150526_iDM2015"].reactions]
+print(str(len(rxns)))
+exCOBRA01.revert2reversible(cobramodels["150526_iDM2015"],ignore_reflection=True)
+rxns = [rxn.id for rxn in cobramodels["150526_iDM2015"].reactions]
+print(str(len(rxns)))
 
 simulations = [
-        'ALEsKOs01_iJO1366_OxicEvo04EcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04gndEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04pgiEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04ptsHIcrrEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04sdhCBEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04tpiAEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04pgiEvo01EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04pgiEvo02EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04pgiEvo03EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04pgiEvo04EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04pgiEvo05EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04pgiEvo06EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04pgiEvo07EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04pgiEvo08EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04ptsHIcrrEvo01EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04ptsHIcrrEvo02EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04ptsHIcrrEvo03EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04ptsHIcrrEvo04EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04tpiAEvo01EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04tpiAEvo02EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04tpiAEvo03EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04tpiAEvo04EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04gndEvo01EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04gndEvo02EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04gndEvo03EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04sdhCBEvo01EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04sdhCBEvo02EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04sdhCBEvo03EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04Evo02EPEcoliGlc',
-        'ALEsKOs01_iJO1366_OxicEvo04Evo01EPEcoliGlc'
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04EcoliGlc_0',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04Evo01EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04Evo02EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04gndEcoliGlc_0',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04gndEvo01EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04gndEvo02EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04gndEvo03EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEcoliGlc_0',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo01EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo02EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo03EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo04EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo05EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo06EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo07EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04pgiEvo08EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04ptsHIcrrEcoliGlc_0',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04ptsHIcrrEvo01EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04ptsHIcrrEvo02EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04ptsHIcrrEvo03EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04ptsHIcrrEvo04EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04sdhCBEcoliGlc_0',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04sdhCBEvo01EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04sdhCBEvo02EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04sdhCBEvo03EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04tpiAEcoliGlc_0',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04tpiAEvo01EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04tpiAEvo02EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04tpiAEvo03EPEcoliGlc_11',
+    'ALEsKOs01_151026_iDM2015_full05_OxicEvo04tpiAEvo04EPEcoliGlc_11',
         ]
+
+#simulations = [
+#        'ALEsKOs01_iJO1366_OxicEvo04EcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04gndEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04pgiEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04ptsHIcrrEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04sdhCBEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04tpiAEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04pgiEvo01EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04pgiEvo02EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04pgiEvo03EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04pgiEvo04EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04pgiEvo05EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04pgiEvo06EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04pgiEvo07EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04pgiEvo08EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04ptsHIcrrEvo01EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04ptsHIcrrEvo02EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04ptsHIcrrEvo03EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04ptsHIcrrEvo04EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04tpiAEvo01EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04tpiAEvo02EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04tpiAEvo03EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04tpiAEvo04EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04gndEvo01EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04gndEvo02EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04gndEvo03EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04sdhCBEvo01EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04sdhCBEvo02EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04sdhCBEvo03EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04Evo02EPEcoliGlc',
+#        'ALEsKOs01_iJO1366_OxicEvo04Evo01EPEcoliGlc'
+#        ]
+
+#make the simulation table
+from SBaaS_COBRA.stage02_physiology_simulatedData_execute import stage02_physiology_simulatedData_execute
+simulatedData01 = stage02_physiology_simulatedData_execute(session,engine,pg_settings.datadir_settings);
+simulatedData01.initialize_supportedTables();
+simulatedData01.initialize_tables();
+
+## Test the constraints
+#for simulation in simulations:
+#    print('running simulation ' + simulation);
+#    data = simulatedData01.execute_testConstraintsIndividual(simulation_id_I=simulation,
+#                       rxn_ids_I=[],
+#                       models_I = cobramodels,
+#                       solver_id_I = "glpk",
+#                       gr_check_I = 0.1,
+#                       diagnose_threshold_I=0.99,
+#                       diagnose_break_I=0.1)
+#    for d in data: print(d)
+#    data = simulatedData01.execute_testConstraintsCumulative(simulation_id_I=simulation,
+#                       rxn_ids_I=[],
+#                       models_I = cobramodels,
+#                       solver_id_I = "glpk",
+#                       gr_check_I = 0.1,
+#                       diagnose_threshold_I=0.99,
+#                       diagnose_break_I=0.1)
+#    for d in data: print(d)
+
+#for simulation in simulations:
+#    print('running simulation ' + simulation);
+#    simulatedData01.reset_dataStage02_physiology_simulatedData(
+#            tables_I = ['data_stage02_physiology_simulatedData_fva',
+#                        'data_stage02_physiology_simulatedData_fbaPrimal',
+#                        'data_stage02_physiology_simulatedData_fbaDual',
+#                        'data_stage02_physiology_simulatedData_sra',],
+#            simulation_id_I = simulation,
+#            warn_I=False)
+#    #fba
+#    simulatedData01.execute_fba(simulation_id_I=simulation,
+#                        rxn_ids_I=[],
+#                        models_I = cobramodels,
+#                        method_I='fba',
+#                        allow_loops_I = True,
+#                        options_I = {},
+#                        solver_id_I='glpk',
+#                        )
+#    #fva
+#    simulatedData01.execute_fva(simulation_id_I=simulation,
+#                    rxn_ids_I=[],
+#                    models_I = cobramodels,
+#                    method_I='fva',
+#                    allow_loops_I = True,
+#                        options_I = {},
+#                    solver_id_I='glpk',
+#                    )
 
 #make the simulatedData table
 from SBaaS_COBRA.stage02_physiology_sampledData_execute import stage02_physiology_sampledData_execute
@@ -148,27 +246,30 @@ sampledData01.initialize_supportedTables();
 sampledData01.initialize_tables();
 
 #data_dir = pg_settings.datadir_settings['workspace_data']+'/_output';
-# data_dir = 'F:/Users/dmccloskey-sbrg/Dropbox (UCSD SBRG)/Phenomics_ALEsKOs01/sampling'
-data_dir = 'F:/Users/dmccloskey-sbrg/Dropbox (UCSD SBRG)/MATLAB/sampling_physiology'
+data_dir = 'F:/Users/dmccloskey-sbrg/Dropbox (UCSD SBRG)/Phenomics_ALEsKOs01/sampling'
+#data_dir = 'F:/Users/dmccloskey-sbrg/Dropbox (UCSD SBRG)/MATLAB/sampling_physiology'
 
 # import sampling results
 for simulation in simulations:
     print('running simulation ' + simulation);
-    sampledData01.reset_dataStage02_physiology_sampledData(
-        tables_I = ['data_stage02_physiology_sampledPoints',
-                   'data_stage02_physiology_sampledData',
-                   'data_stage02_physiology_sampledMetaboliteData',
-                   'data_stage02_physiology_sampledSubsystemData',
-                   ],
-        simulation_id_I = simulation,
-        warn_I=False
-    );
+#    sampledData01.reset_dataStage02_physiology_sampledData(
+#        tables_I = ['data_stage02_physiology_sampledPoints',
+#                   'data_stage02_physiology_sampledData',
+#                   'data_stage02_physiology_sampledMetaboliteData',
+#                   'data_stage02_physiology_sampledSubsystemData',
+#                   ],
+#        simulation_id_I = simulation,
+#        warn_I=False
+#    );
     sampledData01.execute_analyzeSamplingPoints(simulation_id_I=simulation,
         rxn_ids_I=[],
         data_dir_I = data_dir,
         models_I = cobramodels,
-        points_overview_I=True,
+        points_overview_I=False,
         flux_stats_I=True,
-        metabolite_stats_I=True,
-        subsystem_stats_I=True,
+        metabolite_stats_I=False,
+        subsystem_stats_I=False,
+       remove_loops = False,
+       normalize_points2Input = True,
+       normalize_rnx_ids = ['EX_glc_LPAREN_e_RPAREN_']
         )
